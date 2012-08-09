@@ -24,7 +24,7 @@ namespace Log4NetCloudWatchAppender
                                new MetricDatum()
                                    .WithMetricName("RandomTicks")
                                    .WithUnit("Count")
-                                   .WithValue(13)
+                                   .WithValue(1)
                            };
 
             try

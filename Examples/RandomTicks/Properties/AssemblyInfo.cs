@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("log4net_cloudwatch_appender")]
+[assembly: AssemblyTitle("RandomTicks")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("log4net_cloudwatch_appender")]
+[assembly: AssemblyProduct("RandomTicks")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("8e0da235-bfc7-48d7-b273-5432ed9de202")]
+[assembly: Guid("88214793-6ad9-44fe-bcc9-63f946ec9fb2")]
 
 // Version information for an assembly consists of the following four values:
 //

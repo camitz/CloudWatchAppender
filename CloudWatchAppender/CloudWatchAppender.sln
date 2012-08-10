@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchAppender", "CloudWatchAppender.csproj", "{9D22716F-0CF0-45DB-8957-9DACADFFF930}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{454F1AF8-8B2E-4ED9-AD57-6765C371C79A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomTicks", "..\Examples\RandomTicks\RandomTicks.csproj", "{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContinuousTicks", "..\Examples\ContinuousTicks\ContinuousTicks.csproj", "{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D22716F-0CF0-45DB-8957-9DACADFFF930}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D22716F-0CF0-45DB-8957-9DACADFFF930}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D22716F-0CF0-45DB-8957-9DACADFFF930}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9D22716F-0CF0-45DB-8957-9DACADFFF930}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9D22716F-0CF0-45DB-8957-9DACADFFF930}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9D22716F-0CF0-45DB-8957-9DACADFFF930}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D22716F-0CF0-45DB-8957-9DACADFFF930}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D22716F-0CF0-45DB-8957-9DACADFFF930}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9D22716F-0CF0-45DB-8957-9DACADFFF930}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9D22716F-0CF0-45DB-8957-9DACADFFF930}.Release|x86.ActiveCfg = Release|Any CPU
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}.Debug|x86.ActiveCfg = Debug|x86
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}.Debug|x86.Build.0 = Debug|x86
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}.Release|Any CPU.ActiveCfg = Release|x86
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}.Release|Mixed Platforms.Build.0 = Release|x86
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}.Release|x86.ActiveCfg = Release|x86
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A}.Release|x86.Build.0 = Release|x86
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Debug|x86.ActiveCfg = Debug|x86
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Debug|x86.Build.0 = Debug|x86
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Release|Any CPU.ActiveCfg = Release|x86
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Release|Mixed Platforms.Build.0 = Release|x86
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Release|x86.ActiveCfg = Release|x86
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A} = {454F1AF8-8B2E-4ED9-AD57-6765C371C79A}
+		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491} = {454F1AF8-8B2E-4ED9-AD57-6765C371C79A}
+	EndGlobalSection
+EndGlobal

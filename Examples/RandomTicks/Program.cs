@@ -8,7 +8,7 @@ namespace RandomTicks
     internal class RandomTicks
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(RandomTicks));
-        
+
         private static void Main(string[] args)
         {
             XmlConfigurator.Configure();

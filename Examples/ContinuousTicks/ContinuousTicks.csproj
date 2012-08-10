@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{16FB49B5-6AC1-4ED5-9F46-C1F595BDA1A4}</ProjectGuid>
+    <ProjectGuid>{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>log4net_cloudwatch_appender</RootNamespace>
-    <AssemblyName>log4net_cloudwatch_appender</AssemblyName>
+    <RootNamespace>ContinuousTicks</RootNamespace>
+    <AssemblyName>ContinuousTicks</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -34,11 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.0\lib\net40-client\log4net.dll</HintPath>
+    <Reference Include="log4net">
+      <HintPath>..\..\CloudWatchAppender\packages\log4net.2.0.0\lib\net40-client\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -55,9 +54,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Log4NetCloudWatchAppender\Log4NetCloudWatchAppender.csproj">
+    <ProjectReference Include="..\..\CloudWatchAppender\CloudWatchAppender.csproj">
       <Project>{9D22716F-0CF0-45DB-8957-9DACADFFF930}</Project>
-      <Name>Log4NetCloudWatchAppender</Name>
+      <Name>CloudWatchAppender</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

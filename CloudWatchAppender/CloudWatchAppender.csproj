@@ -8,8 +8,8 @@
     <ProjectGuid>{9D22716F-0CF0-45DB-8957-9DACADFFF930}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Log4NetCloudWatchAppender</RootNamespace>
-    <AssemblyName>Log4NetCloudWatchAppender</AssemblyName>
+    <RootNamespace>CloudWatchAppender</RootNamespace>
+    <AssemblyName>CloudWatchAppender</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -47,7 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Log4NetCloudWatchAppender.cs" />
+    <Compile Include="CloudWatchAppender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

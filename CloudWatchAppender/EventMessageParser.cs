@@ -25,7 +25,7 @@ namespace CloudWatchAppender
         public void Parse()
         {
             var matches =
-                Regex.Matches(_renderedMessage, @"(?<name>\w+):\s*(?<value>\d+\.\d+|\d+|[\w/]+)?\s*(?<unit>\w+)").Cast<Match>().ToList();
+                Regex.Matches(_renderedMessage, @"(?<name>\w+):\s*(?<value>\d+\.\d+|\d+|[\w/]+)?\s*(?<unit>\w+)?").Cast<Match>().ToList();
 
             foreach (var m in matches)
             {

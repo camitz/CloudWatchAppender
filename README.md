@@ -39,4 +39,4 @@ The appender will also parse the log message, however, any parameters set in the
 Check out the following blog posts that seeded the project.
 
 [A CloudWatch appender for log4net]("http://blog.simpletask.se/awscloudwatch-log4net-appender")
-[Improvning the CloudWatch Appender]("http://blog.simpletask.se/improvning-cloudwatch-appender")
+[Improving the CloudWatch Appender]("http://blog.simpletask.se/improving-cloudwatch-appender")

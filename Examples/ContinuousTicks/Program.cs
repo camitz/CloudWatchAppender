@@ -19,7 +19,7 @@ namespace ContinuousTicks
             stopWatch.Start();
             for (int i = 0; i < nTicks; i++)
             {
-                log.Info("A tick! Value: 2 Bytes");
+                log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
             }
             stopWatch.Stop();
             Console.WriteLine(String.Format("All {0} ticks in {1} ms.\nWaiting for requests to complete.",nTicks,stopWatch.ElapsedMilliseconds));

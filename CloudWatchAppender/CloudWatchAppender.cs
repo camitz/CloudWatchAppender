@@ -2,7 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.CloudWatch;
@@ -14,9 +17,44 @@ namespace CloudWatchAppender
 {
     public class CloudWatchAppender : AppenderSkeleton
     {
+        public string Unit { get; set; }
+        public string Value { get; set; }
+        public string Name { get; set; }
+        public string Namespace { get; set; }
+        public bool UseLoggerName { get; set; }
+
+        public Dimension Dimension0 { set { AddDimension(value); } }
+        public Dimension Dimension1 { set { AddDimension(value); } }
+        public Dimension Dimension2 { set { AddDimension(value); } }
+        public Dimension Dimension3 { set { AddDimension(value); } }
+        public Dimension Dimension4 { set { AddDimension(value); } }
+        public Dimension Dimension5 { set { AddDimension(value); } }
+        public Dimension Dimension6 { set { AddDimension(value); } }
+        public Dimension Dimension7 { set { AddDimension(value); } }
+        public Dimension Dimension8 { set { AddDimension(value); } }
+        public Dimension Dimension9 { set { AddDimension(value); } }
+
+        private List<Dimension> _dimensions = new List<Dimension>();
+
+        private void AddDimension(Dimension value)
+        {
+            if (value != null && value.Name == "InstanceID" && value.Value == null)
+                value.Value = GetInstanceID();
+            _dimensions.Add(value);
+        }
+
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
 
-        public static bool HasPendingRequests { get { return _tasks.Values.Any(t => !t.IsCompleted); } }
+        readonly AmazonCloudWatch _client = AWSClientFactory.CreateAmazonCloudWatchClient(
+                       ConfigurationManager.AppSettings["AWSAccessKey"],
+                       ConfigurationManager.AppSettings["AWSSecretKey"],
+                       new AmazonCloudWatchConfig { ServiceURL = ConfigurationManager.AppSettings["AWSServiceEndpoint"] }
+                       );
+        
+        public static bool HasPendingRequests
+        {
+            get { return _tasks.Values.Any(t => !t.IsCompleted); }
+        }
 
         public static void WaitForPendingRequests(TimeSpan timeout)
         {
@@ -37,27 +75,49 @@ namespace CloudWatchAppender
 
         protected override void Append(LoggingEvent loggingEvent)
         {
-            var CWClient = AWSClientFactory.CreateAmazonCloudWatchClient(
-                  ConfigurationManager.AppSettings["AWSAccessKey"],
-                  ConfigurationManager.AppSettings["AWSSecretKey"],
-                  new AmazonCloudWatchConfig { ServiceURL = ConfigurationManager.AppSettings["AWSServiceEndpoint"] }
-                );
+            var parser = new EventMessageParser(loggingEvent.RenderedMessage)
+                             {
+                                 OverrideName = string.IsNullOrEmpty(Name)
+                                                    ? UseLoggerName
+                                                          ? loggingEvent.LoggerName.Split(new[] { '.' }).Last()
+                                                          : null
+                                                    : Name,
 
-            var data = new List<MetricDatum>
-                           {
-                               new MetricDatum()
-                                   .WithMetricName("RandomTicks")
-                                   .WithUnit("Count")
-                                   .WithValue(1)
-                           };
+                                 OverrideNameSpace = string.IsNullOrEmpty(Namespace)
+                                                         ? UseLoggerName
+                                                               ? String.Join("/",
+                                                                             loggingEvent.LoggerName.Split(new[] { '.' }).
+                                                                                 Reverse().Skip(1).
+                                                                                 Reverse())
+                                                               : null
+                                                         : Namespace,
 
+                                 OverrideUnit = String.IsNullOrEmpty(Unit)
+                                                    ? null
+                                                    : Unit,
+
+                                 OverrideDimensions = _dimensions.Any() ? _dimensions : null
+                             };
+
+                            if (!string.IsNullOrEmpty(Value))
+                                parser.OverrideValue = Double.Parse(Value, CultureInfo.InvariantCulture);
+
+            parser.Parse();
+
+            foreach (var r in parser)
+            {
+                SendItOff(r);
+            }
+        }
+
+        private void SendItOff(PutMetricDataRequest r)
+        {
             try
             {
                 Task task =
                     Task.Factory.StartNew(() =>
-                                          CWClient.PutMetricData(new PutMetricDataRequest()
-                                                                     .WithNamespace("RandomTicks")
-                                                                     .WithMetricData(data)));
+                                          _client.PutMetricData(r));
+
                 if (!task.IsCompleted)
                     _tasks.TryAdd(task.Id, task);
 
@@ -68,6 +128,16 @@ namespace CloudWatchAppender
                 //Don't log this exception! ;)
                 Console.WriteLine(e.Message);
             }
+        }
+
+
+        private string GetInstanceID()
+        {
+            return new StreamReader(
+                WebRequest.Create("http://169.254.169.254/latest/meta-data/instance-id")
+                    .GetResponse()
+                    .GetResponseStream(), true)
+                .ReadToEnd();
         }
     }
 }

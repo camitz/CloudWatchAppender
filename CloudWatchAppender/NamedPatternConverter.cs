@@ -45,9 +45,9 @@ namespace CloudWatchAppender
                     int num;
                     if (SystemInfo.TryParse(text, out num))
                     {
-                        if (num <= 0)
+                        if (num == 0)
                         {
-                            LogLog.Error(NamedPatternConverter.declaringType, "NamedPatternConverter: Precision option (" + text + ") isn't a positive integer.");
+                            LogLog.Error(NamedPatternConverter.declaringType, "NamedPatternConverter: Precision option (" + text + ") is zero.");
                         }
                         else
                         {

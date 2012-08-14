@@ -4,7 +4,7 @@ using log4net.Core;
 
 namespace CloudWatchAppender
 {
-    internal sealed class LoggerPatternConverter : NamedPatternConverter
+    public class LoggerPatternConverter : NamedPatternConverter
     {
         protected override string GetFullyQualifiedName(LoggingEvent loggingEvent)
         {
@@ -18,28 +18,33 @@ namespace CloudWatchAppender
             if (m_precision == 0 || text == null || text.Length < 2)
             {
                 writer.Write(text);
+                return;
             }
-                var strings = text.Split(new[] { '.' });
+
+            var elements = text
+                .Trim()
+                .Trim(new[] { '.' })
+                .Split(new[] { '.' });
+
             if (m_precision > 0)
             {
                 writer.Write(
                     string.Join("/",
-                        strings
-                            .Reverse()
-                            .Take(m_precision)
-                            .Reverse()
+                                elements
+                                    .Reverse()
+                                    .Take(m_precision)
+                                    .Reverse()
                         )
                     );
+                return;
             }
-            else
-            {
-                writer.Write(
-                   string.Join("/",
-                       strings
-                           .Take(strings.Count() - m_precision)
-                       )
-                   );
-            }
+
+            writer.Write(
+                string.Join("/",
+                            elements
+                                .Take(elements.Count() + m_precision)
+                    )
+                );
         }
     }
 }

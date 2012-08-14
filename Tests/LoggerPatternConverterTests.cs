@@ -83,8 +83,9 @@ namespace CloudWatchAppender.Tests
             Assert.AreEqual("Dots", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
 
+            //This behaviour differs from the log4net source.
             log1.Info("TrailingDot.");
-            Assert.AreEqual("TrailingDot.", stringAppender.GetString(), "%message-as-name not registered");
+            Assert.AreEqual("TrailingDot", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
 
             log1.Info(".LeadingDot");
@@ -123,15 +124,15 @@ namespace CloudWatchAppender.Tests
             stringAppender.Reset();
 
             log1.Info("One.Dot");
-            Assert.AreEqual("One.Dot", stringAppender.GetString(), "%message-as-name not registered");
+            Assert.AreEqual("One/Dot", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
 
             log1.Info("Tw.o.Dots");
-            Assert.AreEqual("o.Dots", stringAppender.GetString(), "%message-as-name not registered");
+            Assert.AreEqual("o/Dots", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
 
             log1.Info("TrailingDot.");
-            Assert.AreEqual("TrailingDot.", stringAppender.GetString(), "%message-as-name not registered");
+            Assert.AreEqual("TrailingDot", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
 
             log1.Info(".LeadingDot");
@@ -151,8 +152,55 @@ namespace CloudWatchAppender.Tests
             Assert.AreEqual(".", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
         }
-    
-        private class MessageAsNamePatternConverter : NamedPatternConverter
+
+        [Test]
+        public void NamedPatternConverterWithPrecisionMinus2ShouldStripLastTwoElements()
+        {
+            StringAppender stringAppender = new StringAppender();
+            PatternLayout layout = new PatternLayout();
+            layout.AddConverter("message-as-name", typeof(MessageAsNamePatternConverter));
+            layout.ConversionPattern = "%message-as-name{-2}";
+            layout.ActivateOptions();
+            stringAppender.Layout = layout;
+            ILoggerRepository rep = LogManager.CreateRepository(Guid.NewGuid().ToString());
+            BasicConfigurator.Configure(rep, stringAppender);
+            ILog log1 = LogManager.GetLogger(rep.Name, "TestAddingCustomPattern");
+
+            log1.Info("Tw.o.Dots");
+            Assert.AreEqual("Tw", stringAppender.GetString(), "%message-as-name not registered");
+            stringAppender.Reset();
+
+            log1.Info("NoDots");
+            Assert.AreEqual("", stringAppender.GetString(), "%message-as-name not registered");
+            stringAppender.Reset();
+
+            log1.Info("One.Dot");
+            Assert.AreEqual("", stringAppender.GetString(), "%message-as-name not registered");
+            stringAppender.Reset();
+
+            log1.Info("TrailingDot.");
+            Assert.AreEqual("", stringAppender.GetString(), "%message-as-name not registered");
+            stringAppender.Reset();
+
+            log1.Info(".LeadingDot");
+            Assert.AreEqual("", stringAppender.GetString(), "%message-as-name not registered");
+            stringAppender.Reset();
+
+            // empty string and other evil combinations as tests for of-by-one mistakes in index calculations
+            log1.Info(string.Empty);
+            Assert.AreEqual(string.Empty, stringAppender.GetString(), "%message-as-name not registered");
+            stringAppender.Reset();
+
+            log1.Info("x");
+            Assert.AreEqual("x", stringAppender.GetString(), "%message-as-name not registered");
+            stringAppender.Reset();
+
+            log1.Info(".");
+            Assert.AreEqual(".", stringAppender.GetString(), "%message-as-name not registered");
+            stringAppender.Reset();
+        }
+
+        private class MessageAsNamePatternConverter : LoggerPatternConverter
         {
             protected override string GetFullyQualifiedName(LoggingEvent loggingEvent)
             {

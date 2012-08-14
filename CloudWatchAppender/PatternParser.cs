@@ -1,10 +1,14 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using log4net.Core;
 
 namespace CloudWatchAppender
 {
-    class PatternParser
+    public class PatternParser
     {
         private readonly LoggingEvent _loggingEvent;
+        private IDictionary<string, Type> _converters = new Dictionary<string, Type>();
 
         public PatternParser(LoggingEvent loggingEvent)
         {
@@ -14,9 +18,17 @@ namespace CloudWatchAppender
         public string Parse(string pattern)
         {
             var l = new CloudWathPatternLayout(pattern, _loggingEvent);
+            foreach (var converter in _converters)
+            {
+                l.AddConverter(converter.Key, converter.Value);
+            }
             return l.Parse();
         }
 
 
+        public void AddConverter(string messageAsName, Type type)
+        {
+            _converters.Add(messageAsName, type);
+        }
     }
 }

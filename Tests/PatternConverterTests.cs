@@ -9,8 +9,36 @@ using log4net.Repository;
 namespace CloudWatchAppender.Tests
 {
     [TestFixture]
-    public class LoggerPatternConverterTests
+    public class PatternConverterTests
     {
+
+        [TearDown]
+        public void TearDown()
+        {
+            GlobalContext.Properties.Remove("prop1");
+            ThreadContext.Properties.Remove("prop1");
+        }
+
+        [Test]
+        public void TestStackTracePattern()
+        {
+            StringAppender stringAppender = new StringAppender();
+            stringAppender.Layout = new CloudWathPatternLayout("%stacktrace{2}");
+
+            ILoggerRepository rep = LogManager.CreateRepository(Guid.NewGuid().ToString());
+            BasicConfigurator.Configure(rep, stringAppender);
+
+            ILog log1 = LogManager.GetLogger(rep.Name, "TestStackTracePattern");
+
+            log1.Info("TestMessage");
+#if !MONO
+            Assert.AreEqual("RuntimeMethodHandle._InvokeMethodFast > PatternConverterTests.TestStackTracePattern", stringAppender.GetString(), "stack trace value set");
+#else
+            Assert.AreEqual("MonoMethod.InternalInvoke > PatternConverterTests.TestStackTracePattern", stringAppender.GetString(), "stack trace value set");
+#endif
+            stringAppender.Reset();
+        }
+
         [Test]
         public void NamedPatternConverterWithoutPrecisionShouldReturnFullName()
         {
@@ -200,12 +228,13 @@ namespace CloudWatchAppender.Tests
             stringAppender.Reset();
         }
 
-        private class MessageAsNamePatternConverter : LoggerPatternConverter
+    }
+
+    internal class MessageAsNamePatternConverter : LoggerPatternConverter
+    {
+        protected override string GetFullyQualifiedName(LoggingEvent loggingEvent)
         {
-            protected override string GetFullyQualifiedName(LoggingEvent loggingEvent)
-            {
-                return loggingEvent.MessageObject.ToString();
-            }
+            return loggingEvent.MessageObject.ToString();
         }
     }
 }

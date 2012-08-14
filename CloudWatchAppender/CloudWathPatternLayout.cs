@@ -4,7 +4,7 @@ using log4net.Layout;
 
 namespace CloudWatchAppender
 {
-    class CloudWathPatternLayout : PatternLayout
+    public class CloudWathPatternLayout : PatternLayout
     {
         private readonly string _pattern;
         private readonly LoggingEvent _loggingEvent;
@@ -23,8 +23,12 @@ namespace CloudWatchAppender
         public CloudWathPatternLayout(string pattern, LoggingEvent loggingEvent)
             : base(pattern)
         {
-            _pattern = pattern;
             _loggingEvent = loggingEvent;
+        }
+
+        public CloudWathPatternLayout(string pattern):base(pattern)
+        {
+            
         }
 
         protected override log4net.Util.PatternParser CreatePatternParser(string pattern)

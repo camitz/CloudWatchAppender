@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomTicks", "..\Examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContinuousTicks", "..\Examples\ContinuousTicks\ContinuousTicks.csproj", "{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchAppender.Tests", "..\Tests\CloudWatchAppender.Tests.csproj", "{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,16 @@ Global
 		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Release|Mixed Platforms.Build.0 = Release|x86
 		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Release|x86.ActiveCfg = Release|x86
 		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491}.Release|x86.Build.0 = Release|x86
+		{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2CE9BF6A-C7DE-4A06-862B-5C6935F92308}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

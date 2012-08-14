@@ -3,15 +3,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using log4net.Appender;
 using log4net.Core;
+using log4net.Layout;
 
 namespace CloudWatchAppender
 {
@@ -21,7 +20,6 @@ namespace CloudWatchAppender
         public string Value { get; set; }
         public string Name { get; set; }
         public string Namespace { get; set; }
-        public bool UseLoggerName { get; set; }
 
         public Dimension Dimension0 { set { AddDimension(value); } }
         public Dimension Dimension1 { set { AddDimension(value); } }
@@ -34,23 +32,23 @@ namespace CloudWatchAppender
         public Dimension Dimension8 { set { AddDimension(value); } }
         public Dimension Dimension9 { set { AddDimension(value); } }
 
+        public bool UseLoggerName { get; set; }
+
         private List<Dimension> _dimensions = new List<Dimension>();
 
         private void AddDimension(Dimension value)
         {
-            if (value != null && value.Name == "InstanceID" && value.Value == null)
-                value.Value = GetInstanceID();
             _dimensions.Add(value);
         }
 
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
 
-        readonly AmazonCloudWatch _client = AWSClientFactory.CreateAmazonCloudWatchClient(
+        private readonly AmazonCloudWatch _client = AWSClientFactory.CreateAmazonCloudWatchClient(
                        ConfigurationManager.AppSettings["AWSAccessKey"],
                        ConfigurationManager.AppSettings["AWSSecretKey"],
                        new AmazonCloudWatchConfig { ServiceURL = ConfigurationManager.AppSettings["AWSServiceEndpoint"] }
                        );
-        
+
         public static bool HasPendingRequests
         {
             get { return _tasks.Values.Any(t => !t.IsCompleted); }
@@ -75,13 +73,17 @@ namespace CloudWatchAppender
 
         protected override void Append(LoggingEvent loggingEvent)
         {
-            var parser = new EventMessageParser(loggingEvent.RenderedMessage)
+            var renderedString = RenderLoggingEvent(loggingEvent);
+
+            var patternParser = new PatternParser(loggingEvent);
+
+            var parser = new EventMessageParser(renderedString)
                              {
                                  OverrideName = string.IsNullOrEmpty(Name)
                                                     ? UseLoggerName
                                                           ? loggingEvent.LoggerName.Split(new[] { '.' }).Last()
                                                           : null
-                                                    : Name,
+                                                    : patternParser.Parse(Name),
 
                                  OverrideNameSpace = string.IsNullOrEmpty(Namespace)
                                                          ? UseLoggerName
@@ -90,24 +92,24 @@ namespace CloudWatchAppender
                                                                                  Reverse().Skip(1).
                                                                                  Reverse())
                                                                : null
-                                                         : Namespace,
+                                                         : patternParser.Parse(Namespace),
 
                                  OverrideUnit = String.IsNullOrEmpty(Unit)
                                                     ? null
-                                                    : Unit,
+                                                    : patternParser.Parse(Unit),
 
-                                 OverrideDimensions = _dimensions.Any() ? _dimensions : null
+                                 OverrideDimensions = _dimensions.Any() ? 
+                                 _dimensions.Select(d=>new Dimension{Name = d.Name, Value = patternParser.Parse(d.Value)}) : 
+                                 null
                              };
 
-                            if (!string.IsNullOrEmpty(Value))
-                                parser.OverrideValue = Double.Parse(Value, CultureInfo.InvariantCulture);
+            if (!string.IsNullOrEmpty(Value))
+                parser.OverrideValue = Double.Parse(Value, CultureInfo.InvariantCulture);
 
             parser.Parse();
 
             foreach (var r in parser)
-            {
                 SendItOff(r);
-            }
         }
 
         private void SendItOff(PutMetricDataRequest r)
@@ -130,14 +132,9 @@ namespace CloudWatchAppender
             }
         }
 
-
         private string GetInstanceID()
         {
-            return new StreamReader(
-                WebRequest.Create("http://169.254.169.254/latest/meta-data/instance-id")
-                    .GetResponse()
-                    .GetResponseStream(), true)
-                .ReadToEnd();
+            return AWSMetaDataReader.GetInstanceID();
         }
     }
 }

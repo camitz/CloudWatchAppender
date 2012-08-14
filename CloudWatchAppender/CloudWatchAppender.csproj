@@ -48,9 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AWSMetaDataReader.cs" />
     <Compile Include="CloudWatchAppender.cs" />
+    <Compile Include="CloudWathPatternLayout.cs" />
     <Compile Include="EventMessageParser.cs" />
+    <Compile Include="InstanceIDPatternConverter.cs" />
+    <Compile Include="LoggerPatternConverter.cs" />
     <Compile Include="MyMetricDatum.cs" />
+    <Compile Include="NamedPatternConverter.cs" />
+    <Compile Include="PatternParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

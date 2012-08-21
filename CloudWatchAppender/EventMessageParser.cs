@@ -12,6 +12,7 @@ namespace CloudWatchAppender
     {
         private readonly string _renderedMessage;
         private readonly List<AppenderValue> _values = new List<AppenderValue>();
+        private readonly List<Dimension> _dimensions= new List<Dimension>();
         private readonly List<MetricDatum> _data = new List<MetricDatum>();
         private MetricDatum _currentDatum;
 
@@ -24,15 +25,65 @@ namespace CloudWatchAppender
 
         public void Parse()
         {
-            var matches =
-                Regex.Matches(_renderedMessage, @"(?<name>\w+):\s*(?<value>\d+\.\d+|\d+|[\w/]+)?\s*(?<unit>[\w/]+)?").Cast<Match>().ToList();
+            var tokens =
+                Regex.Matches(_renderedMessage,
+                              @"(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
+                    .Cast<Match>()
+                    .ToList()
+                    .GetEnumerator();
 
-            foreach (var m in matches)
+            string t0, unit, t2;
+
+            tokens.MoveNext();
+            while (tokens.Current != null)
             {
-                var p = GetValueFromMatch(m);
+                if (!string.IsNullOrEmpty(t0 = tokens.Current.Groups["name"].Value.Split(new[] {':'})[0]))
+                {
+                    if (!_availableNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) &&
+                        !_availableStatisticNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        tokens.MoveNext();
+                        continue;
+                    }
 
-                if (p.HasValue)
-                    _values.Add(p.Value);
+                    if (t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                    }
+                    else
+                    {
+                        if (!tokens.MoveNext())
+                            continue;
+
+                        var sNum = tokens.Current.Groups["int"].Value.Split(new[] {':'})[0] +
+                                   tokens.Current.Groups["float"].Value.Split(new[] {':'})[0];
+
+                        if (string.IsNullOrEmpty(sNum))
+                            continue;
+
+                        var d = 0.0;
+                        if (!Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d))
+                        {
+                            tokens.MoveNext();
+                            continue;
+                        }
+
+                        var v = new AppenderValue
+                                    {
+                                        dValue = d,
+                                        sValue = sNum,
+                                        name = t0
+                                    };
+
+                        if (tokens.MoveNext())
+                            if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
+                                if (_availableUnits.Any(x => x.Equals(unit, StringComparison.InvariantCultureIgnoreCase)))
+                                    v.unit = unit;
+
+                        _values.Add(v);
+                    }
+                }
+                else
+                    tokens.MoveNext();
             }
 
             NewDatum();

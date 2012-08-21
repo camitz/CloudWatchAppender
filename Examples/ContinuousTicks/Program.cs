@@ -32,9 +32,9 @@ namespace ContinuousTicks
                                    .WithValue(1.0)
                            };
 
-            var response = CWClient.PutMetricData(new PutMetricDataRequest()
-                                 .WithNamespace("CloudWatchAppender")
-                                 .WithMetricData(data));
+            //var response = CWClient.PutMetricData(new PutMetricDataRequest()
+            //                     .WithNamespace("CloudWatchAppender")
+            //                     .WithMetricData(data));
 
             XmlConfigurator.Configure();
 

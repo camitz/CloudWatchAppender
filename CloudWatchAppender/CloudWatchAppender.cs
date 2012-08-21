@@ -10,7 +10,6 @@ using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using log4net.Appender;
 using log4net.Core;
-using log4net.Layout;
 
 namespace CloudWatchAppender
 {
@@ -32,7 +31,12 @@ namespace CloudWatchAppender
         public Dimension Dimension8 { set { AddDimension(value); } }
         public Dimension Dimension9 { set { AddDimension(value); } }
 
-        public bool UseLoggerName { get; set; }
+        private bool _configOverrides = true;
+        public bool ConfigOverrides
+        {
+            get { return _configOverrides; }
+            set { _configOverrides = value; }
+        }
 
         private List<Dimension> _dimensions = new List<Dimension>();
 
@@ -77,31 +81,31 @@ namespace CloudWatchAppender
 
             var patternParser = new PatternParser(loggingEvent);
 
-            var parser = new EventMessageParser(renderedString)
+            EventMessageParser parser;
+            if (ConfigOverrides)
+                parser = new EventMessageParser(renderedString)
                              {
                                  OverrideName = string.IsNullOrEmpty(Name)
-                                                    ? UseLoggerName
-                                                          ? loggingEvent.LoggerName.Split(new[] { '.' }).Last()
-                                                          : null
+                                                    ? null
                                                     : patternParser.Parse(Name),
-
                                  OverrideNameSpace = string.IsNullOrEmpty(Namespace)
-                                                         ? UseLoggerName
-                                                               ? String.Join("/",
-                                                                             loggingEvent.LoggerName.Split(new[] { '.' }).
-                                                                                 Reverse().Skip(1).
-                                                                                 Reverse())
-                                                               : null
+                                                         ? null
                                                          : patternParser.Parse(Namespace),
-
                                  OverrideUnit = String.IsNullOrEmpty(Unit)
                                                     ? null
                                                     : patternParser.Parse(Unit),
-
-                                 OverrideDimensions = _dimensions.Any() ?
-                                 _dimensions.Select(d => new Dimension { Name = d.Name, Value = patternParser.Parse(d.Value) }) :
-                                 null
+                                 OverrideDimensions = _dimensions.Any()
+                                                          ? _dimensions.Select(
+                                                              d =>
+                                                              new Dimension
+                                                                  {
+                                                                      Name = d.Name,
+                                                                      Value = patternParser.Parse(d.Value)
+                                                                  })
+                                                          : null
                              };
+            else
+                parser = new EventMessageParser(renderedString);
 
             if (!string.IsNullOrEmpty(Value))
                 parser.OverrideValue = Double.Parse(Value, CultureInfo.InvariantCulture);

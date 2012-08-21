@@ -33,6 +33,26 @@ namespace CloudWatchAppender.Tests
             Assert.AreEqual(1, passes);
         }
 
+        [Test]
+        public void StringWithStatistics()
+        {
+            var parser = new EventMessageParser("A tick! SampleCount: 3000, Minimum: 1.3 Gigabits/Second, Maximum: 127.9 Gigabits/Second, Sum: 15000 Gigabits/Second");
+            parser.Parse();
+
+            var passes = 0;
+            foreach (var r in parser)
+            {
+                Assert.AreEqual("Gigabits/Second", r.MetricData[0].Unit);
+                Assert.AreEqual(1.3, r.MetricData[0].StatisticValues.Minimum);
+                Assert.AreEqual(127.9, r.MetricData[0].StatisticValues.Maximum);
+                Assert.AreEqual(15000, r.MetricData[0].StatisticValues.Sum);
+                Assert.AreEqual(3000, r.MetricData[0].StatisticValues.SampleCount);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+        }
+
 
         [Test]
         public void StringWithNothingRecognizableShouldProduceCount1()

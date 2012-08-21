@@ -15,8 +15,8 @@ namespace CloudWatchAppender
         private double? _min;
         private double? _sampleCount;
 
-        private bool _statisticsMode = false;
-        private bool _valueMode = false;
+        private bool _statisticsMode;
+        private bool _valueMode;
 
         public double Value
         {
@@ -29,10 +29,10 @@ namespace CloudWatchAppender
                 if (_value.HasValue)
                     throw new MetricDatumFilledException("Value has been set already.");
 
-                if (_statisticsMode)
-                    throw new MetricDatumFilledException("Value cannot be set since we're inte statistics mode.");
+                if (StatisticsMode)
+                    throw new MetricDatumFilledException("Value cannot be set since we're in statistics mode.");
 
-                _valueMode = true;
+                ValueMode = true;
                 _value = value;
                 _datum.Value = value;
             }
@@ -85,10 +85,14 @@ namespace CloudWatchAppender
                 if (_max.HasValue)
                     throw new MetricDatumFilledException("Value has been set already.");
 
-                if (_valueMode)
-                    throw new MetricDatumFilledException("Value cannot be set since we're inte statistics mode.");
+                if (ValueMode)
+                    throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _max = value;
+
+                if (_datum.StatisticValues == null)
+                    _datum.StatisticValues = new StatisticSet();
+
                 _datum.StatisticValues.Maximum = value;
             }
         }
@@ -101,10 +105,14 @@ namespace CloudWatchAppender
                 if (_min.HasValue)
                     throw new MetricDatumFilledException("Value has been set already.");
 
-                if (_valueMode)
-                    throw new MetricDatumFilledException("Value cannot be set since we're inte statistics mode.");
+                if (ValueMode)
+                    throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _min = value;
+
+                if (_datum.StatisticValues == null)
+                    _datum.StatisticValues = new StatisticSet();
+
                 _datum.StatisticValues.Minimum = value;
             }
         }
@@ -117,10 +125,14 @@ namespace CloudWatchAppender
                 if (_sum.HasValue)
                     throw new MetricDatumFilledException("Value has been set already.");
 
-                if (_valueMode)
-                    throw new MetricDatumFilledException("Value cannot be set since we're inte statistics mode.");
+                if (ValueMode)
+                    throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _sum = value;
+
+                if (_datum.StatisticValues == null)
+                    _datum.StatisticValues = new StatisticSet();
+
                 _datum.StatisticValues.Sum = value;
             }
         }
@@ -132,10 +144,14 @@ namespace CloudWatchAppender
                 if (_sampleCount.HasValue)
                     throw new MetricDatumFilledException("Value has been set already.");
 
-                if (_valueMode)
-                    throw new MetricDatumFilledException("Value cannot be set since we're inte statistics mode.");
+                if (ValueMode)
+                    throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _sampleCount = value;
+
+                if (_datum.StatisticValues == null)
+                    _datum.StatisticValues = new StatisticSet();
+
                 _datum.StatisticValues.SampleCount = value;
             }
         }
@@ -160,6 +176,17 @@ namespace CloudWatchAppender
 
                 Datum.Dimensions = value;
             }
+        }
+
+        public bool StatisticsMode
+        {
+            get { return _statisticsMode; }
+        }
+
+        public bool ValueMode
+        {
+            get { return _valueMode; }
+            set { _valueMode = value; }
         }
     }
 

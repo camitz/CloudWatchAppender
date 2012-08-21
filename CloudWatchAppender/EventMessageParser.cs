@@ -23,6 +23,11 @@ namespace CloudWatchAppender
 
         public IEnumerable<Dimension> OverrideDimensions { get; set; }
 
+        public double? OverrideSampleCount { get; set; }
+        public double? OverrideSum { get; set; }
+        public double? OverrideMaximum { get; set; }
+        public double? OverrideMinimum { get; set; }
+
         public void Parse()
         {
             var tokens =
@@ -122,8 +127,7 @@ namespace CloudWatchAppender
                         if (!tokens.MoveNext())
                             continue;
 
-                        sNum = tokens.Current.Groups["int"].Value +
-                                   tokens.Current.Groups["float"].Value;
+                        sNum = string.IsNullOrEmpty(tokens.Current.Groups["float"].Value) ? tokens.Current.Groups["int"].Value : tokens.Current.Groups["float"].Value;
 
                         var sValue = tokens.Current.Groups["word"].Value;
 
@@ -187,16 +191,28 @@ namespace CloudWatchAppender
                 if (string.IsNullOrEmpty(datum.Unit))
                     datum.Unit = OverrideUnit ?? "Count";
 
-                if (datum.Value == 0.0)
-                    try
-                    {
+                if (!datum.ValueMode && !datum.StatisticsMode)
+                    datum.ValueMode = true;
+
+                if (datum.ValueMode)
+                {
+                    if (datum.Value == 0.0)
                         datum.Value = OverrideValue ?? 1;
-                    }
-                    catch (Exception)
-                    {
-                    }
+                }
+                else
+                {
+                    if (datum.Minimum == 0.0)
+                        datum.Minimum = OverrideMinimum ?? 0.0;
+                    if (datum.Maximum == 0.0)
+                        datum.Maximum = OverrideMaximum ?? 0.0;
+                    if (datum.Sum == 0.0)
+                        datum.Sum = OverrideSum ?? 0.0;
+                    if (datum.SampleCount == 0)
+                        datum.SampleCount = OverrideSampleCount ?? 1;
+                }
             }
         }
+
 
         private AppenderValue? GetValueFromMatch(Match m)
         {
@@ -279,15 +295,12 @@ namespace CloudWatchAppender
                     _currentDatum.Sum = p.dValue.Value;
                     _currentDatum.Unit = p.unit;
                     break;
-
-                default:
-                    break;
             }
         }
 
         private void NewDatum()
         {
-            _currentDatum = new MetricDatum { Dimensions = _dimensions };
+            _currentDatum = new MetricDatum { Dimensions = OverrideDimensions != null && OverrideDimensions.Count() > 0 ? OverrideDimensions.ToList() : _dimensions };
 
             _data.Add(_currentDatum);
         }

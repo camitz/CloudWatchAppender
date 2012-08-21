@@ -56,7 +56,7 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-        public void StringwithMetricName()
+        public void StringWithMetricName()
         {
             var parser = new EventMessageParser("A tick! Name: NewName");
             parser.Parse();
@@ -69,6 +69,50 @@ namespace CloudWatchAppender.Tests
             }
 
             Assert.AreEqual(1, passes);
+        }
+
+        [Test]
+        public void StringWithNameSpace()
+        {
+            var parser = new EventMessageParser("A tick! NameSpace: NewNameSpace");
+            parser.Parse();
+
+            var passes = 0;
+            foreach (var r in parser)
+            {
+                Assert.AreEqual("NewNameSpace", r.Namespace);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+        }
+
+        [Test]
+        public void StringWithDimensionsList()
+        {
+            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: apple");
+            parser.Parse();
+
+            var passes = 0;
+            foreach (var r in parser)
+            {
+                Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
+                Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[0].Name);
+                Assert.AreEqual("qwerty", r.MetricData[0].Dimensions[0].Value);
+                Assert.AreEqual("Fruit", r.MetricData[0].Dimensions[1].Name);
+                Assert.AreEqual("apple", r.MetricData[0].Dimensions[1].Value);
+
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+
+            //Not plural, should work anyway
+            parser = new EventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple");
+            parser.Parse();
+
+            foreach (var r in parser)
+                Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
         }
     }
 }

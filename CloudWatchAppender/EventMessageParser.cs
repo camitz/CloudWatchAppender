@@ -12,7 +12,7 @@ namespace CloudWatchAppender
     {
         private readonly string _renderedMessage;
         private readonly List<AppenderValue> _values = new List<AppenderValue>();
-        private readonly List<Dimension> _dimensions= new List<Dimension>();
+        private readonly List<Dimension> _dimensions = new List<Dimension>();
         private readonly List<MetricDatum> _data = new List<MetricDatum>();
         private MetricDatum _currentDatum;
 
@@ -32,12 +32,12 @@ namespace CloudWatchAppender
                     .ToList()
                     .GetEnumerator();
 
-            string t0, unit, t2;
+            string t0, unit, value, name;
 
             tokens.MoveNext();
             while (tokens.Current != null)
             {
-                if (!string.IsNullOrEmpty(t0 = tokens.Current.Groups["name"].Value.Split(new[] {':'})[0]))
+                if (!string.IsNullOrEmpty(t0 = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
                 {
                     if (!_availableNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) &&
                         !_availableStatisticNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)))
@@ -48,6 +48,36 @@ namespace CloudWatchAppender
 
                     if (t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase))
                     {
+                        if (t0.Equals("Dimensions", StringComparison.InvariantCultureIgnoreCase) || t0.Equals("Dimension", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            if (!tokens.MoveNext())
+                                continue;
+
+                            if (string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
+                                continue;
+
+                            tokens.MoveNext();
+
+                            while (tokens.Current != null && string.IsNullOrEmpty(tokens.Current.Groups["rparen"].Value))
+                            {
+                                if (string.IsNullOrEmpty(name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
+                                {
+                                    tokens.MoveNext();
+                                    continue;
+                                }
+
+                                if (!tokens.MoveNext())
+                                    continue;
+
+                                if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value))
+                                {
+                                    tokens.MoveNext();
+                                    continue;
+                                }
+
+                                _dimensions.Add(new Dimension {Name = name, Value = value});
+                            }
+                        }
                     }
                     else
                     {
@@ -219,7 +249,8 @@ namespace CloudWatchAppender
 
         private void NewDatum()
         {
-            _currentDatum = new MetricDatum();
+            _currentDatum = new MetricDatum {Dimensions = _dimensions};
+
             _data.Add(_currentDatum);
         }
 
@@ -271,6 +302,7 @@ namespace CloudWatchAppender
                                                         "Value",
                                                         "Unit",
                                                         "Dimension",
+                                                        "Dimensions",
                                                         "Dimension0","Dimension1","Dimension2","Dimension3","Dimension4","Dimension5","Dimension6","Dimension7","Dimension8","Dimension9",
                                                         "NameSpace",
                                                         "Name",

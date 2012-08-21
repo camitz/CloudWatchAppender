@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Amazon.CloudWatch.Model;
 
 namespace CloudWatchAppender
@@ -147,6 +148,18 @@ namespace CloudWatchAppender
         internal Amazon.CloudWatch.Model.MetricDatum Datum
         {
             get { return _datum; }
+        }
+
+        public List<Dimension> Dimensions 
+        {
+            get { return Datum.Dimensions; }
+            set
+            {
+                if (Datum.Dimensions.Count != 0)
+                    throw new MetricDatumFilledException("Value has been set already.");
+
+                Datum.Dimensions = value;
+            }
         }
     }
 

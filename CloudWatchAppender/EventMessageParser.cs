@@ -280,7 +280,7 @@ namespace CloudWatchAppender
                                                     };
 
         private List<MetricDatum>.Enumerator _dataEnumerator;
-        private bool _initialized = false;
+        private bool _initialized;
 
         public EventMessageParser(string renderedMessage)
         {

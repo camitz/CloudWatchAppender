@@ -54,14 +54,19 @@ namespace CloudWatchAppender
                         if (!tokens.MoveNext())
                             continue;
 
-                        var sNum = tokens.Current.Groups["int"].Value.Split(new[] {':'})[0] +
-                                   tokens.Current.Groups["float"].Value.Split(new[] {':'})[0];
+                        var sNum = tokens.Current.Groups["int"].Value +
+                                   tokens.Current.Groups["float"].Value;
 
-                        if (string.IsNullOrEmpty(sNum))
+                        var sValue = tokens.Current.Groups["word"].Value;
+
+                        if (string.IsNullOrEmpty(sNum) && string.IsNullOrEmpty(sValue))
+                        {
+                            tokens.MoveNext();
                             continue;
+                        }
 
                         var d = 0.0;
-                        if (!Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d))
+                        if (!Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d) && string.IsNullOrEmpty(sValue))
                         {
                             tokens.MoveNext();
                             continue;
@@ -70,7 +75,7 @@ namespace CloudWatchAppender
                         var v = new AppenderValue
                                     {
                                         dValue = d,
-                                        sValue = sNum,
+                                        sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue,
                                         name = t0
                                     };
 

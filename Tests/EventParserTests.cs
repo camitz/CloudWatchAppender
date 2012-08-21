@@ -32,6 +32,7 @@ namespace CloudWatchAppender.Tests
 
             Assert.AreEqual(1, passes);
         }
+
     
         [Test]
         public void StringWithNothingRecognizableShouldProduceCount1()
@@ -53,6 +54,21 @@ namespace CloudWatchAppender.Tests
             }
             Assert.AreEqual(1, passes);
         }
-    
+
+        [Test]
+        public void StringwithMetricName()
+        {
+            var parser = new EventMessageParser("A tick! Name: NewName");
+            parser.Parse();
+
+            var passes = 0;
+            foreach (var r in parser)
+            {
+                Assert.AreEqual("NewName", r.MetricData[0].MetricName);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+        }
     }
 }

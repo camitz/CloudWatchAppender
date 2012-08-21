@@ -98,8 +98,8 @@ namespace CloudWatchAppender
                                                     ? null
                                                     : patternParser.Parse(Unit),
 
-                                 OverrideDimensions = _dimensions.Any() ? 
-                                 _dimensions.Select(d=>new Dimension{Name = d.Name, Value = patternParser.Parse(d.Value)}) : 
+                                 OverrideDimensions = _dimensions.Any() ?
+                                 _dimensions.Select(d => new Dimension { Name = d.Name, Value = patternParser.Parse(d.Value) }) :
                                  null
                              };
 
@@ -114,27 +114,40 @@ namespace CloudWatchAppender
 
         private void SendItOff(PutMetricDataRequest r)
         {
-            try
-            {
-                Task task =
-                    Task.Factory.StartNew(() =>
-                                          _client.PutMetricData(r));
+            Task task =
+                Task.Factory.StartNew(() =>
+                {
+                    try
+                    {
+                        _client.PutMetricData(r);
+                    }
+                    catch (AmazonCloudWatchException e)
+                    {
+                        //Don't log this exception! ;)
+                        Console.WriteLine(e.Message);
 
-                if (!task.IsCompleted)
-                    _tasks.TryAdd(task.Id, task);
+                        throw new CloudWatchAppenderException("CloudWatchAppender encountered an error while submitting to CloudWatch. Maybe value has decimal part? We don't know why, but it doesn't work.", e);
+                    }
+                });
 
-                task.ContinueWith(t => _tasks.TryRemove(task.Id, out task));
-            }
-            catch (AmazonCloudWatchException e)
-            {
-                //Don't log this exception! ;)
-                Console.WriteLine(e.Message);
-            }
+            if (!task.IsCompleted)
+                _tasks.TryAdd(task.Id, task);
+
+            task.ContinueWith(t => _tasks.TryRemove(task.Id, out task));
         }
 
         private string GetInstanceID()
         {
             return AWSMetaDataReader.GetInstanceID();
+        }
+    }
+
+    internal class CloudWatchAppenderException : Exception
+    {
+        public CloudWatchAppenderException(string msg, Exception innerException)
+            : base(msg, innerException)
+        {
+
         }
     }
 }

@@ -1,16 +1,16 @@
+using System;
 using System.Collections;
 using log4net.Core;
-using log4net.Layout;
+using log4net.Util;
 
 namespace CloudWatchAppender
 {
-    public class CloudWathPatternLayout : PatternLayout
+    public class PatternLayout : log4net.Layout.PatternLayout
     {
-        private readonly string _pattern;
         private readonly LoggingEvent _loggingEvent;
         private static Hashtable s_rulesRegistry;
 
-        static CloudWathPatternLayout()
+        static PatternLayout()
         {
             s_rulesRegistry = new Hashtable(1)
                     {
@@ -20,23 +20,36 @@ namespace CloudWatchAppender
                     };
         }
 
-        public CloudWathPatternLayout(string pattern, LoggingEvent loggingEvent)
+        public PatternLayout()
+            : base()
+        {
+        }
+
+        public PatternLayout(string pattern, LoggingEvent loggingEvent)
             : base(pattern)
         {
             _loggingEvent = loggingEvent;
         }
 
-        public CloudWathPatternLayout(string pattern):base(pattern)
+        public PatternLayout(string pattern)
+            : base(pattern)
         {
-            
+
         }
 
         protected override log4net.Util.PatternParser CreatePatternParser(string pattern)
         {
             var parser = base.CreatePatternParser(pattern);
 
-            foreach (DictionaryEntry dictionaryEntry in s_rulesRegistry)
-                parser.PatternConverters[dictionaryEntry.Key] = dictionaryEntry.Value;
+            foreach (DictionaryEntry entry in s_rulesRegistry)
+            {
+                var converterInfo = new ConverterInfo
+                                        {
+                                            Name = (string)entry.Key, 
+                                            Type = (Type)entry.Value
+                                        };
+                parser.PatternConverters[entry.Key] = converterInfo;
+            }
 
             return parser;
         }

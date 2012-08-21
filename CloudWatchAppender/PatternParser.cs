@@ -17,7 +17,7 @@ namespace CloudWatchAppender
 
         public string Parse(string pattern)
         {
-            var l = new CloudWathPatternLayout(pattern, _loggingEvent);
+            var l = new PatternLayout(pattern, _loggingEvent);
             foreach (var converter in _converters)
             {
                 l.AddConverter(converter.Key, converter.Value);

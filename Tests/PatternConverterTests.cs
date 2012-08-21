@@ -23,7 +23,7 @@ namespace CloudWatchAppender.Tests
         public void TestStackTracePattern()
         {
             StringAppender stringAppender = new StringAppender();
-            stringAppender.Layout = new CloudWathPatternLayout("%stacktrace{2}");
+            stringAppender.Layout = new PatternLayout("%stacktrace{2}");
 
             ILoggerRepository rep = LogManager.CreateRepository(Guid.NewGuid().ToString());
             BasicConfigurator.Configure(rep, stringAppender);
@@ -43,7 +43,7 @@ namespace CloudWatchAppender.Tests
         public void NamedPatternConverterWithoutPrecisionShouldReturnFullName()
         {
             StringAppender stringAppender = new StringAppender();
-            PatternLayout layout = new PatternLayout();
+            log4net.Layout.PatternLayout layout = new log4net.Layout.PatternLayout();
             layout.AddConverter("message-as-name", typeof(MessageAsNamePatternConverter));
             layout.ConversionPattern = "%message-as-name";
             layout.ActivateOptions();
@@ -90,7 +90,7 @@ namespace CloudWatchAppender.Tests
         public void NamedPatternConverterWithPrecision1ShouldStripLeadingStuffIfPresent()
         {
             StringAppender stringAppender = new StringAppender();
-            PatternLayout layout = new PatternLayout();
+            log4net.Layout.PatternLayout layout = new log4net.Layout.PatternLayout();
             layout.AddConverter("message-as-name", typeof(MessageAsNamePatternConverter));
             layout.ConversionPattern = "%message-as-name{1}";
             layout.ActivateOptions();
@@ -138,7 +138,7 @@ namespace CloudWatchAppender.Tests
         public void NamedPatternConverterWithPrecision2ShouldStripLessLeadingStuffIfPresent()
         {
             StringAppender stringAppender = new StringAppender();
-            PatternLayout layout = new PatternLayout();
+            log4net.Layout.PatternLayout layout = new log4net.Layout.PatternLayout();
             layout.AddConverter("message-as-name", typeof(MessageAsNamePatternConverter));
             layout.ConversionPattern = "%message-as-name{2}";
             layout.ActivateOptions();
@@ -185,7 +185,7 @@ namespace CloudWatchAppender.Tests
         public void NamedPatternConverterWithPrecisionMinus2ShouldStripLastTwoElements()
         {
             StringAppender stringAppender = new StringAppender();
-            PatternLayout layout = new PatternLayout();
+            log4net.Layout.PatternLayout layout = new log4net.Layout.PatternLayout();
             layout.AddConverter("message-as-name", typeof(MessageAsNamePatternConverter));
             layout.ConversionPattern = "%message-as-name{-2}";
             layout.ActivateOptions();

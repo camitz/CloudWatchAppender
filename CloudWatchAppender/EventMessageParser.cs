@@ -25,39 +25,14 @@ namespace CloudWatchAppender
         public void Parse()
         {
             var matches =
-                Regex.Matches(_renderedMessage, @"(?<name>\w+):\s*(?<value>\d+\.\d+|\d+|[\w/]+)?\s*(?<unit>\w+)?").Cast<Match>().ToList();
+                Regex.Matches(_renderedMessage, @"(?<name>\w+):\s*(?<value>\d+\.\d+|\d+|[\w/]+)?\s*(?<unit>[\w/]+)?").Cast<Match>().ToList();
 
             foreach (var m in matches)
             {
-                try
-                {
-                    var p = new AppenderValue
-                                {
-                                    name = m.Groups["name"].Value,
-                                    sValue = m.Groups["value"].Value,
-                                    unit = m.Groups["unit"].Value
-                                };
+                var p = GetValueFromMatch(m);
 
-                    double d = 0.0;
-                    if (Double.TryParse(m.Groups["value"].Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d))
-                        p.dValue = d;
-
-                    if (String.IsNullOrEmpty(p.name))
-                        return;
-
-                    if (!_availableNames.Any(x => x.Equals(p.name, StringComparison.InvariantCultureIgnoreCase)) &&
-                        !_availableStatisticNames.Any(x => x.Equals(p.name, StringComparison.InvariantCultureIgnoreCase)))
-                        return;
-
-                    if (!String.IsNullOrEmpty(p.unit) && !_availableUnits.Any(x => x.Equals(p.unit, StringComparison.InvariantCultureIgnoreCase)))
-                        return;
-
-                    if (p.name == "Unit" && !_availableUnits.Any(x => x.Equals(p.sValue, StringComparison.InvariantCultureIgnoreCase)))
-                        return;
-
-                    _values.Add(p);
-                }
-                catch (FormatException) { }
+                if (p.HasValue)
+                    _values.Add(p.Value);
             }
 
             NewDatum();
@@ -97,6 +72,46 @@ namespace CloudWatchAppender
                     {
                     }
             }
+        }
+
+        private AppenderValue? GetValueFromMatch(Match m)
+        {
+
+            var p = new AppenderValue
+                    {
+                        name = m.Groups["name"].Value,
+                        sValue = m.Groups["value"].Value,
+                        unit = m.Groups["unit"].Value
+                    };
+
+            try
+            {
+
+                var d = 0.0;
+                if (Double.TryParse(m.Groups["value"].Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d))
+                    p.dValue = d;
+
+                if (String.IsNullOrEmpty(p.name))
+                    return null;
+
+                if (!_availableNames.Any(x => x.Equals(p.name, StringComparison.InvariantCultureIgnoreCase)) &&
+                    !_availableStatisticNames.Any(x => x.Equals(p.name, StringComparison.InvariantCultureIgnoreCase)))
+                    return null;
+
+                if (!String.IsNullOrEmpty(p.unit) &&
+                    !_availableUnits.Any(x => x.Equals(p.unit, StringComparison.InvariantCultureIgnoreCase)))
+
+                    return null;
+
+                if (p.name == "Unit" && !_availableUnits.Any(x => x.Equals(p.sValue, StringComparison.InvariantCultureIgnoreCase)))
+                    return null;
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
+
+            return p;
         }
 
         private void FillName(AppenderValue p)
@@ -233,7 +248,7 @@ namespace CloudWatchAppender
 
         public void Dispose()
         {
-            
+
         }
 
         public bool MoveNext()
@@ -252,7 +267,8 @@ namespace CloudWatchAppender
 
         public PutMetricDataRequest Current
         {
-            get {
+            get
+            {
                 var r = _dataEnumerator.Current.Request;
                 r.MetricData.Add(_dataEnumerator.Current.Datum); //Todo: if namespace is the same we can just, add to the list. Needs ordering of namespace etc.
                 return r;

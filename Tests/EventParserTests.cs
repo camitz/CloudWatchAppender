@@ -10,7 +10,7 @@ namespace CloudWatchAppender.Tests
     public class EventParserTests
     {
 
-        
+
         [TearDown]
         public void TearDown()
         {
@@ -33,7 +33,7 @@ namespace CloudWatchAppender.Tests
             Assert.AreEqual(1, passes);
         }
 
-    
+
         [Test]
         public void StringWithNothingRecognizableShouldProduceCount1()
         {
@@ -44,7 +44,7 @@ namespace CloudWatchAppender.Tests
             foreach (var r in parser)
             {
                 Assert.AreEqual("CloudWatchAppender", r.Namespace);
-                Assert.AreEqual(1,r.MetricData.Count);
+                Assert.AreEqual(1, r.MetricData.Count);
                 Assert.AreEqual(0, r.MetricData[0].Dimensions.Count);
                 Assert.AreEqual("CloudWatchAppender", r.MetricData[0].MetricName);
                 Assert.AreEqual("Count", r.MetricData[0].Unit);
@@ -118,10 +118,43 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
         }
 
-       [Test]
+        [Test]
+        public void StringWithNumberedDimensions()
+        {
+            var parser = new EventMessageParser("A tick! Dimension1: (InstanceID: qwerty), Dimension4: Fruit: apple) Value: 4.5 Seconds");
+            parser.Parse();
+
+            var passes = 0;
+            foreach (var r in parser)
+            {
+                Assert.AreEqual(5, r.MetricData[0].Dimensions.Count);
+                Assert.IsNull(r.MetricData[0].Dimensions[0]);
+
+                Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[1].Name);
+                Assert.AreEqual("qwerty", r.MetricData[0].Dimensions[1].Value);
+                Assert.AreEqual("Fruit", r.MetricData[0].Dimensions[4].Name);
+                Assert.AreEqual("apple", r.MetricData[0].Dimensions[4].Value);
+
+                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(4.5, r.MetricData[0].Value);
+
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+
+            //Not plural, should work anyway
+            parser = new EventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
+            parser.Parse();
+
+            foreach (var r in parser)
+                Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
+        }
+
+        [Test]
         public void StringWithSingleDimension()
         {
-            var parser = new EventMessageParser("A tick! Dimensions: InstanceID: qwerty Value: 4.5 Seconds");
+            var parser = new EventMessageParser("A tick! Dimension: InstanceID: qwerty Value: 4.5 Seconds");
             parser.Parse();
 
             var passes = 0;
@@ -138,13 +171,25 @@ namespace CloudWatchAppender.Tests
             }
 
             Assert.AreEqual(1, passes);
+        }
 
-            //Not plural, should work anyway
-            parser = new EventMessageParser("A tick! Dimension: InstanceID: qwerty");
+        [Test]
+        public void StringWithDimensionUnfinishedParenthsTriesToParseAsDimensionSkippingUnit()
+        {            //Plural, with unended parenths, should work anyway
+            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: qwerty Value: 4.5 Seconds");
             parser.Parse();
 
             foreach (var r in parser)
-                Assert.AreEqual(1, r.MetricData[0].Dimensions.Count);
+            {
+                Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
+                Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[0].Name);
+                Assert.AreEqual("qwerty", r.MetricData[0].Dimensions[0].Value);
+                Assert.AreEqual("Value", r.MetricData[0].Dimensions[1].Name);
+                Assert.AreEqual("4.5", r.MetricData[0].Dimensions[1].Value);
+
+                Assert.AreEqual("Count", r.MetricData[0].Unit);
+                Assert.AreEqual(1.0, r.MetricData[0].Value);
+            }
         }
     }
 }

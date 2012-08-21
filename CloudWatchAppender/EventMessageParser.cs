@@ -32,7 +32,7 @@ namespace CloudWatchAppender
                     .ToList()
                     .GetEnumerator();
 
-            string t0, unit, value, name;
+            string t0, unit, value, name, sNum = string.Empty;
 
             tokens.MoveNext();
             while (tokens.Current != null)
@@ -48,43 +48,27 @@ namespace CloudWatchAppender
 
                     if (t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        if (t0.Equals("Dimensions", StringComparison.InvariantCultureIgnoreCase) || t0.Equals("Dimension", StringComparison.InvariantCultureIgnoreCase))
+                        var nDimension = _dimensions.Count;
+                        var isNumberedDimension = t0.Length == "Dimension".Length + 1 && !t0.Equals("Dimensions", StringComparison.InvariantCultureIgnoreCase);
+                        if (isNumberedDimension)
                         {
-                            if (!tokens.MoveNext())
-                                continue;
+                            var nsDimension = t0.ElementAt("Dimension".Length);
+                            nDimension = Convert.ToInt32(nsDimension) - 0x30;
+                        }
 
-                            if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
-                            {
-                                tokens.MoveNext();
+                        if (!tokens.MoveNext())
+                            continue;
 
-                                while (tokens.Current != null &&
-                                       string.IsNullOrEmpty(tokens.Current.Groups["rparen"].Value))
-                                {
-                                    if (
-                                        string.IsNullOrEmpty(
-                                            name = tokens.Current.Groups["name"].Value.Split(new[] {':'})[0]))
-                                    {
-                                        tokens.MoveNext();
-                                        continue;
-                                    }
+                        if (!isNumberedDimension && !string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
+                        {
+                            tokens.MoveNext();
 
-                                    if (!tokens.MoveNext())
-                                        continue;
-
-                                    if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value))
-                                    {
-                                        tokens.MoveNext();
-                                        continue;
-                                    }
-
-                                    _dimensions.Add(new Dimension {Name = name, Value = value});
-                                }
-                            }
-                            else
+                            while (tokens.Current != null &&
+                                   string.IsNullOrEmpty(tokens.Current.Groups["rparen"].Value))
                             {
                                 if (
-                                      string.IsNullOrEmpty(
-                                          name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
+                                    string.IsNullOrEmpty(
+                                        name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
                                 {
                                     tokens.MoveNext();
                                     continue;
@@ -93,14 +77,44 @@ namespace CloudWatchAppender
                                 if (!tokens.MoveNext())
                                     continue;
 
-                                if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value))
+                                if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value) && string.IsNullOrEmpty(sNum = tokens.Current.Groups["float"].Value))
                                 {
                                     tokens.MoveNext();
                                     continue;
                                 }
 
-                                _dimensions.Add(new Dimension { Name = name, Value = value });
+                                _dimensions.Add(new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum });
                             }
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
+                                tokens.MoveNext();
+
+                            if (
+                                  string.IsNullOrEmpty(
+                                      name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
+                            {
+                                tokens.MoveNext();
+                                continue;
+                            }
+
+                            if (!tokens.MoveNext())
+                                continue;
+
+                            if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value))
+                            {
+                                tokens.MoveNext();
+                                continue;
+                            }
+                            if (isNumberedDimension)
+                            {
+                                for (int i = _dimensions.Count; i <= nDimension; i++)
+                                    _dimensions.Add(null);
+                                _dimensions[nDimension] = new Dimension { Name = name, Value = value };
+                            }
+                            else
+                                _dimensions.Add(new Dimension { Name = name, Value = value });
                         }
                     }
                     else
@@ -108,7 +122,7 @@ namespace CloudWatchAppender
                         if (!tokens.MoveNext())
                             continue;
 
-                        var sNum = tokens.Current.Groups["int"].Value +
+                        sNum = tokens.Current.Groups["int"].Value +
                                    tokens.Current.Groups["float"].Value;
 
                         var sValue = tokens.Current.Groups["word"].Value;
@@ -273,7 +287,7 @@ namespace CloudWatchAppender
 
         private void NewDatum()
         {
-            _currentDatum = new MetricDatum {Dimensions = _dimensions};
+            _currentDatum = new MetricDatum { Dimensions = _dimensions };
 
             _data.Add(_currentDatum);
         }

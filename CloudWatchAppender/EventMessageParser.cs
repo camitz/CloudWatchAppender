@@ -53,14 +53,38 @@ namespace CloudWatchAppender
                             if (!tokens.MoveNext())
                                 continue;
 
-                            if (string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
-                                continue;
-
-                            tokens.MoveNext();
-
-                            while (tokens.Current != null && string.IsNullOrEmpty(tokens.Current.Groups["rparen"].Value))
+                            if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
                             {
-                                if (string.IsNullOrEmpty(name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
+                                tokens.MoveNext();
+
+                                while (tokens.Current != null &&
+                                       string.IsNullOrEmpty(tokens.Current.Groups["rparen"].Value))
+                                {
+                                    if (
+                                        string.IsNullOrEmpty(
+                                            name = tokens.Current.Groups["name"].Value.Split(new[] {':'})[0]))
+                                    {
+                                        tokens.MoveNext();
+                                        continue;
+                                    }
+
+                                    if (!tokens.MoveNext())
+                                        continue;
+
+                                    if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value))
+                                    {
+                                        tokens.MoveNext();
+                                        continue;
+                                    }
+
+                                    _dimensions.Add(new Dimension {Name = name, Value = value});
+                                }
+                            }
+                            else
+                            {
+                                if (
+                                      string.IsNullOrEmpty(
+                                          name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
                                 {
                                     tokens.MoveNext();
                                     continue;
@@ -75,7 +99,7 @@ namespace CloudWatchAppender
                                     continue;
                                 }
 
-                                _dimensions.Add(new Dimension {Name = name, Value = value});
+                                _dimensions.Add(new Dimension { Name = name, Value = value });
                             }
                         }
                     }

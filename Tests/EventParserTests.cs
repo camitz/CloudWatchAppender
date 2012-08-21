@@ -90,7 +90,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithDimensionsList()
         {
-            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: apple");
+            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: apple) Value: 4.5 Seconds");
             parser.Parse();
 
             var passes = 0;
@@ -102,17 +102,49 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual("Fruit", r.MetricData[0].Dimensions[1].Name);
                 Assert.AreEqual("apple", r.MetricData[0].Dimensions[1].Value);
 
+                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(4.5, r.MetricData[0].Value);
+
                 passes++;
             }
 
             Assert.AreEqual(1, passes);
 
             //Not plural, should work anyway
-            parser = new EventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple");
+            parser = new EventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
             parser.Parse();
 
             foreach (var r in parser)
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
+        }
+
+       [Test]
+        public void StringWithSingleDimension()
+        {
+            var parser = new EventMessageParser("A tick! Dimensions: InstanceID: qwerty Value: 4.5 Seconds");
+            parser.Parse();
+
+            var passes = 0;
+            foreach (var r in parser)
+            {
+                Assert.AreEqual(1, r.MetricData[0].Dimensions.Count);
+                Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[0].Name);
+                Assert.AreEqual("qwerty", r.MetricData[0].Dimensions[0].Value);
+
+                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(4.5, r.MetricData[0].Value);
+
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+
+            //Not plural, should work anyway
+            parser = new EventMessageParser("A tick! Dimension: InstanceID: qwerty");
+            parser.Parse();
+
+            foreach (var r in parser)
+                Assert.AreEqual(1, r.MetricData[0].Dimensions.Count);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Amazon.CloudWatch.Model;
 
 namespace CloudWatchAppender
@@ -48,7 +49,7 @@ namespace CloudWatchAppender
                     if (!string.IsNullOrEmpty(_datum.Unit) && _datum.Unit != value)
                         throw new MetricDatumFilledException("Value has been set already.");
 
-                    _datum.Unit = value;
+                    _datum.Unit = SupportedUnits.SingleOrDefault(x => x.Equals(value, StringComparison.InvariantCultureIgnoreCase));
                 }
             }
         }
@@ -188,6 +189,55 @@ namespace CloudWatchAppender
             get { return _valueMode; }
             set { _valueMode = value; }
         }
+
+        public static readonly string[] SupportedUnits = {
+                                                        "Seconds",
+                                                        "Microseconds",
+                                                        "Milliseconds",
+                                                        "Bytes",
+                                                        "Kilobytes",
+                                                        "Megabytes",
+                                                        "Gigabytes",
+                                                        "Terabytes",
+                                                        "Bits",
+                                                        "Kilobits",
+                                                        "Megabits",
+                                                        "Gigabits",
+                                                        "Terabits",
+                                                        "Percent",
+                                                        "Count",
+                                                        "Bytes/Second",
+                                                        "Kilobytes/Second",
+                                                        "Megabytes/Second",
+                                                        "Gigabytes/Second",
+                                                        "Terabytes/Second",
+                                                        "Bits/Second",
+                                                        "Kilobits/Second",
+                                                        "Megabits/Second",
+                                                        "Gigabits/Second",
+                                                        "Terabits/Second",
+                                                        "Count",
+                                                        "Second",
+                                                        "None"
+                                                    };
+
+        public static readonly string[] SupportedNames = {
+                                                        "Value",
+                                                        "Unit",
+                                                        "Dimension",
+                                                        "Dimensions",
+                                                        "Dimension0","Dimension1","Dimension2","Dimension3","Dimension4","Dimension5","Dimension6","Dimension7","Dimension8","Dimension9",
+                                                        "NameSpace",
+                                                        "Name",
+                                                        "MetricName"
+                                                    };
+
+        public static readonly string[] SupportedStatistics = {
+                                                        "Maximum",
+                                                        "Minimum",
+                                                        "SampleCount",
+                                                        "Sum"
+                                                    };
     }
 
     public class MetricDatumFilledException : InvalidOperationException

@@ -44,8 +44,8 @@ namespace CloudWatchAppender
             {
                 if (!string.IsNullOrEmpty(t0 = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
                 {
-                    if (!_availableNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) &&
-                        !_availableStatisticNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)))
+                    if (!MetricDatum.SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) &&
+                        !MetricDatum.SupportedStatistics.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         tokens.MoveNext();
                         continue;
@@ -234,16 +234,16 @@ namespace CloudWatchAppender
                 if (String.IsNullOrEmpty(p.name))
                     return null;
 
-                if (!_availableNames.Any(x => x.Equals(p.name, StringComparison.InvariantCultureIgnoreCase)) &&
-                    !_availableStatisticNames.Any(x => x.Equals(p.name, StringComparison.InvariantCultureIgnoreCase)))
+                if (!MetricDatum.SupportedNames.Any(x => x.Equals(p.name, StringComparison.InvariantCultureIgnoreCase)) &&
+                    !MetricDatum.SupportedStatistics.Any(x => x.Equals(p.name, StringComparison.InvariantCultureIgnoreCase)))
                     return null;
 
                 if (!String.IsNullOrEmpty(p.unit) &&
-                    !_availableUnits.Any(x => x.Equals(p.unit, StringComparison.InvariantCultureIgnoreCase)))
+                    !MetricDatum.SupportedUnits.Any(x => x.Equals(p.unit, StringComparison.InvariantCultureIgnoreCase)))
 
                     return null;
 
-                if (p.name == "Unit" && !_availableUnits.Any(x => x.Equals(p.sValue, StringComparison.InvariantCultureIgnoreCase)))
+                if (p.name == "Unit" && !MetricDatum.SupportedUnits.Any(x => x.Equals(p.sValue, StringComparison.InvariantCultureIgnoreCase)))
                     return null;
             }
             catch (FormatException)
@@ -318,54 +318,7 @@ namespace CloudWatchAppender
             return _data;
         }
 
-        private readonly string[] _availableUnits = {
-                                                        "Seconds",
-                                                        "Microseconds",
-                                                        "Milliseconds",
-                                                        "Bytes",
-                                                        "Kilobytes",
-                                                        "Megabytes",
-                                                        "Gigabytes",
-                                                        "Terabytes",
-                                                        "Bits",
-                                                        "Kilobits",
-                                                        "Megabits",
-                                                        "Gigabits",
-                                                        "Terabits",
-                                                        "Percent",
-                                                        "Count",
-                                                        "Bytes/Second",
-                                                        "Kilobytes/Second",
-                                                        "Megabytes/Second",
-                                                        "Gigabytes/Second",
-                                                        "Terabytes/Second",
-                                                        "Bits/Second",
-                                                        "Kilobits/Second",
-                                                        "Megabits/Second",
-                                                        "Gigabits/Second",
-                                                        "Terabits/Second",
-                                                        "Count",
-                                                        "Second",
-                                                        "None"
-                                                    };
 
-        private readonly string[] _availableNames = {
-                                                        "Value",
-                                                        "Unit",
-                                                        "Dimension",
-                                                        "Dimensions",
-                                                        "Dimension0","Dimension1","Dimension2","Dimension3","Dimension4","Dimension5","Dimension6","Dimension7","Dimension8","Dimension9",
-                                                        "NameSpace",
-                                                        "Name",
-                                                        "MetricName"
-                                                    };
-
-        private readonly string[] _availableStatisticNames = {
-                                                        "Maximum",
-                                                        "Minimum",
-                                                        "SampleCount",
-                                                        "Sum"
-                                                    };
 
         private List<MetricDatum>.Enumerator _dataEnumerator;
         private bool _initialized;

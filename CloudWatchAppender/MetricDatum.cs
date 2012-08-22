@@ -216,7 +216,6 @@ namespace CloudWatchAppender
                                                         "Megabits/Second",
                                                         "Gigabits/Second",
                                                         "Terabits/Second",
-                                                        "Count",
                                                         "Second",
                                                         "None"
                                                     };

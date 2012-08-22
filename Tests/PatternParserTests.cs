@@ -28,7 +28,7 @@ namespace CloudWatchAppender.Tests
             var p = new PatternParser(GetLoggingEvent());
             var s = p.Parse("%stacktrace{10}");
 
-            Assert.AreEqual("RuntimeMethodHandle._InvokeMethodFast > PatternParserTests.TestStackTracePattern > PatternParser.Parse > PatternLayout.Parse > LayoutSkeleton.Format > PatternLayout.Format > PatternConverter.Format > PatternLayoutConverter.Convert > StackTracePatternConverter.Convert > LoggingEvent.get_LocationInformation", s);
+            Assert.AreEqual("RuntimeMethodHandle.InvokeMethodFast > RuntimeMethodHandle._InvokeMethodFast > PatternParserTests.TestStackTracePattern > PatternParser.Parse > LayoutSkeleton.Format > PatternLayout.Format > PatternConverter.Format > PatternLayoutConverter.Convert > StackTracePatternConverter.Convert > LoggingEvent.get_LocationInformation", s);
         }
     
         [Test]

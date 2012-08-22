@@ -153,7 +153,7 @@ namespace CloudWatchAppender
 
                         if (tokens.MoveNext())
                             if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
-                                if (_availableUnits.Any(x => x.Equals(unit, StringComparison.InvariantCultureIgnoreCase)))
+                                if (MetricDatum.SupportedUnits.Any(x => x.Equals(unit, StringComparison.InvariantCultureIgnoreCase)))
                                     v.unit = unit;
 
                         _values.Add(v);

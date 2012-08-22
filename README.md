@@ -2,7 +2,7 @@ A CloudWatch appender for [log4net](http://logging.apache.org/log4net/ "log4net"
 
 All posts are made asynchronously to CloudWatch via the [AWSSDK](http://aws.amazon.com/sdkfornet/) library for .NET.
 
-# Install
+# Installation
 
 To add CloudWatchAppender to your Visual Studio (>2010) project, run the following command in <a href="http://docs.nuget.org/docs/start-here/using-the-package-manager-console">Package Manager Console</a> or download the source from [GitHub](https://github.com/camitz/CloudWatchAppender).
 
@@ -142,6 +142,8 @@ Dots (.) are converted to slashes (/) before sending. This is true of all string
 TODO
 
 # <a id="tokens"></a> Tokens recognized by CloudWatchAppender
+
+TODO
 
 Check out the following blog posts that seeded the project.
 

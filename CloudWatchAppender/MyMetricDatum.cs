@@ -73,7 +73,7 @@ namespace CloudWatchAppender
                 if (!string.IsNullOrEmpty(_request.Namespace))
                     throw new MetricDatumFilledException("Value has been set already.");
 
-                _request.Namespace = value;
+                _request.Namespace = value.Replace(".", "/");
             }
         }
 

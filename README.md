@@ -1,21 +1,3 @@
-<style type="text/css">
-/* NuGet Badge */
-.nuget-badge code {
-    background-color: #202020;
-    border: 4px solid #c0c0c0;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    box-shadow: 2px 2px 3px #6e6e6e;
-    color: #e2e2e2;
-    display:block;
-    font: 1.5em 'andale mono', 'lucida console', monospace; 
-    line-height: 1.5em;
-    overflow: auto;
-    padding: 15px;
-}
-</style>
-
 A CloudWatch appender for [log4net](http://logging.apache.org/log4net/ "log4net"). You can configure log4net to direct some of you log events to [CloudWatch](http://aws.amazon.com/CloudWatch/ "CloudWatch"), making them show up as data points on a graph.
 
 All posts are made asynchronously to CloudWatch via the [AWSSDK](http://aws.amazon.com/sdkfornet/) library for .NET.

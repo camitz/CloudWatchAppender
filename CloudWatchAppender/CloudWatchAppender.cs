@@ -72,24 +72,24 @@ namespace CloudWatchAppender
 
             var patternParser = new PatternParser(loggingEvent);
 
-            EventMessageParser parser = new EventMessageParser(renderedString, ConfigOverrides)
+            var parser = new EventMessageParser(renderedString, ConfigOverrides)
                         {
-                            OverrideName = string.IsNullOrEmpty(Name)
+                            DefaultName = string.IsNullOrEmpty(Name)
                                                 ? null
                                                 : patternParser.Parse(Name),
-                            OverrideNameSpace = string.IsNullOrEmpty(Namespace)
+                            DefaultNameSpace = string.IsNullOrEmpty(Namespace)
                                                     ? null
                                                     : patternParser.Parse(Namespace),
-                            OverrideUnit = String.IsNullOrEmpty(Unit)
+                            DefaultUnit = String.IsNullOrEmpty(Unit)
                                                 ? null
                                                 : patternParser.Parse(Unit),
-                            OverrideDimensions = _dimensions.Any()
+                            DefaultDimensions = _dimensions.Any()
                                                         ? _dimensions
                                                         : null
                         };
 
             if (!string.IsNullOrEmpty(Value) && ConfigOverrides)
-                parser.OverrideValue = Double.Parse(Value, CultureInfo.InvariantCulture);
+                parser.DefaultValue = Double.Parse(Value, CultureInfo.InvariantCulture);
 
             parser.Parse();
 

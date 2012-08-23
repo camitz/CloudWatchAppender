@@ -11,23 +11,23 @@ namespace CloudWatchAppender
     public class EventMessageParser : IEnumerable<PutMetricDataRequest>, IEnumerator<PutMetricDataRequest>
     {
         private readonly string _renderedMessage;
-        private readonly bool _useOverrides;
+        private readonly bool _defaultsOverridePattern;
         private readonly List<AppenderValue> _values = new List<AppenderValue>();
         private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
         private readonly List<MetricDatum> _data = new List<MetricDatum>();
         private MetricDatum _currentDatum;
 
-        public string OverrideName { get; set; }
-        public double? OverrideValue { get; set; }
-        public string OverrideUnit { get; set; }
-        public string OverrideNameSpace { get; set; }
+        public string DefaultName { get; set; }
+        public double? DefaultValue { get; set; }
+        public string DefaultUnit { get; set; }
+        public string DefaultNameSpace { get; set; }
 
-        public IDictionary<string, Dimension> OverrideDimensions { get; set; }
+        public IDictionary<string, Dimension> DefaultDimensions { get; set; }
 
-        public double? OverrideSampleCount { get; set; }
-        public double? OverrideSum { get; set; }
-        public double? OverrideMaximum { get; set; }
-        public double? OverrideMinimum { get; set; }
+        public double? DefaultSampleCount { get; set; }
+        public double? DefaultSum { get; set; }
+        public double? DefaultMaximum { get; set; }
+        public double? DefaultMinimum { get; set; }
 
         public void Parse()
         {
@@ -170,13 +170,13 @@ namespace CloudWatchAppender
                 //Set overrides if not already set.
 
                 if (string.IsNullOrEmpty(datum.Name))
-                    datum.Name = OverrideName ?? "CloudWatchAppender";
+                    datum.Name = DefaultName ?? "CloudWatchAppender";
 
                 if (string.IsNullOrEmpty(datum.NameSpace))
-                    datum.NameSpace = OverrideNameSpace ?? "CloudWatchAppender";
+                    datum.NameSpace = DefaultNameSpace ?? "CloudWatchAppender";
 
                 if (string.IsNullOrEmpty(datum.Unit))
-                    datum.Unit = OverrideUnit ?? "Count";
+                    datum.Unit = DefaultUnit ?? "Count";
 
                 if (!datum.ValueMode && !datum.StatisticsMode)
                     datum.ValueMode = true;
@@ -184,18 +184,18 @@ namespace CloudWatchAppender
                 if (datum.ValueMode)
                 {
                     if (datum.Value == 0.0)
-                        datum.Value = OverrideValue ?? 1;
+                        datum.Value = DefaultValue ?? 1;
                 }
                 else
                 {
                     if (datum.Minimum == 0.0)
-                        datum.Minimum = OverrideMinimum ?? 0.0;
+                        datum.Minimum = DefaultMinimum ?? 0.0;
                     if (datum.Maximum == 0.0)
-                        datum.Maximum = OverrideMaximum ?? 0.0;
+                        datum.Maximum = DefaultMaximum ?? 0.0;
                     if (datum.Sum == 0.0)
-                        datum.Sum = OverrideSum ?? 0.0;
+                        datum.Sum = DefaultSum ?? 0.0;
                     if (datum.SampleCount == 0)
-                        datum.SampleCount = OverrideSampleCount ?? 1;
+                        datum.SampleCount = DefaultSampleCount ?? 1;
                 }
             }
         }
@@ -246,54 +246,54 @@ namespace CloudWatchAppender
             switch (p.name)
             {
                 case "Value":
-                    _currentDatum.Value = _useOverrides ? OverrideValue ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.unit : p.unit;
+                    _currentDatum.Value = _defaultsOverridePattern ? DefaultValue ?? p.dValue.Value : p.dValue.Value;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.unit : p.unit;
                     break;
 
                 case "Unit":
-                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.sValue : p.sValue;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.sValue : p.sValue;
                     break;
 
                 case "Name":
                 case "MetricName":
-                    _currentDatum.Name = _useOverrides ? OverrideName ?? p.sValue : p.sValue;
+                    _currentDatum.Name = _defaultsOverridePattern ? DefaultName ?? p.sValue : p.sValue;
                     break;
 
                 case "NameSpace":
-                    _currentDatum.NameSpace = _useOverrides ? OverrideNameSpace ?? p.sValue : p.sValue;
+                    _currentDatum.NameSpace = _defaultsOverridePattern ? DefaultNameSpace ?? p.sValue : p.sValue;
                     break;
 
                 case "Maximum":
-                    _currentDatum.Maximum = _useOverrides ? OverrideMaximum ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.unit : p.unit;
+                    _currentDatum.Maximum = _defaultsOverridePattern ? DefaultMaximum ?? p.dValue.Value : p.dValue.Value;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.unit : p.unit;
                     break;
 
                 case "Minimum":
-                    _currentDatum.Minimum = _useOverrides ? OverrideMinimum ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.unit : p.unit;
+                    _currentDatum.Minimum = _defaultsOverridePattern ? DefaultMinimum ?? p.dValue.Value : p.dValue.Value;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.unit : p.unit;
                     break;
 
                 case "SampleCount":
-                    _currentDatum.SampleCount = _useOverrides ? OverrideSampleCount ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.unit : p.unit;
+                    _currentDatum.SampleCount = _defaultsOverridePattern ? DefaultSampleCount ?? p.dValue.Value : p.dValue.Value;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.unit : p.unit;
                     break;
 
                 case "Sum":
-                    _currentDatum.Sum = _useOverrides ? OverrideSum ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.unit : p.unit;
+                    _currentDatum.Sum = _defaultsOverridePattern ? DefaultSum ?? p.dValue.Value : p.dValue.Value;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.unit : p.unit;
                     break;
             }
         }
 
         private void NewDatum()
         {
-            var dimensions = OverrideDimensions ?? _dimensions;
+            var dimensions = DefaultDimensions ?? _dimensions;
 
             foreach (var dimension in _dimensions.Values)
             {
-                if (dimensions[dimension.Name] != null)
+                if (dimensions.ContainsKey(dimension.Name))
                 {
-                    if (!_useOverrides)
+                    if (!_defaultsOverridePattern)
                         dimensions[dimension.Name] = dimension;
                 } else
                     dimensions[dimension.Name] = dimension;
@@ -302,7 +302,7 @@ namespace CloudWatchAppender
             _currentDatum = new MetricDatum
                                 {
                                     Dimensions = dimensions.Values.ToList(),
-                                    Unit = OverrideUnit
+                                    Unit = DefaultUnit
                                 };
 
             _data.Add(_currentDatum);
@@ -329,7 +329,7 @@ namespace CloudWatchAppender
         public EventMessageParser(string renderedMessage, bool useOverrides = true)
         {
             _renderedMessage = renderedMessage;
-            _useOverrides = useOverrides;
+            _defaultsOverridePattern = useOverrides;
         }
 
         public IEnumerator<PutMetricDataRequest> GetEnumerator()

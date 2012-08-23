@@ -12,7 +12,7 @@ namespace CloudWatchAppender
     {
         private readonly string _renderedMessage;
         private readonly List<AppenderValue> _values = new List<AppenderValue>();
-        private readonly List<Dimension> _dimensions = new List<Dimension>();
+        private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
         private readonly List<MetricDatum> _data = new List<MetricDatum>();
         private MetricDatum _currentDatum;
 
@@ -53,18 +53,10 @@ namespace CloudWatchAppender
 
                     if (t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        var nDimension = _dimensions.Count;
-                        var isNumberedDimension = t0.Length == "Dimension".Length + 1 && !t0.Equals("Dimensions", StringComparison.InvariantCultureIgnoreCase);
-                        if (isNumberedDimension)
-                        {
-                            var nsDimension = t0.ElementAt("Dimension".Length);
-                            nDimension = Convert.ToInt32(nsDimension) - 0x30;
-                        }
-
                         if (!tokens.MoveNext())
                             continue;
 
-                        if (!isNumberedDimension && !string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
+                        if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
                         {
                             tokens.MoveNext();
 
@@ -88,7 +80,7 @@ namespace CloudWatchAppender
                                     continue;
                                 }
 
-                                _dimensions.Add(new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum });
+                                _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
                             }
                         }
                         else
@@ -112,14 +104,8 @@ namespace CloudWatchAppender
                                 tokens.MoveNext();
                                 continue;
                             }
-                            if (isNumberedDimension)
-                            {
-                                for (int i = _dimensions.Count; i <= nDimension; i++)
-                                    _dimensions.Add(null);
-                                _dimensions[nDimension] = new Dimension { Name = name, Value = value };
-                            }
-                            else
-                                _dimensions.Add(new Dimension { Name = name, Value = value });
+
+                            _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
                         }
                     }
                     else
@@ -300,7 +286,7 @@ namespace CloudWatchAppender
 
         private void NewDatum()
         {
-            _currentDatum = new MetricDatum { Dimensions = OverrideDimensions != null && OverrideDimensions.Count() > 0 ? OverrideDimensions.ToList() : _dimensions };
+            _currentDatum = new MetricDatum { Dimensions = OverrideDimensions != null && OverrideDimensions.Count() > 0 ? OverrideDimensions.ToList() : _dimensions.Values.ToList() };
 
             _data.Add(_currentDatum);
         }

@@ -20,16 +20,7 @@ namespace CloudWatchAppender
         public string Name { get; set; }
         public string Namespace { get; set; }
 
-        public Dimension Dimension0 { set { AddDimension(value); } }
-        public Dimension Dimension1 { set { AddDimension(value); } }
-        public Dimension Dimension2 { set { AddDimension(value); } }
-        public Dimension Dimension3 { set { AddDimension(value); } }
-        public Dimension Dimension4 { set { AddDimension(value); } }
-        public Dimension Dimension5 { set { AddDimension(value); } }
-        public Dimension Dimension6 { set { AddDimension(value); } }
-        public Dimension Dimension7 { set { AddDimension(value); } }
-        public Dimension Dimension8 { set { AddDimension(value); } }
-        public Dimension Dimension9 { set { AddDimension(value); } }
+        public Dimension Dimension { set { AddDimension(value); } }
 
         private bool _configOverrides = true;
         public bool ConfigOverrides
@@ -38,11 +29,11 @@ namespace CloudWatchAppender
             set { _configOverrides = value; }
         }
 
-        private List<Dimension> _dimensions = new List<Dimension>();
+        private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
 
         private void AddDimension(Dimension value)
         {
-            _dimensions.Add(value);
+            _dimensions[value.Name] = value;
         }
 
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
@@ -95,7 +86,7 @@ namespace CloudWatchAppender
                                                     ? null
                                                     : patternParser.Parse(Unit),
                                  OverrideDimensions = _dimensions.Any()
-                                                          ? _dimensions.Select(
+                                                          ? _dimensions.Values.Select(
                                                               d =>
                                                               new Dimension
                                                                   {

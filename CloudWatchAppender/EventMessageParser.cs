@@ -11,6 +11,7 @@ namespace CloudWatchAppender
     public class EventMessageParser : IEnumerable<PutMetricDataRequest>, IEnumerator<PutMetricDataRequest>
     {
         private readonly string _renderedMessage;
+        private readonly bool _useOverrides;
         private readonly List<AppenderValue> _values = new List<AppenderValue>();
         private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
         private readonly List<MetricDatum> _data = new List<MetricDatum>();
@@ -21,7 +22,7 @@ namespace CloudWatchAppender
         public string OverrideUnit { get; set; }
         public string OverrideNameSpace { get; set; }
 
-        public IEnumerable<Dimension> OverrideDimensions { get; set; }
+        public IDictionary<string, Dimension> OverrideDimensions { get; set; }
 
         public double? OverrideSampleCount { get; set; }
         public double? OverrideSum { get; set; }
@@ -245,48 +246,64 @@ namespace CloudWatchAppender
             switch (p.name)
             {
                 case "Value":
-                    _currentDatum.Value = OverrideValue ?? p.dValue.Value;
-                    _currentDatum.Unit = OverrideUnit ?? p.unit;
+                    _currentDatum.Value = _useOverrides ? OverrideValue ?? p.dValue.Value : p.dValue.Value;
+                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.unit : p.unit;
                     break;
 
                 case "Unit":
-                    _currentDatum.Unit = OverrideUnit ?? p.sValue;
+                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.sValue : p.sValue;
                     break;
 
                 case "Name":
                 case "MetricName":
-                    _currentDatum.Name = OverrideName ?? p.sValue;
+                    _currentDatum.Name = _useOverrides ? OverrideName ?? p.sValue : p.sValue;
                     break;
 
                 case "NameSpace":
-                    _currentDatum.NameSpace = OverrideNameSpace ?? p.sValue;
+                    _currentDatum.NameSpace = _useOverrides ? OverrideNameSpace ?? p.sValue : p.sValue;
                     break;
 
                 case "Maximum":
-                    _currentDatum.Maximum = p.dValue.Value;
-                    _currentDatum.Unit = p.unit;
+                    _currentDatum.Maximum = _useOverrides ? OverrideMaximum ?? p.dValue.Value : p.dValue.Value;
+                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.unit : p.unit;
                     break;
 
                 case "Minimum":
-                    _currentDatum.Minimum = p.dValue.Value;
-                    _currentDatum.Unit = p.unit;
+                    _currentDatum.Minimum = _useOverrides ? OverrideMinimum ?? p.dValue.Value : p.dValue.Value;
+                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.unit : p.unit;
                     break;
 
                 case "SampleCount":
-                    _currentDatum.SampleCount = p.dValue.Value;
-                    _currentDatum.Unit = p.unit;
+                    _currentDatum.SampleCount = _useOverrides ? OverrideSampleCount ?? p.dValue.Value : p.dValue.Value;
+                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.unit : p.unit;
                     break;
 
                 case "Sum":
-                    _currentDatum.Sum = p.dValue.Value;
-                    _currentDatum.Unit = p.unit;
+                    _currentDatum.Sum = _useOverrides ? OverrideSum ?? p.dValue.Value : p.dValue.Value;
+                    _currentDatum.Unit = _useOverrides ? OverrideUnit ?? p.unit : p.unit;
                     break;
             }
         }
 
         private void NewDatum()
         {
-            _currentDatum = new MetricDatum { Dimensions = OverrideDimensions != null && OverrideDimensions.Count() > 0 ? OverrideDimensions.ToList() : _dimensions.Values.ToList() };
+            var dimensions = OverrideDimensions ?? _dimensions;
+
+            foreach (var dimension in _dimensions.Values)
+            {
+                if (dimensions[dimension.Name] != null)
+                {
+                    if (!_useOverrides)
+                        dimensions[dimension.Name] = dimension;
+                } else
+                    dimensions[dimension.Name] = dimension;
+            }
+
+            _currentDatum = new MetricDatum
+                                {
+                                    Dimensions = dimensions.Values.ToList(),
+                                    Unit = OverrideUnit
+                                };
 
             _data.Add(_currentDatum);
         }
@@ -309,9 +326,10 @@ namespace CloudWatchAppender
         private List<MetricDatum>.Enumerator _dataEnumerator;
         private bool _initialized;
 
-        public EventMessageParser(string renderedMessage)
+        public EventMessageParser(string renderedMessage, bool useOverrides = true)
         {
             _renderedMessage = renderedMessage;
+            _useOverrides = useOverrides;
         }
 
         public IEnumerator<PutMetricDataRequest> GetEnumerator()

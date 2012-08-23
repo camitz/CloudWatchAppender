@@ -72,31 +72,21 @@ namespace CloudWatchAppender
 
             var patternParser = new PatternParser(loggingEvent);
 
-            EventMessageParser parser;
-            if (ConfigOverrides)
-                parser = new EventMessageParser(renderedString)
-                             {
-                                 OverrideName = string.IsNullOrEmpty(Name)
+            EventMessageParser parser = new EventMessageParser(renderedString, ConfigOverrides)
+                        {
+                            OverrideName = string.IsNullOrEmpty(Name)
+                                                ? null
+                                                : patternParser.Parse(Name),
+                            OverrideNameSpace = string.IsNullOrEmpty(Namespace)
                                                     ? null
-                                                    : patternParser.Parse(Name),
-                                 OverrideNameSpace = string.IsNullOrEmpty(Namespace)
-                                                         ? null
-                                                         : patternParser.Parse(Namespace),
-                                 OverrideUnit = String.IsNullOrEmpty(Unit)
-                                                    ? null
-                                                    : patternParser.Parse(Unit),
-                                 OverrideDimensions = _dimensions.Any()
-                                                          ? _dimensions.Values.Select(
-                                                              d =>
-                                                              new Dimension
-                                                                  {
-                                                                      Name = d.Name,
-                                                                      Value = patternParser.Parse(d.Value)
-                                                                  })
-                                                          : null
-                             };
-            else
-                parser = new EventMessageParser(renderedString);
+                                                    : patternParser.Parse(Namespace),
+                            OverrideUnit = String.IsNullOrEmpty(Unit)
+                                                ? null
+                                                : patternParser.Parse(Unit),
+                            OverrideDimensions = _dimensions.Any()
+                                                        ? _dimensions
+                                                        : null
+                        };
 
             if (!string.IsNullOrEmpty(Value) && ConfigOverrides)
                 parser.OverrideValue = Double.Parse(Value, CultureInfo.InvariantCulture);

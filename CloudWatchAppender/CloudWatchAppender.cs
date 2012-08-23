@@ -107,7 +107,7 @@ namespace CloudWatchAppender
             else
                 parser = new EventMessageParser(renderedString);
 
-            if (!string.IsNullOrEmpty(Value))
+            if (!string.IsNullOrEmpty(Value) && ConfigOverrides)
                 parser.OverrideValue = Double.Parse(Value, CultureInfo.InvariantCulture);
 
             parser.Parse();

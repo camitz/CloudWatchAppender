@@ -76,7 +76,7 @@ Note that if the PatternLayout is used, either the original one or the one provi
 
 A list of [tokens](#tokens) supported by the event parser can be found below. 
 
-## ConfigOverrides
+## <a id="configoverrides"></a>ConfigOverrides
 
 Normally input given in parameters to the appenders will override anything given in the log event message, including anything given in the conversion pattern. To change this behaviour, add
 
@@ -103,7 +103,33 @@ The following behave the same way.
 
 # <a id="dimensions"></a>Dimensions
 
-TODO
+CloudWatch supports up to 10 dimensions given as name/value pair. CloudWatchAppender has no limit but don't try exceeding 10.
+
+**Warning** Again, make sure you understand that overusing dimensions can quickly become expensive.
+
+In your config file under the appender element you can add dimensions simply by listing a bunch of elements like this:
+
+      <dimension type="Amazon.CloudWatch.Model.Dimension">
+        <name value="InstanceID"/>
+        <value value="%instanceid"/>
+      </dimension>
+
+      <dimension type="Amazon.CloudWatch.Model.Dimension">
+        <name value="Fruit"/>
+        <value value="Apple"/>
+      </dimension>
+
+Again, note the pattern [%instanceid](#instanceid).
+
+The corresponding equivalent pattern/event log message would be
+
+    "Dimension: InstanceID: %instanceid, Dimension: Fruit: Apple" //(%instanceid only parsed if in a layout conversion pattern)
+
+or simply
+
+    "Dimensions: (InstanceID: %instanceid, Fruit: Apple)" //(%instanceid only parsed if in a layout conversion pattern)
+
+Deppending on the setting of [ConfigOverrides](#configoverrides) individual dimensions compete according to name (key). Internally in CloudWatchAppender the dimensions are stores as a dictionary.
 
 # <a id="patternlayout"></a> Using layouts and the CloudWatchAppender PatternLayout
 

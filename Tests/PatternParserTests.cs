@@ -2,10 +2,7 @@ using System;
 using System.Threading;
 using MbUnit.Framework;
 using log4net;
-using log4net.Config;
 using log4net.Core;
-using log4net.Layout;
-using log4net.Repository;
 
 namespace CloudWatchAppender.Tests
 {
@@ -26,9 +23,9 @@ namespace CloudWatchAppender.Tests
         public void TestStackTracePattern()
         {
             var p = new PatternParser(GetLoggingEvent());
-            var s = p.Parse("%stacktrace{8}");
+            var s = p.Parse("%stacktrace{6}");
 
-            Assert.AreEqual("PatternParser.Parse > PatternLayout.Parse > LayoutSkeleton.Format > PatternLayout.Format > PatternConverter.Format > PatternLayoutConverter.Convert > StackTracePatternConverter.Convert > LoggingEvent.get_LocationInformation", s);
+            Assert.AreEqual("LayoutSkeleton.Format > PatternLayout.Format > PatternConverter.Format > PatternLayoutConverter.Convert > StackTracePatternConverter.Convert > LoggingEvent.get_LocationInformation", s);
         }
     
         [Test]

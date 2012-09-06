@@ -45,7 +45,8 @@ namespace ContinuousTicks
             {
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
                 //log.Info("A tick! Value: 29.4 Kilobytes");
-                log.Info(String.Format("A tick! Timestamp: {0}", DateTimeOffset.Now.AddMinutes(-10).ToString()));
+                //log.Info(String.Format("A tick! Timestamp: {0}", DateTimeOffset.Now.AddMinutes(-10).ToString()));
+                log.Info(String.Format("A tick!"));
             }
 
             stopWatch.Stop();

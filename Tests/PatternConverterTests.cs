@@ -3,7 +3,6 @@ using MbUnit.Framework;
 using log4net;
 using log4net.Config;
 using log4net.Core;
-using log4net.Layout;
 using log4net.Repository;
 
 namespace CloudWatchAppender.Tests

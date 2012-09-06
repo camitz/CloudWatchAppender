@@ -29,7 +29,7 @@ namespace ContinuousTicks
                                new MetricDatum()
                                    .WithMetricName("CloudWatchAppender")
                                    .WithUnit("Seconds")
-                                   .WithValue(1.0)
+                                   .WithValue(1.1)
                            };
 
             //var response = CWClient.PutMetricData(new PutMetricDataRequest()

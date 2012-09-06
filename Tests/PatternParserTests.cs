@@ -9,9 +9,6 @@ namespace CloudWatchAppender.Tests
     [TestFixture]
     public class PatternParserTests
     {
-
-        const string TEST_REPOSITORY = "Test Repository";
-        
         [TearDown]
         public void TearDown()
         {

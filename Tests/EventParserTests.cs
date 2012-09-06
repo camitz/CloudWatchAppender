@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Amazon.CloudWatch.Model;
 using MbUnit.Framework;
@@ -173,6 +174,48 @@ namespace CloudWatchAppender.Tests
             }
 
             Assert.AreEqual(1, passes);
+        }
+
+        [Test]
+        public void StringWithTimestamp_Override()
+        {
+            var parser = new EventMessageParser("A tick! Timestamp: 2012-09-06 17:55:55 +02:00")
+                             {
+                                 DefaultTimestamp = DateTimeOffset.Parse("2012-09-06 12:55:55 +02:00")
+                             };
+            parser.Parse();
+
+            var passes = 0;
+            foreach (var r in parser)
+            {
+                Assert.AreEqual(DateTime.Parse("2012-09-06 10:55:55"), r.MetricData[0].Timestamp);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+        }
+
+        [Test]
+        public void StringWithTimestamp()
+        {
+            var parser = new EventMessageParser("A tick! Timestamp: 2012-09-06 17:55:55 +02:00");
+            parser.Parse();
+
+            var passes = 0;
+            foreach (var r in parser)
+            {
+                Assert.AreEqual(DateTime.Parse("2012-09-06 15:55:55"), r.MetricData[0].Timestamp);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+
+
+            parser = new EventMessageParser("A tick! Timestamp: 2012-09-06 15:55:55");
+            parser.Parse();
+
+            foreach (var r in parser)
+                Assert.AreEqual(DateTime.Parse("2012-09-06 15:55:55"), r.MetricData[0].Timestamp);
         }
 
         [Test]

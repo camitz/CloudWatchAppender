@@ -31,7 +31,7 @@ CloudWatchAppender is easy to configure in web.config or app.config. If you've b
         </root>
     </log4net>
 
-CloudWatchAppender can do more than this. Pretty much anything you can post to CloudWatch via the AWSSDK is supported by the appender in different ways. A notable exception is timestamp which will of course be supported in the near future.
+CloudWatchAppender can do more than this. Pretty much anything you can post to CloudWatch via the AWSSDK is supported by the appender in different ways. A notable exception is timestamp which will of course be supported in the near future. **Update!** *Supported as of version 1.2.*
 
 To change the default behavior, you can either provide the info in the config-file or as part of the log event message. The former is cleaner in that the code can remain agnostic to the log end point. The latter provides more power and granularity over what is posted. Other appenders will simply output the information as it is written.
 
@@ -83,6 +83,28 @@ Normally input given in parameters to the appenders will override anything given
     <configOverrides value="false"/>
 
 to the appender definition. Now, parameters to the appender will act as defaults, should the values be missing from the message.
+
+# Timestamp
+
+As of version 1.2 the timestamp can be set. If left out, CloudWatch will just default it to the current time in UTC. 
+
+Set it in your config like so if you use a locale where this format is parsable:
+
+    <timestamp value="2012-09-06 14:00:00 +02:00"/>
+
+It works, of course, but you'll find this more useful.
+
+    <timestamp value="%utcdate{DATE}"/>
+
+The above uses the log4net PatterConverted for a DateTime-formatted current UTC timestamp. Both the below are permissible in the eventlog message:
+
+    "Timestamp: 2012-09-06 12:00:00"
+    
+    "Timestamp: %date{DATE}"
+
+Both above will be assumed to be UTC, so the second one, at least, may not have expected result. Use utcdate to avoid confusion.
+
+It is recommended to think UTC. That's what CloudWatch does. DateTime.UtcNow will get you the current UTC timestamp. In fact, CloudWatch refuses to display anything in what it deems to be the future, which can be confusing, particularly if you're on the plus side of UTC. You can read about my [experiences](http://blog.simpletask.se/awscloudwatch-log4net-appender) prior to figuring that one out.
 
 # Statistics
 
@@ -145,7 +167,7 @@ The pattern %instanceid anywhere in your conversion pattern will be replaced by 
 
 Providing the same token, or any other supported token for that matter, as a parameter to the appender in the config-file is also possible and works as expected.
 
-## Added %logger functionality
+## Augmented %logger functionality
 
 The log4net PatternLayout provides the %logger or %c pattern, which translates to the name of the logger, typically the qualified name of the type issuing the event. You can also specify a precision specifier as a integer enclosed in curly brackets following the pattern, to filter out the end part of the name. 
 
@@ -176,3 +198,32 @@ Check out the following blog posts that seeded the project.
 [A CloudWatch appender for log4net](http://blog.simpletask.se/awscloudwatch-log4net-appender)
 
 [Improving the CloudWatch Appender](http://blog.simpletask.se/improving-cloudwatch-appender)
+
+## Releases
+
+### 1.2 2012-09-06
+
+#### New features 
+
+* MetricDatum timestamp property supported. Current date format provider used for parsing, UTC assumed. For example Timestamp: 2012-09-06 14:00:00 +02:00.
+
+#### Bug fixes
+
+* Bug in AWSSDK concerning decimal separator in locales using for example "," instead of ".". Hacked by temporarily setting default locale.
+
+### 1.1 (beta)
+
+#### New features 
+
+* Intance id is cached. 
+* . to / conversion for all NameSpace strings in MetricDAtum.
+* Support for lowercase units. 
+* Ceased support for ordered dimensions 
+
+#### Bug fixes
+
+* ConfigOverrides false wasn't checked for value 
+* ConfigOverrides didn't work as expected
+* Couldn't override dimensions (error)
+
+### 1.0 (beta)

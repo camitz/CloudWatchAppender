@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.CloudWatch;
@@ -104,7 +105,12 @@ namespace CloudWatchAppender
                 {
                     try
                     {
+                        var tmpCulture = Thread.CurrentThread.CurrentCulture;
+                        Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
+                        
                         _client.PutMetricData(r);
+
+                        Thread.CurrentThread.CurrentCulture = tmpCulture;
                     }
                     catch (AmazonCloudWatchException e)
                     {

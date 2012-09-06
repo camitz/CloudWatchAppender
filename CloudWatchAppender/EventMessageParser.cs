@@ -115,7 +115,7 @@ namespace CloudWatchAppender
                     if (t0.StartsWith("Timestamp", StringComparison.InvariantCultureIgnoreCase))
                     {
                         DateTimeOffset time;
-                        if(ExtractTime(renderedMessage.Substring(tokens.Current.Index + "Timestamp:".Length), out time))
+                        if(ExtractTime(renderedMessage.Substring(tokens.Current.Index + "Timestamp".Length), out time))
                             _values.Add(new AppenderValue
                                             {
                                                 Name = "Timestamp",
@@ -237,10 +237,11 @@ namespace CloudWatchAppender
             time = DateTimeOffset.UtcNow;
 
             s = s.Trim();
+            s = s.Trim(new[] {':'});
 
-            for (int i = 1; i < s.Length; i++)
+            for (int i = 1; i <= s.Length; i++)
             {
-                if (DateTimeOffset.TryParse(s.Substring(0, i), out lastTriedTime))
+                if (DateTimeOffset.TryParse(s.Substring(0, i), null, DateTimeStyles.AssumeUniversal, out lastTriedTime))
                 {
                     success = true;
                     time = lastTriedTime;

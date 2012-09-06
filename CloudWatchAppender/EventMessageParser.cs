@@ -19,6 +19,7 @@ namespace CloudWatchAppender
 
         public string DefaultName { get; set; }
         public double? DefaultValue { get; set; }
+        public DateTimeOffset? DefaultTimestamp { get; set; }
         public string DefaultUnit { get; set; }
         public string DefaultNameSpace { get; set; }
 
@@ -38,117 +39,7 @@ namespace CloudWatchAppender
                     .ToList()
                     .GetEnumerator();
 
-            string t0, unit, value, name, sNum = string.Empty;
-
-            tokens.MoveNext();
-            while (tokens.Current != null)
-            {
-                if (!string.IsNullOrEmpty(t0 = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
-                {
-                    if (!MetricDatum.SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) &&
-                        !MetricDatum.SupportedStatistics.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)))
-                    {
-                        tokens.MoveNext();
-                        continue;
-                    }
-
-                    if (t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        if (!tokens.MoveNext())
-                            continue;
-
-                        if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
-                        {
-                            tokens.MoveNext();
-
-                            while (tokens.Current != null &&
-                                   string.IsNullOrEmpty(tokens.Current.Groups["rparen"].Value))
-                            {
-                                if (
-                                    string.IsNullOrEmpty(
-                                        name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
-                                {
-                                    tokens.MoveNext();
-                                    continue;
-                                }
-
-                                if (!tokens.MoveNext())
-                                    continue;
-
-                                if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value) && string.IsNullOrEmpty(sNum = tokens.Current.Groups["float"].Value))
-                                {
-                                    tokens.MoveNext();
-                                    continue;
-                                }
-
-                                _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
-                            }
-                        }
-                        else
-                        {
-                            if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
-                                tokens.MoveNext();
-
-                            if (
-                                  string.IsNullOrEmpty(
-                                      name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
-                            {
-                                tokens.MoveNext();
-                                continue;
-                            }
-
-                            if (!tokens.MoveNext())
-                                continue;
-
-                            if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value))
-                            {
-                                tokens.MoveNext();
-                                continue;
-                            }
-
-                            _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
-                        }
-                    }
-                    else
-                    {
-                        if (!tokens.MoveNext())
-                            continue;
-
-                        sNum = string.IsNullOrEmpty(tokens.Current.Groups["float"].Value) ? tokens.Current.Groups["int"].Value : tokens.Current.Groups["float"].Value;
-
-                        var sValue = tokens.Current.Groups["word"].Value;
-
-                        if (string.IsNullOrEmpty(sNum) && string.IsNullOrEmpty(sValue))
-                        {
-                            tokens.MoveNext();
-                            continue;
-                        }
-
-                        var d = 0.0;
-                        if (!Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d) && string.IsNullOrEmpty(sValue))
-                        {
-                            tokens.MoveNext();
-                            continue;
-                        }
-
-                        var v = new AppenderValue
-                                    {
-                                        dValue = d,
-                                        sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue,
-                                        name = t0
-                                    };
-
-                        if (tokens.MoveNext())
-                            if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
-                                if (MetricDatum.SupportedUnits.Any(x => x.Equals(unit, StringComparison.InvariantCultureIgnoreCase)))
-                                    v.unit = unit;
-
-                        _values.Add(v);
-                    }
-                }
-                else
-                    tokens.MoveNext();
-            }
+            ParseTokens(tokens, _renderedMessage);
 
             NewDatum();
             foreach (var p in _values)
@@ -165,6 +56,11 @@ namespace CloudWatchAppender
                 }
             }
 
+            SetDefaults();
+        }
+
+        private void SetDefaults()
+        {
             foreach (var datum in _data)
             {
                 //Set overrides if not already set.
@@ -200,54 +96,168 @@ namespace CloudWatchAppender
             }
         }
 
-
-        private AppenderValue? GetValueFromMatch(Match m)
+        private void ParseTokens(List<Match>.Enumerator tokens, string renderedMessage)
         {
+            string t0, unit, value, name, sNum = string.Empty;
 
-            var p = new AppenderValue
+            tokens.MoveNext();
+            while (tokens.Current != null)
+            {
+                if (!string.IsNullOrEmpty(t0 = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
+                {
+                    if (!MetricDatum.SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) &&
+                        !MetricDatum.SupportedStatistics.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)))
                     {
-                        name = m.Groups["name"].Value,
-                        sValue = m.Groups["value"].Value,
-                        unit = m.Groups["unit"].Value
-                    };
+                        tokens.MoveNext();
+                        continue;
+                    }
 
-            try
-            {
+                    if (t0.StartsWith("Timestamp", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        DateTimeOffset time;
+                        if(ExtractTime(renderedMessage.Substring(tokens.Current.Index + "Timestamp:".Length), out time))
+                            _values.Add(new AppenderValue
+                                            {
+                                                Name = "Timestamp",
+                                                Time = time
+                                            });
 
-                var d = 0.0;
-                if (Double.TryParse(m.Groups["value"].Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d))
-                    p.dValue = d;
+                        tokens.MoveNext();
+                    }
+                    else if (t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (!tokens.MoveNext())
+                            continue;
 
-                if (String.IsNullOrEmpty(p.name))
-                    return null;
+                        if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
+                        {
+                            tokens.MoveNext();
 
-                if (!MetricDatum.SupportedNames.Any(x => x.Equals(p.name, StringComparison.InvariantCultureIgnoreCase)) &&
-                    !MetricDatum.SupportedStatistics.Any(x => x.Equals(p.name, StringComparison.InvariantCultureIgnoreCase)))
-                    return null;
+                            while (tokens.Current != null &&
+                                   string.IsNullOrEmpty(tokens.Current.Groups["rparen"].Value))
+                            {
+                                if (
+                                    string.IsNullOrEmpty(
+                                        name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
+                                {
+                                    tokens.MoveNext();
+                                    continue;
+                                }
 
-                if (!String.IsNullOrEmpty(p.unit) &&
-                    !MetricDatum.SupportedUnits.Any(x => x.Equals(p.unit, StringComparison.InvariantCultureIgnoreCase)))
+                                if (!tokens.MoveNext())
+                                    continue;
 
-                    return null;
+                                if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value) &&
+                                    string.IsNullOrEmpty(sNum = tokens.Current.Groups["float"].Value))
+                                {
+                                    tokens.MoveNext();
+                                    continue;
+                                }
 
-                if (p.name == "Unit" && !MetricDatum.SupportedUnits.Any(x => x.Equals(p.sValue, StringComparison.InvariantCultureIgnoreCase)))
-                    return null;
+                                _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
+                            }
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
+                                tokens.MoveNext();
+
+                            if (
+                                string.IsNullOrEmpty(
+                                    name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
+                            {
+                                tokens.MoveNext();
+                                continue;
+                            }
+
+                            if (!tokens.MoveNext())
+                                continue;
+
+                            if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value))
+                            {
+                                tokens.MoveNext();
+                                continue;
+                            }
+
+                            _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
+                        }
+                    }
+                    else
+                    {
+                        if (!tokens.MoveNext())
+                            continue;
+
+                        sNum = string.IsNullOrEmpty(tokens.Current.Groups["float"].Value)
+                                   ? tokens.Current.Groups["int"].Value
+                                   : tokens.Current.Groups["float"].Value;
+
+                        var sValue = tokens.Current.Groups["word"].Value;
+
+                        if (string.IsNullOrEmpty(sNum) && string.IsNullOrEmpty(sValue))
+                        {
+                            tokens.MoveNext();
+                            continue;
+                        }
+
+                        var d = 0.0;
+                        if (!Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d) &&
+                            string.IsNullOrEmpty(sValue))
+                        {
+                            tokens.MoveNext();
+                            continue;
+                        }
+
+                        var v = new AppenderValue
+                                    {
+                                        dValue = d,
+                                        sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue,
+                                        Name = t0
+                                    };
+
+                        if (tokens.MoveNext())
+                            if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
+                                if (
+                                    MetricDatum.SupportedUnits.Any(
+                                        x => x.Equals(unit, StringComparison.InvariantCultureIgnoreCase)))
+                                    v.Unit = unit;
+
+                        _values.Add(v);
+                    }
+                }
+                else
+                    tokens.MoveNext();
             }
-            catch (FormatException)
-            {
-                return null;
-            }
-
-            return p;
         }
+
+        private bool ExtractTime(string s, out DateTimeOffset time)
+        {
+            var success = false;
+            DateTimeOffset lastTriedTime;
+
+            time = DateTimeOffset.UtcNow;
+
+            s = s.Trim();
+
+            for (int i = 1; i < s.Length; i++)
+            {
+                if (DateTimeOffset.TryParse(s.Substring(0, i), out lastTriedTime))
+                {
+                    success = true;
+                    time = lastTriedTime;
+                }
+            }
+
+            return success;
+        }
+
 
         private void FillName(AppenderValue p)
         {
-            switch (p.name)
+            switch (p.Name)
             {
                 case "Value":
                     _currentDatum.Value = _defaultsOverridePattern ? DefaultValue ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.unit : p.unit;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
                     break;
 
                 case "Unit":
@@ -265,22 +275,26 @@ namespace CloudWatchAppender
 
                 case "Maximum":
                     _currentDatum.Maximum = _defaultsOverridePattern ? DefaultMaximum ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.unit : p.unit;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
                     break;
 
                 case "Minimum":
                     _currentDatum.Minimum = _defaultsOverridePattern ? DefaultMinimum ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.unit : p.unit;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
                     break;
 
                 case "SampleCount":
                     _currentDatum.SampleCount = _defaultsOverridePattern ? DefaultSampleCount ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.unit : p.unit;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
                     break;
 
                 case "Sum":
                     _currentDatum.Sum = _defaultsOverridePattern ? DefaultSum ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.unit : p.unit;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
+                    break;
+
+                case "Timestamp":
+                    _currentDatum.Timestamp = _defaultsOverridePattern ? DefaultTimestamp ?? p.Time.Value : p.Time.Value;
                     break;
             }
         }
@@ -295,7 +309,8 @@ namespace CloudWatchAppender
                 {
                     if (!_defaultsOverridePattern)
                         dimensions[dimension.Name] = dimension;
-                } else
+                }
+                else
                     dimensions[dimension.Name] = dimension;
             }
 
@@ -308,19 +323,14 @@ namespace CloudWatchAppender
             _data.Add(_currentDatum);
         }
 
-        public struct AppenderValue
+        private struct AppenderValue
         {
-            public string name;
+            public string Name;
             public double? dValue;
-            public string unit;
+            public string Unit;
             public string sValue;
+            public DateTimeOffset? Time;
         }
-
-        private IEnumerable<MetricDatum> GetData()
-        {
-            return _data;
-        }
-
 
 
         private List<MetricDatum>.Enumerator _dataEnumerator;

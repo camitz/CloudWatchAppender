@@ -20,6 +20,7 @@ namespace CloudWatchAppender
         public string Value { get; set; }
         public string Name { get; set; }
         public string Namespace { get; set; }
+        public string Timestamp { get; set; }
 
         public Dimension Dimension { set { AddDimension(value); } }
 
@@ -86,7 +87,10 @@ namespace CloudWatchAppender
                                                 : patternParser.Parse(Unit),
                             DefaultDimensions = _dimensions.Any()
                                                         ? _dimensions
-                                                        : null
+                                                        : null,
+                            DefaultTimestamp = string.IsNullOrEmpty(Timestamp)
+                                                        ? null
+                                                        : (DateTimeOffset?) DateTimeOffset.Parse(patternParser.Parse(Timestamp))
                         };
 
             if (!string.IsNullOrEmpty(Value) && ConfigOverrides)
@@ -117,7 +121,7 @@ namespace CloudWatchAppender
                         //Don't log this exception! ;)
                         Console.WriteLine(e.Message);
 
-                        throw new CloudWatchAppenderException("CloudWatchAppender encountered an error while submitting to CloudWatch. Maybe value has decimal part? We don't know why, but it doesn't work.", e);
+                        throw new CloudWatchAppenderException("CloudWatchAppender encountered an error while submitting to CloudWatch.", e);
                     }
                 });
 

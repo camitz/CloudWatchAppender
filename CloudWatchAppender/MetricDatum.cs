@@ -19,6 +19,8 @@ namespace CloudWatchAppender
         private bool _statisticsMode;
         private bool _valueMode;
 
+        private DateTimeOffset? _timestamp;
+
         public double Value
         {
             get
@@ -137,6 +139,7 @@ namespace CloudWatchAppender
                 _datum.StatisticValues.Sum = value;
             }
         }
+
         public double SampleCount
         {
             get { return _datum.StatisticValues.SampleCount; }
@@ -154,6 +157,20 @@ namespace CloudWatchAppender
                     _datum.StatisticValues = new StatisticSet();
 
                 _datum.StatisticValues.SampleCount = value;
+            }
+        }
+
+        public DateTimeOffset Timestamp
+        {
+            get { return _datum.Timestamp; }
+            set
+            {
+                if (_timestamp.HasValue)
+                    throw new MetricDatumFilledException("Value has been set already.");
+
+                _timestamp = value;
+
+                _datum.Timestamp = value.UtcDateTime;
             }
         }
 
@@ -225,10 +242,10 @@ namespace CloudWatchAppender
                                                         "Unit",
                                                         "Dimension",
                                                         "Dimensions",
-                                                        "Dimension0","Dimension1","Dimension2","Dimension3","Dimension4","Dimension5","Dimension6","Dimension7","Dimension8","Dimension9",
                                                         "NameSpace",
                                                         "Name",
-                                                        "MetricName"
+                                                        "MetricName",
+                                                        "Timestamp"
                                                     };
 
         public static readonly string[] SupportedStatistics = {
@@ -237,6 +254,7 @@ namespace CloudWatchAppender
                                                         "SampleCount",
                                                         "Sum"
                                                     };
+
     }
 
     public class MetricDatumFilledException : InvalidOperationException

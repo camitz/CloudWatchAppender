@@ -104,7 +104,7 @@ The above uses the log4net PatterConverted for a DateTime-formatted current UTC 
 
 Both above will be assumed to be UTC, so the second one, at least, may not have expected result. Use utcdate to avoid confusion.
 
-It is recommended to think UTC. That's what CloudWatch does. DateTime.UtcNow will get you the current UTC timestamp. In fact, CloudWatch refuses to display anything in what it deems to be the future, which can be confusing, particularly if you're on the plus side of UTC. You can read about my [experiences](http://blog.simpletask.se/awscloudwatch-log4net-appender) prior to figuring that one out.
+It is recommended to think UTC. That's what CloudWatch does. DateTime.UtcNow will get you the current UTC timestamp. In fact, CloudWatch refuses to display anything in what it deems to be the future, which can be confusing, particularly if you're on the plus side of UTC. You can read about my [experiences](http://blog.simpletask.se/awscloudwatch-log4net-appender) prior to figuring that one out on my blog.
 
 # Statistics
 
@@ -201,11 +201,11 @@ Check out the following blog posts that seeded the project.
 
 ## Releases
 
-### 1.2 2012-09-06
+### 1.2 <font size="2">(beta) 2012-09-06</font>
 
 #### New features 
 
-* MetricDatum timestamp property supported. Current date format provider used for parsing, UTC assumed. For example Timestamp: 2012-09-06 14:00:00 +02:00.
+* MetricDatum timestamp property supported. Current date format provider used for parsing, UTC assumed. For example Timestamp: <nobr>2012-09-06 14:00:00 +02:00</nobr>.
 
 #### Bug fixes
 

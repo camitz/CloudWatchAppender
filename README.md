@@ -191,7 +191,55 @@ TODO
 
 # <a id="tokens"></a> Tokens recognized by CloudWatchAppender
 
-TODO
+## Units
+
+* Seconds
+* Microseconds
+* Milliseconds
+* Bytes
+* Kilobytes
+* Megabytes
+* Gigabytes
+* Terabytes
+* Bits
+* Kilobits
+* Megabits
+* Gigabits
+* Terabits
+* Percent
+* Count
+* Bytes/Second
+* Kilobytes/Second
+* Megabytes/Second
+* Gigabytes/Second
+* Terabytes/Second
+* Bits/Second
+* Kilobits/Second
+* Megabits/Second
+* Gigabits/Second
+* Terabits/Second
+* Second
+* None
+
+## Metrics
+
+* Value
+* Unit
+* Dimension
+* Dimensions
+* NameSpace
+* Name
+* MetricName
+* Timestamp
+
+## Statistics
+
+* Maximum
+* Minimum
+* SampleCount
+* Sum
+
+# Some more reading
 
 Check out the following blog posts that seeded the project.
 
@@ -199,31 +247,31 @@ Check out the following blog posts that seeded the project.
 
 [Improving the CloudWatch Appender](http://blog.simpletask.se/improving-cloudwatch-appender)
 
-## Releases
+# Releases
 
-### 1.2 <font size="2">(beta) 2012-09-06</font>
+## 1.2 <font size="2">(beta) 2012-09-06</font>
 
-#### New features 
+### New features 
 
 * MetricDatum timestamp property supported. Current date format provider used for parsing, UTC assumed. For example Timestamp: <nobr>2012-09-06 14:00:00 +02:00</nobr>.
 
-#### Bug fixes
+### Bug fixes
 
 * Bug in AWSSDK concerning decimal separator in locales using for example "," instead of ".". Hacked by temporarily setting default locale.
 
-### 1.1 (beta)
+## 1.1 (beta)
 
-#### New features 
+### New features 
 
 * Intance id is cached. 
 * . to / conversion for all NameSpace strings in MetricDAtum.
 * Support for lowercase units. 
 * Ceased support for ordered dimensions 
 
-#### Bug fixes
+### Bug fixes
 
 * ConfigOverrides false wasn't checked for value 
 * ConfigOverrides didn't work as expected
 * Couldn't override dimensions (error)
 
-### 1.0 (beta)
+## 1.0 (beta)

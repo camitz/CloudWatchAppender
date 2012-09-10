@@ -50,7 +50,7 @@ namespace ContinuousTicks
             }
 
             stopWatch.Stop();
-            Console.WriteLine(String.Format("All {0} ticks in {1} ms.\nWaiting for requests to complete.",nTicks,stopWatch.ElapsedMilliseconds));
+            Console.WriteLine(String.Format("All {0} ticks in {1} ms.\nWaiting for requests to complete.", nTicks, stopWatch.ElapsedMilliseconds));
 
             stopWatch.Start();
             CloudWatchAppender.CloudWatchAppender.WaitForPendingRequests();

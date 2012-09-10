@@ -11,11 +11,13 @@ using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using log4net.Appender;
 using log4net.Core;
+using log4net.Repository.Hierarchy;
 
 namespace CloudWatchAppender
 {
     public class CloudWatchAppender : AppenderSkeleton
     {
+
         public string Unit { get; set; }
         public string Value { get; set; }
         public string Name { get; set; }
@@ -46,10 +48,17 @@ namespace CloudWatchAppender
                        new AmazonCloudWatchConfig { ServiceURL = ConfigurationManager.AppSettings["AWSServiceEndpoint"] }
                        );
 
+        public CloudWatchAppender()
+        {
+            var logger = ((Hierarchy)log4net.LogManager.GetRepository()).GetLogger("Amazon") as Logger;
+            logger.Level = Level.Off;
+        }
+
         public static bool HasPendingRequests
         {
             get { return _tasks.Values.Any(t => !t.IsCompleted); }
         }
+
 
         public static void WaitForPendingRequests(TimeSpan timeout)
         {

@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchAppender.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "log4net.vs2010", "..\..\log4net-1.2.11\src\log4net.vs2010.csproj", "{181FE707-E161-4722-9F38-6AAAB6FAA106}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSBugTest", "..\Examples\AWSBugTest\AWSBugTest.csproj", "{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,16 @@ Global
 		{181FE707-E161-4722-9F38-6AAAB6FAA106}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{181FE707-E161-4722-9F38-6AAAB6FAA106}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{181FE707-E161-4722-9F38-6AAAB6FAA106}.Release|x86.ActiveCfg = Release|Any CPU
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}.Debug|x86.ActiveCfg = Debug|x86
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}.Debug|x86.Build.0 = Debug|x86
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}.Release|Any CPU.ActiveCfg = Release|x86
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}.Release|Mixed Platforms.Build.0 = Release|x86
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}.Release|x86.ActiveCfg = Release|x86
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,5 +92,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A} = {454F1AF8-8B2E-4ED9-AD57-6765C371C79A}
 		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491} = {454F1AF8-8B2E-4ED9-AD57-6765C371C79A}
+		{7087061B-EDA2-4E64-B6A0-BC44BAF5C323} = {454F1AF8-8B2E-4ED9-AD57-6765C371C79A}
 	EndGlobalSection
 EndGlobal

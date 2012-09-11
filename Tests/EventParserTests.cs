@@ -56,7 +56,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithStatistics()
         {
-            var parser = new EventMessageParser("A tick! SampleCount: 3000, Minimum: 1.3 Gigabits/Second, Maximum: 127.9 Gigabits/Second, Sum: 15000 Gigabits/Second");
+            var parser = new EventMessageParser("A tick! SampleCount: 3000, Minimum: 1.3 Gigabits/Second, Maximum: 127.9 Gigabits/Second, Sum: 15000.5 Gigabits/Second");
             parser.Parse();
 
             var passes = 0;
@@ -65,7 +65,7 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual("Gigabits/Second", r.MetricData[0].Unit);
                 Assert.AreEqual(1.3, r.MetricData[0].StatisticValues.Minimum);
                 Assert.AreEqual(127.9, r.MetricData[0].StatisticValues.Maximum);
-                Assert.AreEqual(15000, r.MetricData[0].StatisticValues.Sum);
+                Assert.AreEqual(15000.5, r.MetricData[0].StatisticValues.Sum);
                 Assert.AreEqual(3000, r.MetricData[0].StatisticValues.SampleCount);
                 passes++;
             }
@@ -78,12 +78,12 @@ namespace CloudWatchAppender.Tests
         {
             var parser =
                 new EventMessageParser(
-                    "A tick! SampleCount: 3000, Minimum: 1.3 Gigabits/Second, Maximum: 127.9 Gigabits/Second, Sum: 15000 Gigabits/Second")
+                    "A tick! SampleCount: 3000, Minimum: 1.3 Gigabits/Second, Maximum: 127.9 Gigabits/Second, Sum: 15000.1 Gigabits/Second")
                     {
                         DefaultSampleCount = 4000,
                         DefaultMinimum = 1.2,
-                        DefaultMaximum = 130,
-                        DefaultSum = 16000
+                        DefaultMaximum = 130.5,
+                        DefaultSum = 16000.5
                     };
             parser.Parse();
 
@@ -92,8 +92,8 @@ namespace CloudWatchAppender.Tests
             {
                 Assert.AreEqual("Gigabits/Second", r.MetricData[0].Unit);
                 Assert.AreEqual(1.2, r.MetricData[0].StatisticValues.Minimum);
-                Assert.AreEqual(130, r.MetricData[0].StatisticValues.Maximum);
-                Assert.AreEqual(16000, r.MetricData[0].StatisticValues.Sum);
+                Assert.AreEqual(130.5, r.MetricData[0].StatisticValues.Maximum);
+                Assert.AreEqual(16000.5, r.MetricData[0].StatisticValues.Sum);
                 Assert.AreEqual(4000, r.MetricData[0].StatisticValues.SampleCount);
                 passes++;
             }

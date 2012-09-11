@@ -255,6 +255,41 @@ namespace CloudWatchAppender
                                                         "Sum"
                                                     };
 
+        public MetricDatum WithMetricName(string value)
+        {
+            _datum.MetricName = value;
+            return this;
+        }
+
+        public MetricDatum WithUnit(string value)
+        {
+            _datum.Unit = value;
+            return this;
+        }
+
+        public MetricDatum WithValue(double value)
+        {
+            _datum.Value = value;
+            return this;
+        }
+
+        public MetricDatum WithTimestamp(DateTime value)
+        {
+            _datum.Timestamp = value;
+            return this;
+        }
+
+        public MetricDatum WithDimensions(IEnumerable<Dimension> value)
+        {
+            _datum.Dimensions = value.ToList();
+            return this;
+        }
+
+        public MetricDatum WithStatisticValues(StatisticSet statisticSet)
+        {
+            _datum.StatisticValues = statisticSet;
+            return this;
+        }
     }
 
     public class MetricDatumFilledException : InvalidOperationException

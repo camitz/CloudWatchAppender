@@ -23,14 +23,14 @@ namespace CloudWatchAppender
             if (!String.IsNullOrEmpty(metricDatum.Unit))
                 writer.Write(String.Format("Unit: {0}, ", metricDatum.Unit));
 
-            writer.Write(String.Format("Value: {0}, ", metricDatum.Value));
+            writer.Write(String.Format("Value: {0}, ", metricDatum.Value.ToString(CultureInfo.InvariantCulture)));
 
             if (metricDatum.Dimensions.Any())
             {
                 writer.Write("Dimensions: {0}, ", String.Join(", ",
                                                               metricDatum.Dimensions.Select(
                                                                   x =>
-                                                                  String.Format("Dimension: {0}: {1}, ", x.Name, x.Value))));
+                                                                  String.Format("{0}: {1}", x.Name, x.Value))));
             }
 
             if (metricDatum.Timestamp != default(DateTime))
@@ -40,15 +40,15 @@ namespace CloudWatchAppender
             if (metricDatum.StatisticValues != null)
             {
                 if (metricDatum.StatisticValues.Maximum > 0)
-                    writer.Write(String.Format("Maximum: {0}, ", metricDatum.StatisticValues.Maximum));
+                    writer.Write(String.Format("Maximum: {0}, ", metricDatum.StatisticValues.Maximum.ToString(CultureInfo.InvariantCulture)));
 
-                writer.Write(String.Format("Minimum: {0}, ", metricDatum.StatisticValues.Minimum));
+                writer.Write(String.Format("Minimum: {0}, ", metricDatum.StatisticValues.Minimum.ToString(CultureInfo.InvariantCulture)));
 
                 if (metricDatum.StatisticValues.SampleCount > 1)
-                    writer.Write(String.Format("SampleCount: {0}, ", metricDatum.StatisticValues.SampleCount));
+                    writer.Write(String.Format("SampleCount: {0}, ", metricDatum.StatisticValues.SampleCount.ToString(CultureInfo.InvariantCulture)));
 
                 if (metricDatum.StatisticValues.Sum > 0)
-                    writer.Write(String.Format("Sum: {0}, ", metricDatum.StatisticValues.Sum));
+                    writer.Write(String.Format("Sum: {0}, ", metricDatum.StatisticValues.Sum.ToString(CultureInfo.InvariantCulture)));
             }
         }
     }

@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventParserTests.cs" />
+    <Compile Include="MetricDatumRendererTests.cs" />
     <Compile Include="PatternConverterTests.cs" />
     <Compile Include="PatternParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

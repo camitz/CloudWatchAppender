@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using CloudWatchAppender;
 using log4net;
 using log4net.Config;
 
@@ -22,7 +23,11 @@ namespace ContinuousTicks
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
                 //log.Info("A tick! Value: 29.4 Kilobytes");
                 //log.Info(String.Format("A tick! Timestamp: {0}", DateTimeOffset.Now.AddMinutes(-10).ToString()));
-                log.Info(String.Format("A tick!"));
+                //log.Info(String.Format("A tick!"));
+                log.Info(new MetricDatum("A tick!")
+                    .WithTimestamp(DateTimeOffset.UtcNow.AddMinutes(-10))
+                    .WithUnit("Kilobytes")
+                    .WithValue(29.4));
             }
 
             stopWatch.Stop();

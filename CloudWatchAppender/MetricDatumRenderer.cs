@@ -13,7 +13,15 @@ namespace CloudWatchAppender
             if (obj is Amazon.CloudWatch.Model.MetricDatum)
                 RenderAWSMetricDatum((Amazon.CloudWatch.Model.MetricDatum)obj, writer);
             else if (obj is MetricDatum)
-                RenderAWSMetricDatum(((MetricDatum)obj).AWSDatum, writer);
+                RenderAppenderMetricDatum((MetricDatum)obj, writer);
+        }
+
+        private void RenderAppenderMetricDatum(MetricDatum metricDatum, TextWriter writer)
+        {
+            if (!String.IsNullOrEmpty(metricDatum.Message))
+                writer.Write(metricDatum.Message + " ");
+            
+            RenderAWSMetricDatum(metricDatum.AWSDatum, writer);
         }
 
         private void RenderAWSMetricDatum(Amazon.CloudWatch.Model.MetricDatum metricDatum, TextWriter writer)

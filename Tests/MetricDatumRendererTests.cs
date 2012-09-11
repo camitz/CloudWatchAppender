@@ -2,9 +2,6 @@ using System;
 using System.IO;
 using Amazon.CloudWatch.Model;
 using MbUnit.Framework;
-using log4net;
-using log4net.Config;
-using log4net.Repository;
 
 namespace CloudWatchAppender.Tests
 {
@@ -44,7 +41,7 @@ namespace CloudWatchAppender.Tests
         {
             var t = new StringWriter();
 
-            new MetricDatumRenderer().RenderObject(null, new MetricDatum()
+            new MetricDatumRenderer().RenderObject(null, new MetricDatum("A tick!")
                                         .WithMetricName("TheMetricName")
                                         .WithDimensions(new[]{new Dimension
                                                                    {
@@ -64,6 +61,20 @@ namespace CloudWatchAppender.Tests
             Assert.Contains(t.ToString(), "Value: 5.1");
             Assert.Contains(t.ToString(), "Timestamp: 2012-09-11 11:11");
             Assert.Contains(t.ToString(), "Dimensions: dim1: v1, dim2: v2");
+            Assert.Contains(t.ToString(), "A tick!");
+        }
+
+
+        [Test]
+        public void AppenderMetricDatum_WithDateTimeOffset()
+        {
+            var t = new StringWriter();
+
+            new MetricDatumRenderer().RenderObject(null, new MetricDatum()
+                                         .WithTimestamp(DateTimeOffset.Parse("2012-09-11 11:11")),
+                                     t);
+
+            Assert.Contains(t.ToString(), "Timestamp: 2012-09-11 09:11");
         }
 
         [Test]
@@ -88,7 +99,7 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-        public void CustomMetricDatum_WithStatistics()
+        public void AppenderMetricDatum_WithStatistics()
         {
             var t = new StringWriter();
 

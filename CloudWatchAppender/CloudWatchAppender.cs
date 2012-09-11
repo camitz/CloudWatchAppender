@@ -64,7 +64,16 @@ namespace CloudWatchAppender
             AmazonCloudWatchConfig cloudWatchConfig = null;
             RegionEndpoint regionEndpoint = null;
 
-            _client = AWSClientFactory.CreateAmazonCloudWatchClient();
+            _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret);
+
+            if (string.IsNullOrEmpty(EndPoint) && ConfigurationManager.AppSettings["AWSServiceEndpoint"] != null)
+                EndPoint = ConfigurationManager.AppSettings["AWSServiceEndpoint"];
+
+            if (string.IsNullOrEmpty(AccessKey) && ConfigurationManager.AppSettings["AWSAccessKey"] != null)
+                AccessKey = ConfigurationManager.AppSettings["AWSAccessKey"];
+
+            if (string.IsNullOrEmpty(Secret) && ConfigurationManager.AppSettings["AWSSecretKey"] != null)
+                Secret = ConfigurationManager.AppSettings["AWSSecretKey"];
 
             if (!string.IsNullOrEmpty(EndPoint))
             {
@@ -88,6 +97,7 @@ namespace CloudWatchAppender
                 else
                     _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret);
         }
+
 
 
         public static bool HasPendingRequests

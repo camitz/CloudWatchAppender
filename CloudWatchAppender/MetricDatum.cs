@@ -179,20 +179,20 @@ namespace CloudWatchAppender
             get { return _request; }
         }
 
-        internal Amazon.CloudWatch.Model.MetricDatum Datum
+        internal Amazon.CloudWatch.Model.MetricDatum AWSDatum
         {
             get { return _datum; }
         }
 
         public List<Dimension> Dimensions 
         {
-            get { return Datum.Dimensions; }
+            get { return AWSDatum.Dimensions; }
             set
             {
-                if (Datum.Dimensions.Count != 0)
+                if (AWSDatum.Dimensions.Count != 0)
                     throw new MetricDatumFilledException("Value has been set already.");
 
-                Datum.Dimensions = value;
+                AWSDatum.Dimensions = value;
             }
         }
 

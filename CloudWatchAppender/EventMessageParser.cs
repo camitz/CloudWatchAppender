@@ -377,7 +377,7 @@ namespace CloudWatchAppender
             get
             {
                 var r = _dataEnumerator.Current.Request;
-                r.MetricData.Add(_dataEnumerator.Current.Datum); //Todo: if namespace is the same we can just, add to the list. Needs ordering of namespace etc.
+                r.MetricData.Add(_dataEnumerator.Current.AWSDatum); //Todo: if namespace is the same we can just, add to the list. Needs ordering of namespace etc.
                 return r;
             }
         }

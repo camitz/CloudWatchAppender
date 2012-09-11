@@ -49,8 +49,11 @@ namespace CloudWatchAppender
 
         public CloudWatchAppender()
         {
-            var logger = ((Hierarchy)log4net.LogManager.GetRepository()).GetLogger("Amazon") as Logger;
+            var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
+            var logger = hierarchy.GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;
+
+            hierarchy.AddRenderer(typeof(Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
         }
 
         private void SetupClient()

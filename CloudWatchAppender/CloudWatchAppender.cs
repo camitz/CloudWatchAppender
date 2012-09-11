@@ -17,6 +17,9 @@ namespace CloudWatchAppender
 {
     public class CloudWatchAppender : AppenderSkeleton
     {
+        public string AccessKey { get; set; }
+        public string Secret { get; set; }
+        public string EndPoint { get; set; }
 
         public string Unit { get; set; }
         public string Value { get; set; }
@@ -42,17 +45,47 @@ namespace CloudWatchAppender
 
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
 
-        private readonly AmazonCloudWatch _client = AWSClientFactory.CreateAmazonCloudWatchClient(
-                       ConfigurationManager.AppSettings["AWSAccessKey"],
-                       ConfigurationManager.AppSettings["AWSSecretKey"],
-                       new AmazonCloudWatchConfig { ServiceURL = ConfigurationManager.AppSettings["AWSServiceEndpoint"] }
-                       );
+        private AmazonCloudWatch _client;
 
         public CloudWatchAppender()
         {
             var logger = ((Hierarchy)log4net.LogManager.GetRepository()).GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;
         }
+
+        private void SetupClient()
+        {
+            if (_client != null)
+                return;
+
+            AmazonCloudWatchConfig cloudWatchConfig = null;
+            RegionEndpoint regionEndpoint = null;
+
+            _client = AWSClientFactory.CreateAmazonCloudWatchClient();
+
+            if (!string.IsNullOrEmpty(EndPoint))
+            {
+                if (EndPoint.StartsWith("http"))
+                {
+                    cloudWatchConfig = new AmazonCloudWatchConfig { ServiceURL = EndPoint };
+                    _client = AWSClientFactory.CreateAmazonCloudWatchClient(cloudWatchConfig);
+                }
+                else
+                {
+                    regionEndpoint = RegionEndpoint.GetBySystemName(EndPoint);
+                    _client = AWSClientFactory.CreateAmazonCloudWatchClient(regionEndpoint);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(AccessKey))
+                if (regionEndpoint != null)
+                    _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret, regionEndpoint);
+                else if (cloudWatchConfig != null)
+                    _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret, cloudWatchConfig);
+                else
+                    _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret);
+        }
+
 
         public static bool HasPendingRequests
         {
@@ -99,7 +132,7 @@ namespace CloudWatchAppender
                                                         : null,
                             DefaultTimestamp = string.IsNullOrEmpty(Timestamp)
                                                         ? null
-                                                        : (DateTimeOffset?) DateTimeOffset.Parse(patternParser.Parse(Timestamp))
+                                                        : (DateTimeOffset?)DateTimeOffset.Parse(patternParser.Parse(Timestamp))
                         };
 
             if (!string.IsNullOrEmpty(Value) && ConfigOverrides)
@@ -113,6 +146,9 @@ namespace CloudWatchAppender
 
         private void SendItOff(PutMetricDataRequest r)
         {
+            if (_client == null)
+                SetupClient();
+
             Task task =
                 Task.Factory.StartNew(() =>
                 {
@@ -120,7 +156,7 @@ namespace CloudWatchAppender
                     {
                         var tmpCulture = Thread.CurrentThread.CurrentCulture;
                         Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
-                        
+
                         _client.PutMetricData(r);
 
                         Thread.CurrentThread.CurrentCulture = tmpCulture;

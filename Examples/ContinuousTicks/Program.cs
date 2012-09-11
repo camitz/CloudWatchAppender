@@ -24,8 +24,8 @@ namespace ContinuousTicks
                 //log.Info("A tick! Value: 29.4 Kilobytes");
                 //log.Info(String.Format("A tick! Timestamp: {0}", DateTimeOffset.Now.AddMinutes(-10).ToString()));
                 //log.Info(String.Format("A tick!"));
-                log.Info(new MetricDatum("A tick!")
-                    .WithTimestamp(DateTimeOffset.UtcNow.AddMinutes(-10))
+                log.Info(new CloudWatchAppender.MetricDatum("A tick!")
+                    .WithTimestamp(DateTimeOffset.Now.AddMinutes(-10))
                     .WithUnit("Kilobytes")
                     .WithValue(29.4));
             }

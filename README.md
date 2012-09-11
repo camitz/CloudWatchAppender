@@ -18,30 +18,40 @@ CloudWatchAppender is easy to configure in web.config or app.config. If you've b
 
     <log4net>
         <appender name="CloudWatchAppender" type="CloudwatchAppender.CloudwatchAppender, CloudwatchAppender">
+			<accessKey value="YourAWSAccessKey" />
+			<secret value="YourAWSSecret" />
+			<endPoint value="eu-west-1" />
         </appender>
 
 
-        <!-- The AWSSDK uses log4net too! This will filter out those messages. -->
+        <!-- As of version 1.3, this is no longer necessary.
         <logger name="Amazon">
           <level value="OFF" />
         </logger>
+        -->
 
         <root>
           <appender-ref ref="CloudWatchAppender" />
         </root>
     </log4net>
 
-CloudWatchAppender can do more than this. Pretty much anything you can post to CloudWatch via the AWSSDK is supported by the appender in different ways. A notable exception is timestamp which will of course be supported in the near future. **Update!** *Supported as of version 1.2.*
+CloudWatchAppender can do more than this. Pretty much anything you can post to CloudWatch via the AWSSDK is supported by the appender in different ways. <strike>A notable exception is timestamp which will of course be supported in the near future.</strike> **Update!** *Supported as of version 1.2.*
 
-To change the default behavior, you can either provide the info in the config-file or as part of the log event message. The former is cleaner in that the code can remain agnostic to the log end point. The latter provides more power and granularity over what is posted. Other appenders will simply output the information as it is written.
+To change the default behavior, you can either provide the info in the config-file or as part of the log event message. The former is cleaner in that the code can remain agnostic to the log event endpoint. The latter provides more power and granularity over what is posted. Other appenders that you might have added will the simply output the data as if it were any old message.
 
 **Warning** Make sure you read about CloudWatch [pricing](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/DeveloperGuide/cloudwatch_concepts.html) so you'll not get any surprises. Particularly, CloudWatch treats each combination of name, namespace and dimension as a different custom metric. You have just 10 free custom metrics. After that they start charging you.
 
 ## Config-file
 
+**Note!** *Changes as of version 1.3:* Before crendentials and endpoint was provided in AppSettings, a small but vital element that I had overlooked and hence failed to implement properly or even document. It is essential that you put it in your config file. AppSettings still work, of course, for backwards compatibility. As an EndPoint you can provide both the system name as below, or the full url, for instance https://monitoring.eu-west-1.amazonaws.com.
+
 The following example will post a metric with [unit](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html) Milliseconds and the value 20 for all loggers using this appender. The metric name will be ProcessingTime and the namespace MyPadd/Process.
 
     <appender name="CloudWatchAppender" type="CloudwatchAppender.CloudwatchAppender, CloudwatchAppender">
+		<accessKey value="YourAWSAccessKey" />
+		<secret value="YourAWSSecret" />
+		<endPoint value="eu-west-1" />
+
         <unit value="Milliseconds"/>
         <value value="20"/>
         <name value="ProcessingTime"/>
@@ -52,6 +62,8 @@ The following example will post a metric with [unit](http://docs.amazonwebservic
             <value value="%instanceid"/>
         </dimension0>
     </appender>
+
+This normally goes in your app.config or web.config. log4net allows any old xml file to be brought in and this is of course fine for CloudWatchAppender too.
 
 Notice also we've provided the first of ten possible ["dimensions"](#dimensions). You can specify any string you like for name and value of the dimension. Above, however, we're using a special token for the value, "%instanceid". This will be translated to the EC2 instance ID, see [Instance ID](#insanceid) below. In fact, any token recognized by any regular PatternLayout conversion [patterns](http://logging.apache.org/log4net/release/sdk/log4net.Layout.PatternLayout.html), for instance %logger, will be translated as such.
 
@@ -66,15 +78,38 @@ The exact same can be accomplished by using the ["PatternLayout"](#patternlayout
 If you pass a string to the logger like this
 
     ILog log = LogManager.GetLogger(typeof(MyClass));
-    log.Info("This part will be ignored. Value: 20 Milliseconds, Name: ProcessingTime this will be ignored too NameSpace: MyApp/Processor, Dimension0: InstanceID: %instanceid");
+    log.Info("This part will be ignored by CloudWatchAppender. Value: 20 Milliseconds, Name: ProcessingTime " +
+			 "this will be ignored too NameSpace: MyApp/Processor, Dimension0: InstanceID: %instanceid");
 
 most of it will be ignored by the CloudWatchAppender. Of course, if there are other appenders listening on the logger, they will handle the string in their way. Most will output the entire string to whatever end point they are designed for.
 
 The above message to the logger will behave in the same way as the previous examples. The CloudWatchAppender event parser will look for recognizable tokens, largely corresponding to the entities and units familiar to CloudWatch. The parser is pretty lenient in what is allowed but also let's unexpected input slip without warning. As the messages get complicated, especially if PatternLayout is used, it is important to understand the conflict resolution [rules](#conflicts).
 
-Note that if the PatternLayout is used, either the original one or the one provided by CloudWatchAppender, the pattern %message or %m (deprecated) must be present in the conversion pattern for the event log message to be observed.
+Note that if the PatternLayout is used, either the original one or the one provided by CloudWatchAppender, the pattern %message or %m (the short hand is deprecated) must be present in the conversion pattern for the event log message to be observed.
 
 A list of [tokens](#tokens) supported by the event parser can be found below. 
+
+### The MetricDatum object
+
+log4net permits not just strings as the parameter to the log event method. Any old object will do and normally this it the ToString() method is used to convet it to a string. First, however, log4net will look to see if an ObjectRenderer has been registered. CloudWatchAppender automatically registers the MetricDatumRenderer, allowing you to provide a MetricDatum.
+
+The MetricDatum comes in two flavours, the AWS CloudWatch one and the wrapper we have designed. You can use either but our one offers a few more features. Noteably it takes a string to the constructor with which you can provide info that you want output to appenders other than CloudWatchAppender that you might have registered.
+
+Example:
+
+    log.Info(new CloudWatchAppender.MetricDatum("A tick!")
+        .WithTimestamp(DateTimeOffset.Now.AddMinutes(-10))
+        .WithUnit("Kilobytes")
+        .WithValue(29.4));
+
+or
+
+    log.Info(new Amazon.CloudWatch.Model.MetricDatum()
+        .WithTimestamp(DateTime.UtcNow.AddMinutes(-10))
+        .WithUnit("Kilobytes")
+        .WithValue(29.4));
+
+The above will do the same except for the message "A tick!" which if you have for instance a FileAppender cannot be output with the latter.
 
 ## <a id="configoverrides"></a>ConfigOverrides
 
@@ -248,6 +283,18 @@ Check out the following blog posts that seeded the project.
 [Improving the CloudWatch Appender](http://blog.simpletask.se/improving-cloudwatch-appender)
 
 # Releases
+
+## 1.3 <font size="2">(beta) 2012-09-11</font>
+
+### New features 
+
+* Credentials and EndPoint can now be provided in the appender config.
+* MetricDatum (both variants) supported in call to log event method.
+* Eliminiting debug output from AWSSDK in config is no longer necessary.
+
+### Bug fixes
+
+* Credentials and EndPoint needed to be set in AppSettings. Undocumented.
 
 ## 1.2 <font size="2">(beta) 2012-09-06</font>
 

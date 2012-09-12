@@ -24,7 +24,7 @@ namespace CloudWatchAppender
 
         public string Unit { get; set; }
         public string Value { get; set; }
-        public string Name { get; set; }
+        public string MetricName { get; set; }
         public string Namespace { get; set; }
         public string Timestamp { get; set; }
 
@@ -146,11 +146,16 @@ namespace CloudWatchAppender
 
             renderedString = patternParser.Parse(renderedString);
 
+            var parsedDimensions =
+                _dimensions
+                    .Select(x => new Dimension {Name = x.Key, Value = patternParser.Parse(x.Value.Value)}).
+                    ToDictionary(x => x.Name, y => y);
+
             var parser = new EventMessageParser(renderedString, ConfigOverrides)
                         {
-                            DefaultName = string.IsNullOrEmpty(Name)
+                            DefaultMetricName = string.IsNullOrEmpty(MetricName)
                                                 ? null
-                                                : patternParser.Parse(Name),
+                                                : patternParser.Parse(MetricName),
                             DefaultNameSpace = string.IsNullOrEmpty(Namespace)
                                                     ? null
                                                     : patternParser.Parse(Namespace),
@@ -158,7 +163,7 @@ namespace CloudWatchAppender
                                                 ? null
                                                 : patternParser.Parse(Unit),
                             DefaultDimensions = _dimensions.Any()
-                                                        ? _dimensions
+                                                        ? parsedDimensions
                                                         : null,
                             DefaultTimestamp = string.IsNullOrEmpty(Timestamp)
                                                         ? null
@@ -204,11 +209,6 @@ namespace CloudWatchAppender
                 _tasks.TryAdd(task.Id, task);
 
             task.ContinueWith(t => _tasks.TryRemove(task.Id, out task));
-        }
-
-        private string GetInstanceID()
-        {
-            return AWSMetaDataReader.GetInstanceID();
         }
     }
 

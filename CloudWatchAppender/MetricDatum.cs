@@ -253,7 +253,6 @@ namespace CloudWatchAppender
                                                         "Dimension",
                                                         "Dimensions",
                                                         "NameSpace",
-                                                        "Name",
                                                         "MetricName",
                                                         "Timestamp"
                                                     };

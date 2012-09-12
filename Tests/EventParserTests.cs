@@ -144,7 +144,7 @@ namespace CloudWatchAppender.Tests
         {
             var parser = new EventMessageParser("A tick! Name: NewName NameSpace: NewNameSpace")
                              {
-                                 DefaultName = "DefaultName",
+                                 DefaultMetricName = "DefaultMetricName",
                                  DefaultNameSpace = "DefaultNameSpace"
                              };
             parser.Parse();
@@ -152,7 +152,7 @@ namespace CloudWatchAppender.Tests
             var passes = 0;
             foreach (var r in parser)
             {
-                Assert.AreEqual("DefaultName", r.MetricData[0].MetricName);
+                Assert.AreEqual("DefaultMetricName", r.MetricData[0].MetricName);
                 Assert.AreEqual("DefaultNameSpace", r.Namespace);
                 passes++;
             }

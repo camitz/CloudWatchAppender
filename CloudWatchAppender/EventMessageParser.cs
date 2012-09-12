@@ -17,7 +17,7 @@ namespace CloudWatchAppender
         private readonly List<MetricDatum> _data = new List<MetricDatum>();
         private MetricDatum _currentDatum;
 
-        public string DefaultName { get; set; }
+        public string DefaultMetricName { get; set; }
         public double? DefaultValue { get; set; }
         public DateTimeOffset? DefaultTimestamp { get; set; }
         public string DefaultUnit { get; set; }
@@ -66,7 +66,7 @@ namespace CloudWatchAppender
                 //Set overrides if not already set.
 
                 if (string.IsNullOrEmpty(datum.Name))
-                    datum.Name = DefaultName ?? "CloudWatchAppender";
+                    datum.Name = DefaultMetricName ?? "CloudWatchAppender";
 
                 if (string.IsNullOrEmpty(datum.NameSpace))
                     datum.NameSpace = DefaultNameSpace ?? "CloudWatchAppender";
@@ -268,9 +268,8 @@ namespace CloudWatchAppender
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.sValue : p.sValue;
                     break;
 
-                case "Name":
                 case "MetricName":
-                    _currentDatum.Name = _defaultsOverridePattern ? DefaultName ?? p.sValue : p.sValue;
+                    _currentDatum.Name = _defaultsOverridePattern ? DefaultMetricName ?? p.sValue : p.sValue;
                     break;
 
                 case "NameSpace":

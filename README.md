@@ -14,7 +14,7 @@ To add CloudWatchAppender to your Visual Studio (>2010) project, run the followi
 
 # Configuration
 
-CloudWatchAppender is easy to configure in web.config or app.config. If you've been using log4net you, probably already have the section and some of the elements defined. The following will divert all your logs events to CloudWatch. It will send a value of 1 with unit "Count". The default MetricName and Namespace is "CloudWatchAppender" both.
+CloudWatchAppender is easy to configure in web.config or app.config. If you've been using log4net you, probably already have the section and some of the elements defined. The following will divert all your logs events to CloudWatch. It will send a value of 1 with unit "Count". The default metric name as well as namespace is "CloudWatchAppender".
 
     <log4net>
         <appender name="CloudWatchAppender" type="CloudwatchAppender.CloudwatchAppender, CloudwatchAppender">
@@ -39,13 +39,13 @@ CloudWatchAppender can do more than this. Pretty much anything you can post to C
 
 To change the default behavior, you can either provide the info in the config-file or as part of the log event message. The former is cleaner in that the code can remain agnostic to the log event endpoint. The latter provides more power and granularity over what is posted. Other appenders that you might have added will the simply output the data as if it were any old message.
 
-**Warning** Make sure you read about CloudWatch [pricing](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/DeveloperGuide/cloudwatch_concepts.html) so you'll not get any surprises. Particularly, CloudWatch treats each combination of name, namespace and dimension as a different custom metric. You have just 10 free custom metrics. After that they start charging you.
+**Warning** Make sure you read about CloudWatch [pricing](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/DeveloperGuide/cloudwatch_concepts.html) so you'll not get any surprises. Particularly, CloudWatch treats each combination of metric name, namespace and dimension as a different custom metric. You have just 10 free custom metrics. After that they start charging you.
 
 ## Config-file
 
 **Note!** *Changes as of version 1.3:* Before crendentials and endpoint was provided in AppSettings, a small but vital element that I had overlooked and hence failed to implement properly or even document. It is essential that you put it in your config file. AppSettings still work, of course, for backwards compatibility. As an EndPoint you can provide both the system name as below, or the full url, for instance https://monitoring.eu-west-1.amazonaws.com.
 
-The following example will post a metric with [unit](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html) Milliseconds and the value 20 for all loggers using this appender. The metric name will be ProcessingTime and the namespace MyPadd/Process.
+The following example will post a metric with [unit](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html) Milliseconds and the value 20 for all loggers using this appender. The metric name will be ProcessingTime and the namespace MyApp/Process.
 
     <appender name="CloudWatchAppender" type="CloudwatchAppender.CloudwatchAppender, CloudwatchAppender">
 		<accessKey value="YourAWSAccessKey" />
@@ -54,7 +54,7 @@ The following example will post a metric with [unit](http://docs.amazonwebservic
 
         <unit value="Milliseconds"/>
         <value value="20"/>
-        <name value="ProcessingTime"/>
+        <metricname value="ProcessingTime"/>
         <namespace value="MyApp/Processor"/>
 
         <dimension0 type="Amazon.CloudWatch.Model.Dimension">
@@ -70,7 +70,7 @@ Notice also we've provided the first of ten possible ["dimensions"](#dimensions)
 The exact same can be accomplished by using the ["PatternLayout"](#patternlayout) we provide and using the format rules outlined below to format the input string to the appender.
 
       <layout type="CloudWatchAppender.PatternLayout, CloudWatchAppender">
-        <conversionPattern value="%message Value: 20 Milliseconds, Name: ProcessingTime, NameSpace: MyApp/Processor, Dimension0: InstanceID: %instanceid"/>
+        <conversionPattern value="%message Value: 20 Milliseconds, MetricName: ProcessingTime, NameSpace: MyApp/Processor, Dimension0: InstanceID: %instanceid"/>
       </layout>
 
 ## Event log message
@@ -78,8 +78,8 @@ The exact same can be accomplished by using the ["PatternLayout"](#patternlayout
 If you pass a string to the logger like this
 
     ILog log = LogManager.GetLogger(typeof(MyClass));
-    log.Info("This part will be ignored by CloudWatchAppender. Value: 20 Milliseconds, Name: ProcessingTime " +
-			 "this will be ignored too NameSpace: MyApp/Processor, Dimension0: InstanceID: %instanceid");
+    log.Info("These seven part will be ignored by CloudWatchAppender. Value: 20 Milliseconds, MetricName: ProcessingTime " +
+			 "this seven word will be ignored too NameSpace: MyApp/Processor, Dimension0: InstanceID: %instanceid");
 
 most of it will be ignored by the CloudWatchAppender. Of course, if there are other appenders listening on the logger, they will handle the string in their way. Most will output the entire string to whatever end point they are designed for.
 
@@ -212,9 +212,9 @@ Typically you'd create the logger like so.
 
     ILog log = LogManager.GetLogger(typeof(MyClass));
 
-If the namespace is MyApp.MyNamespace, then *Name: %logger{2}* in your pattern would post "MyNamespace.MyClass" as the metric name to CloudWatch. The following may be more suitable for your needs.
+If the namespace is MyApp.MyNamespace, then *MetricName: %logger{2}* in your pattern would post "MyNamespace.MyClass" as the metric name to CloudWatch. The following may be more suitable for your needs.
 
-    Name: %logger{1}, NameSpace: %logger{-1}
+    MetricName: %logger{1}, NameSpace: %logger{-1}
 
 The negative precision specifier removes the last word from the name. The metric name will now by MyClass and the namespace will be MyApp.MyNamespace.
 
@@ -263,7 +263,6 @@ TODO
 * Dimension
 * Dimensions
 * NameSpace
-* Name
 * MetricName
 * Timestamp
 

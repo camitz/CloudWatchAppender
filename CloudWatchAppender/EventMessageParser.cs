@@ -74,6 +74,9 @@ namespace CloudWatchAppender
                 if (string.IsNullOrEmpty(datum.Unit))
                     datum.Unit = DefaultUnit ?? "Count";
 
+                //if (!datum.Timestamp.HasValue)
+                //    datum.Timestamp = DateTimeOffset.UtcNow;
+
                 if (!datum.ValueMode && !datum.StatisticsMode)
                     datum.ValueMode = true;
 

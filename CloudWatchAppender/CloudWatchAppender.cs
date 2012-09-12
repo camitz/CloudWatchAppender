@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using Amazon.Runtime;
 using log4net.Appender;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
@@ -75,6 +76,9 @@ namespace CloudWatchAppender
             if (string.IsNullOrEmpty(Secret) && ConfigurationManager.AppSettings["AWSSecretKey"] != null)
                 Secret = ConfigurationManager.AppSettings["AWSSecretKey"];
 
+            try
+            {
+
             if (!string.IsNullOrEmpty(EndPoint))
             {
                 if (EndPoint.StartsWith("http"))
@@ -88,6 +92,10 @@ namespace CloudWatchAppender
                     _client = AWSClientFactory.CreateAmazonCloudWatchClient(regionEndpoint);
                 }
             }
+            }
+            catch (AmazonServiceException)
+            {
+            }
 
             if (!string.IsNullOrEmpty(AccessKey))
                 if (regionEndpoint != null)
@@ -96,6 +104,10 @@ namespace CloudWatchAppender
                     _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret, cloudWatchConfig);
                 else
                     _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret);
+
+            //Debug
+            var metricDatum = new Amazon.CloudWatch.Model.MetricDatum().WithMetricName("CloudWatchAppender").WithValue(1).WithUnit("Count");
+            //_client.PutMetricData(new PutMetricDataRequest().WithNamespace("CloudWatchAppender").WithMetricData(metricDatum));
         }
 
 

@@ -160,9 +160,19 @@ namespace CloudWatchAppender
             }
         }
 
-        public DateTimeOffset Timestamp
+        public DateTimeOffset? Timestamp
         {
-            get { return _datum.Timestamp; }
+            get
+            {
+                try
+                {
+                    return _datum.Timestamp;
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
             set
             {
                 if (_timestamp.HasValue)
@@ -170,7 +180,7 @@ namespace CloudWatchAppender
 
                 _timestamp = value;
 
-                _datum.Timestamp = value.UtcDateTime;
+                _datum.Timestamp = value.Value.UtcDateTime;
             }
         }
 
@@ -184,7 +194,7 @@ namespace CloudWatchAppender
             get { return _datum; }
         }
 
-        public List<Dimension> Dimensions 
+        public List<Dimension> Dimensions
         {
             get { return AWSDatum.Dimensions; }
             set

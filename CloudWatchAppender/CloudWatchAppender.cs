@@ -137,6 +137,8 @@ namespace CloudWatchAppender
 
         protected override void Append(LoggingEvent loggingEvent)
         {
+            System.Diagnostics.Debug.WriteLine("Appending");
+
             if (Layout == null)
                 Layout = new PatternLayout("%message");
 
@@ -145,6 +147,8 @@ namespace CloudWatchAppender
             var patternParser = new PatternParser(loggingEvent);
 
             renderedString = patternParser.Parse(renderedString);
+
+            System.Diagnostics.Debug.WriteLine(string.Format("RenderedString: {0}", renderedString));
 
             var parsedDimensions =
                 _dimensions
@@ -192,14 +196,14 @@ namespace CloudWatchAppender
                         var tmpCulture = Thread.CurrentThread.CurrentCulture;
                         Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
 
+                        System.Diagnostics.Debug.WriteLine("Sending");
                         _client.PutMetricData(r);
 
                         Thread.CurrentThread.CurrentCulture = tmpCulture;
                     }
                     catch (AmazonCloudWatchException e)
                     {
-                        //Don't log this exception! ;)
-                        Console.WriteLine(e.Message);
+                        System.Diagnostics.Debug.WriteLine(e.Message);
 
                         throw new CloudWatchAppenderException("CloudWatchAppender encountered an error while submitting to CloudWatch.", e);
                     }

@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch.Model;
+using log4net;
 
 namespace CloudWatchAppender
 {
@@ -57,6 +59,11 @@ namespace CloudWatchAppender
             }
 
             SetDefaults();
+
+            foreach (var datum in _data)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Datum: {0}", datum));
+            }
         }
 
         private void SetDefaults()

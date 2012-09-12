@@ -283,6 +283,29 @@ Check out the following blog posts that seeded the project.
 
 # Releases
 
+## Upcoming breaking release 2.0 <font size="2">(beta) **Planned for 2012-09-13** </font>
+
+### Breaking changes
+
+* Due to confusion with the appender Name property, the alias Name for MetricName will is longer be supported.
+
+### Bug fixes
+
+* Patterns in dimension values weren't properly parsed.
+
+## 1.3.2 <font size="2">(beta) 2012-09-12</font>
+
+### Bug fixes
+
+* Backward compatibility (credentials in AppSettings) was broken in 1.3.1.
+
+## 1.3.1 <font size="2">(beta) 2012-09-12</font>
+
+### Bug fixes
+
+* A layout was required in config.
+* Default timestamp didn't work. Prevented requests.
+
 ## 1.3 <font size="2">(beta) 2012-09-11</font>
 
 ### New features 

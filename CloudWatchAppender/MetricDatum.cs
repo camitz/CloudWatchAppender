@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Amazon.CloudWatch.Model;
 
@@ -317,6 +318,13 @@ namespace CloudWatchAppender
             return this;
         }
 
+        public override string ToString()
+        {
+            var s = new StringWriter();
+            new MetricDatumRenderer().RenderObject(null, this, s);
+
+            return "MetricDatum, " + s;
+        }
     }
 
     public class MetricDatumFilledException : InvalidOperationException

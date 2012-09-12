@@ -125,9 +125,14 @@ namespace CloudWatchAppender
 
         protected override void Append(LoggingEvent loggingEvent)
         {
+            if (Layout == null)
+                Layout = new PatternLayout("%message");
+
             var renderedString = RenderLoggingEvent(loggingEvent);
 
             var patternParser = new PatternParser(loggingEvent);
+
+            renderedString = patternParser.Parse(renderedString);
 
             var parser = new EventMessageParser(renderedString, ConfigOverrides)
                         {

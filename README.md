@@ -20,7 +20,7 @@ CloudWatchAppender is easy to configure in web.config or app.config. If you've b
         <appender name="CloudWatchAppender" type="CloudwatchAppender.CloudwatchAppender, CloudwatchAppender">
 			<accessKey value="YourAWSAccessKey" />
 			<secret value="YourAWSSecret" />
-			<endPoint value="eu-west-1" />
+			<endPoint value="url or system name like: eu-west-1" />
         </appender>
 
 

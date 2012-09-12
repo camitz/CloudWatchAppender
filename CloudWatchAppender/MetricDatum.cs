@@ -36,7 +36,7 @@ namespace CloudWatchAppender
                 if (StatisticsMode)
                     throw new MetricDatumFilledException("Value cannot be set since we're in statistics mode.");
 
-                ValueMode = true;
+                _valueMode = true;
                 _value = value;
                 _datum.Value = value;
             }
@@ -57,7 +57,7 @@ namespace CloudWatchAppender
             }
         }
 
-        public string Name
+        public string MetricName
         {
             get { return _datum.MetricName; }
             set
@@ -94,6 +94,7 @@ namespace CloudWatchAppender
 
                 _max = value;
 
+                _statisticsMode = true;
                 if (_datum.StatisticValues == null)
                     _datum.StatisticValues = new StatisticSet();
 
@@ -114,6 +115,7 @@ namespace CloudWatchAppender
 
                 _min = value;
 
+                _statisticsMode = true;
                 if (_datum.StatisticValues == null)
                     _datum.StatisticValues = new StatisticSet();
 
@@ -134,6 +136,7 @@ namespace CloudWatchAppender
 
                 _sum = value;
 
+                _statisticsMode = true;
                 if (_datum.StatisticValues == null)
                     _datum.StatisticValues = new StatisticSet();
 
@@ -154,6 +157,7 @@ namespace CloudWatchAppender
 
                 _sampleCount = value;
 
+                _statisticsMode = true;
                 if (_datum.StatisticValues == null)
                     _datum.StatisticValues = new StatisticSet();
 
@@ -215,7 +219,7 @@ namespace CloudWatchAppender
         public bool ValueMode
         {
             get { return _valueMode; }
-            set { _valueMode = value; }
+            set { throw new NotImplementedException(); }
         }
 
         public static readonly string[] SupportedUnits = {

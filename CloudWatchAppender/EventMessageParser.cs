@@ -72,8 +72,8 @@ namespace CloudWatchAppender
             {
                 //Set overrides if not already set.
 
-                if (string.IsNullOrEmpty(datum.Name))
-                    datum.Name = DefaultMetricName ?? "CloudWatchAppender";
+                if (string.IsNullOrEmpty(datum.MetricName))
+                    datum.MetricName = DefaultMetricName ?? "CloudWatchAppender";
 
                 if (string.IsNullOrEmpty(datum.NameSpace))
                     datum.NameSpace = DefaultNameSpace ?? "CloudWatchAppender";
@@ -276,7 +276,7 @@ namespace CloudWatchAppender
                     break;
 
                 case "MetricName":
-                    _currentDatum.Name = _defaultsOverridePattern ? DefaultMetricName ?? p.sValue : p.sValue;
+                    _currentDatum.MetricName = _defaultsOverridePattern ? DefaultMetricName ?? p.sValue : p.sValue;
                     break;
 
                 case "NameSpace":

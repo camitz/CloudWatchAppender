@@ -150,7 +150,7 @@ namespace CloudWatchAppender
                 _dimensions
                     .Select(x => new Dimension {Name = x.Key, Value = patternParser.Parse(x.Value.Value)}).
                     ToDictionary(x => x.Name, y => y);
-
+             
             var parser = new EventMessageParser(renderedString, ConfigOverrides)
                         {
                             DefaultMetricName = string.IsNullOrEmpty(MetricName)

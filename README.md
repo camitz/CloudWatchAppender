@@ -283,7 +283,7 @@ Check out the following blog posts that seeded the project.
 
 # Releases
 
-## Upcoming breaking release 2.0 <font size="2">(beta) **Planned for 2012-09-13** </font>
+## 2.0.0 <font size="2">(beta) 2012-09-13 </font>
 
 ### Breaking changes
 

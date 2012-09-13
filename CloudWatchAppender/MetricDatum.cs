@@ -219,7 +219,7 @@ namespace CloudWatchAppender
         public bool ValueMode
         {
             get { return _valueMode; }
-            set { throw new NotImplementedException(); }
+            set { _valueMode = value; }
         }
 
         public static readonly string[] SupportedUnits = {

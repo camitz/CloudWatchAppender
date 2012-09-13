@@ -126,7 +126,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithMetricName()
         {
-            var parser = new EventMessageParser("A tick! Name: NewName");
+            var parser = new EventMessageParser("A tick! MetricName: NewName");
             parser.Parse();
 
             var passes = 0;

@@ -31,9 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK, Version=1.5.2.0, Culture=neutral, PublicKeyToken=cd2d24cd2bace800, processorArchitecture=MSIL">
+    <Reference Include="AWSSDK, Version=1.5.2.2, Culture=neutral, PublicKeyToken=cd2d24cd2bace800, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CloudWatchAppender\packages\AWSSDK.1.5.2.0\lib\AWSSDK.dll</HintPath>
+      <HintPath>..\CloudWatchAppender\packages\AWSSDK.1.5.2.2\lib\AWSSDK.dll</HintPath>
     </Reference>
     <Reference Include="Gallio, Version=3.3.0.0, Culture=neutral, PublicKeyToken=eb9cfa67ee6ab36e, processorArchitecture=MSIL">
       <HintPath>..\CloudWatchAppender\packages\mbunit.3.3.454.0\lib\net40\Gallio.dll</HintPath>

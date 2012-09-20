@@ -1,10 +1,13 @@
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using log4net.Core;
+
+[assembly: InternalsVisibleTo("CloudWatchAppender.Tests")]
 
 namespace CloudWatchAppender
 {
-    public class LoggerPatternConverter : NamedPatternConverter
+    internal class LoggerPatternConverter : NamedPatternConverter
     {
         protected override string GetFullyQualifiedName(LoggingEvent loggingEvent)
         {

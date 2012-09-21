@@ -229,28 +229,6 @@ namespace CloudWatchAppender
         }
     }
 
-    public class EventCap
-    {
-        private int _max;
-
-        public EventCap(int max)
-        {
-            _max = max;
-        }
-
-        public EventCap()
-        {
-        }
-
-        public bool Request(DateTime timeStamp)
-        {
-            if (_max <= 0)
-                return true;
-
-            return true;
-        }
-    }
-
     internal class CloudWatchAppenderException : Exception
     {
         public CloudWatchAppenderException(string msg, Exception innerException)

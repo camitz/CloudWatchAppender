@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace CloudWatchAppender
 {
@@ -70,9 +71,16 @@ namespace CloudWatchAppender
                     var uri = serviceUrl + _metaDataKeys[key];
                     Debug.WriteLine(string.Format("Requesting {0}", uri));
 
-                    var responseStream = WebRequest.Create(uri)
-                        .GetResponse()
-                        .GetResponseStream();
+                    Stream responseStream = null;
+                    var task =
+                        Task.Factory.StartNew(() =>
+                                                  {
+                                                      responseStream = WebRequest.Create(uri)
+                                                          .GetResponse()
+                                                          .GetResponseStream();
+                                                  });
+                    
+                    task.Wait(500);
 
                     if (responseStream == null)
                         return null;

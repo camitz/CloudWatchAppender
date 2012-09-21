@@ -44,6 +44,11 @@ namespace CloudWatchAppender
             _dimensions[value.Name] = value;
         }
 
+        public int MaxRequestsPerSecond
+        {
+            set { _eventCap = new EventCap(value); }
+        }
+
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
 
         private AmazonCloudWatch _client;
@@ -139,6 +144,12 @@ namespace CloudWatchAppender
         {
             System.Diagnostics.Debug.WriteLine("Appending");
 
+            if (_eventCap.Request(loggingEvent.TimeStamp))
+            {
+                System.Diagnostics.Debug.WriteLine("Appending denied due to event saturation.");
+                return;
+            }
+
             if (Layout == null)
                 Layout = new PatternLayout("%message");
 
@@ -183,6 +194,8 @@ namespace CloudWatchAppender
                 SendItOff(r);
         }
 
+        private EventCap _eventCap = new EventCap();
+
         private void SendItOff(PutMetricDataRequest r)
         {
             if (_client == null)
@@ -213,6 +226,28 @@ namespace CloudWatchAppender
                 _tasks.TryAdd(task.Id, task);
 
             task.ContinueWith(t => _tasks.TryRemove(task.Id, out task));
+        }
+    }
+
+    public class EventCap
+    {
+        private int _max;
+
+        public EventCap(int max)
+        {
+            _max = max;
+        }
+
+        public EventCap()
+        {
+        }
+
+        public bool Request(DateTime timeStamp)
+        {
+            if (_max <= 0)
+                return true;
+
+            return true;
         }
     }
 

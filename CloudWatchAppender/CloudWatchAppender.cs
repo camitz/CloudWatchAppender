@@ -46,7 +46,7 @@ namespace CloudWatchAppender
 
         public int MaxRequestsPerSecond
         {
-            set { _eventCap = new EventCap(value); }
+            set { _eventRateLimiter = new EventRateLimiter(value); }
         }
 
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
@@ -144,7 +144,7 @@ namespace CloudWatchAppender
         {
             System.Diagnostics.Debug.WriteLine("Appending");
 
-            if (_eventCap.Request(loggingEvent.TimeStamp))
+            if (_eventRateLimiter.Request(loggingEvent.TimeStamp))
             {
                 System.Diagnostics.Debug.WriteLine("Appending denied due to event saturation.");
                 return;
@@ -194,7 +194,7 @@ namespace CloudWatchAppender
                 SendItOff(r);
         }
 
-        private EventCap _eventCap = new EventCap();
+        private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
 
         private void SendItOff(PutMetricDataRequest r)
         {

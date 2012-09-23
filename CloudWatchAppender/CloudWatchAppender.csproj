@@ -51,7 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventCap.cs" />
+    <Compile Include="EventRateLimiter.cs" />
     <Compile Include="InstanceMetaDataReader.cs" />
     <Compile Include="CloudWatchAppender.cs" />
     <Compile Include="InstanceMetaDataPatternConverter.cs" />

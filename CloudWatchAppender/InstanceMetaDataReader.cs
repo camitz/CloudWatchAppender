@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CloudWatchAppender
@@ -53,6 +54,8 @@ namespace CloudWatchAppender
 
         private static Dictionary<string, string> _cachedValues = new Dictionary<string, string>();
 
+        private static Dictionary<string, Task> _pendingTasks = new Dictionary<string, Task>();
+
         [Obsolete]
         public static string GetInstanceID()
         {
@@ -66,30 +69,71 @@ namespace CloudWatchAppender
 
             try
             {
+                if (_pendingTasks.ContainsKey(key))
+                {
+                    Debug.WriteLine(string.Format("Waiting for pending {0}", key));
+                    return
+                        _pendingTasks[key].ContinueWith(x =>
+                                                            {
+                                                                Debug.WriteLine(string.Format("Pending {0} completed", key));
+
+                                                                if (_cachedValues.ContainsKey(key))
+                                                                    return _cachedValues[key];
+
+                                                                return null;
+                                                            })
+                                                            .Result;
+                }
+
                 if (!_cachedValues.ContainsKey(key))
                 {
                     var uri = serviceUrl + _metaDataKeys[key];
                     Debug.WriteLine(string.Format("Requesting {0}", uri));
 
+                    var tokenSource2 = new CancellationTokenSource();
+                    CancellationToken ct = tokenSource2.Token;
+
+
                     Stream responseStream = null;
-                    var task =
+
+                    var task1 =
+                    _pendingTasks[key] =
                         Task.Factory.StartNew(() =>
                                                   {
-                                                      responseStream = WebRequest.Create(uri)
-                                                          .GetResponse()
-                                                          .GetResponseStream();
+                                                      var task =
+                                                          Task.Factory.StartNew(() =>
+                                                                                    {
+                                                                                        responseStream =
+                                                                                            WebRequest.Create(uri)
+                                                                                                .GetResponse()
+                                                                                                .GetResponseStream();
+                                                                                    }, ct);
+
+                                                      if (!task.Wait(500))
+                                                          tokenSource2.Cancel();
+
+                                                      if (responseStream == null)
+                                                          _cachedValues[key] = null;
+                                                      else
+                                                          _cachedValues[key] = new StreamReader(
+                                                              responseStream, true)
+                                                              .ReadToEnd();
+
                                                   });
-                    
-                    task.Wait(500);
 
-                    if (responseStream == null)
-                        return null;
+                    return task1
+                            .ContinueWith(x =>
+                                              {
+                                                  Debug.WriteLine(string.Format("Got {0}", key));
+                                                  _pendingTasks.Remove(key);
+                                                  return _cachedValues[key];
+                                              })
+                            .Result;
 
-                    _cachedValues[key] = new StreamReader(
-                        responseStream, true)
-                        .ReadToEnd();
+
                 }
 
+                Debug.WriteLine(string.Format("Returning cached {0}", key));
                 return _cachedValues[key];
             }
             catch (WebException)

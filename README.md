@@ -57,20 +57,24 @@ The following example will post a metric with [unit](http://docs.amazonwebservic
         <metricname value="ProcessingTime"/>
         <namespace value="MyApp/Processor"/>
 
+	    <rateLimit value="20"/>
+
         <dimension0 type="Amazon.CloudWatch.Model.Dimension">
             <name value="InstanceID"/>
-            <value value="%instanceid"/>
+            <value value="%metadata{instanceid}"/>
         </dimension0>
     </appender>
 
 This normally goes in your app.config or web.config. log4net allows any old xml file to be brought in and this is of course fine for CloudWatchAppender too.
 
-Notice also we've provided the first of ten possible ["dimensions"](#dimensions). You can specify any string you like for name and value of the dimension. Above, however, we're using a special token for the value, "%instanceid". This will be translated to the EC2 instance ID, see [Instance ID](#insanceid) below. In fact, any token recognized by any regular PatternLayout conversion [patterns](http://logging.apache.org/log4net/release/sdk/log4net.Layout.PatternLayout.html), for instance %logger, will be translated as such.
+Notice also we've provided the first of ten possible ["dimensions"](#dimensions). You can specify any string you like for name and value of the dimension. Above, however, we're using a special token for the value, "%metadata{instanceid}". This will be translated to the EC2 instance ID, see [Instance Metadata](#metadata) below. In fact, any token recognized by any regular PatternLayout conversion [patterns](http://logging.apache.org/log4net/release/sdk/log4net.Layout.PatternLayout.html), for instance %logger, will be translated as such.
+
+The *rateLimit* limits the number of requests sent to CloudWatch to 20 per second. 
 
 The exact same can be accomplished by using the ["PatternLayout"](#patternlayout) we provide and using the format rules outlined below to format the input string to the appender.
 
       <layout type="CloudWatchAppender.PatternLayout, CloudWatchAppender">
-        <conversionPattern value="%message Value: 20 Milliseconds, MetricName: ProcessingTime, NameSpace: MyApp/Processor, Dimension0: InstanceID: %instanceid"/>
+           <conversionPattern value="%message Value: 20 Milliseconds, MetricName: ProcessingTime, NameSpace: MyApp/Processor, Dimension0: InstanceID: %metadata{instanceid}"/>
       </layout>
 
 ## Event log message
@@ -78,8 +82,8 @@ The exact same can be accomplished by using the ["PatternLayout"](#patternlayout
 If you pass a string to the logger like this
 
     ILog log = LogManager.GetLogger(typeof(MyClass));
-    log.Info("These seven part will be ignored by CloudWatchAppender. Value: 20 Milliseconds, MetricName: ProcessingTime " +
-			 "this seven word will be ignored too NameSpace: MyApp/Processor, Dimension0: InstanceID: %instanceid");
+    log.Info("These eight words will be ignored by CloudWatchAppender. Value: 20 Milliseconds, MetricName: ProcessingTime " +
+			 "these seven words will be ignored too NameSpace: MyApp/Processor, Dimension0: InstanceID: %metadata{instanceid}");
 
 most of it will be ignored by the CloudWatchAppender. Of course, if there are other appenders listening on the logger, they will handle the string in their way. Most will output the entire string to whatever end point they are designed for.
 
@@ -168,7 +172,7 @@ In your config file under the appender element you can add dimensions simply by 
 
       <dimension type="Amazon.CloudWatch.Model.Dimension">
         <name value="InstanceID"/>
-        <value value="%instanceid"/>
+        <value value="%metadata{instanceid}"/>
       </dimension>
 
       <dimension type="Amazon.CloudWatch.Model.Dimension">
@@ -176,15 +180,15 @@ In your config file under the appender element you can add dimensions simply by 
         <value value="Apple"/>
       </dimension>
 
-Again, note the pattern [%instanceid](#instanceid).
+Again, note the [metadata](#metadat) pattern.
 
 The corresponding equivalent pattern/event log message would be
 
-    "Dimension: InstanceID: %instanceid, Dimension: Fruit: Apple" //(%instanceid only parsed if in a layout conversion pattern)
+    "Dimension: InstanceID: %metadata{instanceid}, Dimension: Fruit: Apple" //(%metadata{instanceid} only parsed if in a layout conversion pattern)
 
 or simply
 
-    "Dimensions: (InstanceID: %instanceid, Fruit: Apple)" //(%instanceid only parsed if in a layout conversion pattern)
+    "Dimensions: (InstanceID: %metadata{instanceid}, Fruit: Apple)" //(%metadata{instanceid} only parsed if in a layout conversion pattern)
 
 Deppending on the setting of [ConfigOverrides](#configoverrides) individual dimensions compete according to name (key). Internally in CloudWatchAppender the dimensions are stores as a dictionary.
 
@@ -194,13 +198,35 @@ The CloudWatchAppender supports layouts as expected. The most commonly used by f
 
 The CloudWatchAppender PatternLayout subclasses PatternLayout so all features should work as expected. Plus there are a few extran functions. Any [patterns](http://logging.apache.org/log4net/release/sdk/log4net.Layout.PatternLayout.html) supported by PatternLayout is headed. Some of them, however, will be less sensible to use in this context. Firstly, some of them take to long and secondly, some will not make sense to CloudWatch or the appender. 
 
-*Most conversion patterns have yet to be tested.*
+## <a id="metadata"></a> Instance metadata
 
-## <a id="instanceid"></a> The instance ID converter
+The pattern %metadata{*key*} anywhere in your conversion pattern will be replaced by the instance metadata indicated by the supplied key of the instance on which the application is running. This information is retrieved via an asynchronous AWS metadata API call at first use and then cached in a static field.
 
-The pattern %instanceid anywhere in your conversion pattern will be replaced by the intance id of the EC2 instance on which the application is running. This information is retrieved via an AWS metadata API (synchronous) call at first use and then cached in a static field.
+For example, %metadata{instanceid} will provide the instance id and may be useful as a dimension.
 
-Providing the same token, or any other supported token for that matter, as a parameter to the appender in the config-file is also possible and works as expected.
+Providing the same token, or any other supported token for that matter, in the config-file is also possible and works as expected.
+
+Supported keys are:
+
+* amiid (ami-id)
+* amilaunchindex (ami-launch-index)
+* amimanifestpath (ami-manifest-path)
+* instanceid (instance-id)
+* instancetype (instance-type)
+* kernelid (kernel-id)
+* localhostname (local-hostname)
+* localipv4 (local-ipv4)
+* mac (mac)
+* availabilityzone (placement/availability-zone)
+* productcodes (product-codes)
+* publichostname (public-hostname)
+* publicipv4 (public-ipv4)
+* publickeys (public-keys)
+* reservationid (reservation-i)
+
+See [Instance Metadata](http://docs.amazonwebservices.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html).
+
+The old patter %instanceid is deprecated, but still works.
 
 ## Augmented %logger functionality
 
@@ -219,6 +245,16 @@ If the namespace is MyApp.MyNamespace, then *MetricName: %logger{2}* in your pat
 The negative precision specifier removes the last word from the name. The metric name will now by MyClass and the namespace will be MyApp.MyNamespace.
 
 Dots (.) are converted to slashes (/) before sending. This is true of all strings passed as namespace anywhere.
+
+## RateLimit
+
+Placing the following in the appender config, inhibits the number of request sent to CloudWatch.
+
+	<rateLimit value="20"/>
+
+A maximum of 20 per second is sent. This is useful for logging errors which could suddenly spike. The default is not to limit, but it is recommended you do.
+
+Any events exceeding the rate limit will not be processed by the appender. Other appenders my still process the event, of course.
 
 ## <a id="conflicts"></a> Handling conflicting input
 
@@ -282,6 +318,14 @@ Check out the following blog posts that seeded the project.
 [Improving the CloudWatch Appender](http://blog.simpletask.se/improving-cloudwatch-appender)
 
 # Releases
+
+## 2.1.0 <font size="2">(beta) 2012-09-24 </font>
+
+### New features
+
+* Rate limit (rateLimit)
+* More instance metadata options (former instanceid pattern deprecated)
+* Instance metadata reader async
 
 ## 2.0.1 <font size="2">(beta) 2012-09-13 </font>
 

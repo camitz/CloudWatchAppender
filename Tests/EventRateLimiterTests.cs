@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
-using Amazon.CloudWatch.Model;
 using MbUnit.Framework;
 
 namespace CloudWatchAppender.Tests
 {
     [TestFixture]
-    public class EventCapTests
+    public class EventRateLimiterTests
     {
 
         [TearDown]

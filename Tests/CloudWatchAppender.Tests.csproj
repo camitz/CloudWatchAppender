@@ -60,7 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventCapTests.cs" />
+    <Compile Include="EventRateLimiterTests.cs" />
     <Compile Include="EventParserTests.cs" />
     <Compile Include="MetricDatumRendererTests.cs" />
     <Compile Include="PatternConverterTests.cs" />

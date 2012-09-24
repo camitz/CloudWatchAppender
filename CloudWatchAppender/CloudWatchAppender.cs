@@ -44,7 +44,7 @@ namespace CloudWatchAppender
             _dimensions[value.Name] = value;
         }
 
-        public int MaxRequestsPerSecond
+        public int RateLimit
         {
             set { _eventRateLimiter = new EventRateLimiter(value); }
         }
@@ -144,7 +144,7 @@ namespace CloudWatchAppender
         {
             System.Diagnostics.Debug.WriteLine("Appending");
 
-            if (_eventRateLimiter.Request(loggingEvent.TimeStamp))
+            if (!_eventRateLimiter.Request(loggingEvent.TimeStamp))
             {
                 System.Diagnostics.Debug.WriteLine("Appending denied due to event saturation.");
                 return;

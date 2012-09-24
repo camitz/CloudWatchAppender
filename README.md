@@ -226,7 +226,9 @@ Supported keys are:
 
 See [Instance Metadata](http://docs.amazonwebservices.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html).
 
-The old patter %instanceid is deprecated, but still works.
+The old pattern %instanceid is deprecated, but still works.
+
+If you download the source code there is a tiny utility that tests all these keys on your system.
 
 ## Augmented %logger functionality
 

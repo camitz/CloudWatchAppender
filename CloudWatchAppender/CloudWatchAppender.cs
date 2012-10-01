@@ -221,7 +221,7 @@ namespace CloudWatchAppender
                         System.Diagnostics.Debug.WriteLine(e.Message);
 
                     }
-                });
+                }); 
 
             if (!task.IsCompleted)
                 _tasks.TryAdd(task.Id, task);

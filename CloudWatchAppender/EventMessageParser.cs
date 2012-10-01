@@ -326,7 +326,7 @@ namespace CloudWatchAppender
 
             _currentDatum = new MetricDatum
                                 {
-                                    Dimensions = dimensions.Values.ToList(),
+                                    Dimensions = dimensions.Values.Where(x => !string.IsNullOrEmpty(x.Value)).ToList(),
                                     Unit = DefaultUnit
                                 };
 

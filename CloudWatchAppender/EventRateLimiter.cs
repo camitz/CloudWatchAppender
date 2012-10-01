@@ -21,6 +21,9 @@ namespace CloudWatchAppender
 
         public bool Request(DateTime timeStamp)
         {
+            if (_maxEventsPerSecond == 0)
+                return true;
+
             var timePassed = timeStamp - _timeBefore;
             _timeBefore = timeStamp;
 

@@ -33,7 +33,7 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-        public void StringWithSingleValueAndUnit_Ocerrides()
+        public void StringWithSingleValueAndUnit_Overrides()
         {
             var parser = new EventMessageParser("A tick! Value: 3.0 Kilobytes/Second")
                              {
@@ -250,6 +250,27 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
+        public void StringWithDimensionsList_Empties()
+        {
+            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: , Fruit: ) Value: 4.5 Seconds");
+            parser.Parse();
+
+            var passes = 0;
+            foreach (var r in parser)
+            {
+                Assert.AreEqual(0, r.MetricData[0].Dimensions.Count);
+
+                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(4.5, r.MetricData[0].Value);
+
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+        }
+
+
+        [Test]
         public void StringWithDimensionsList_Overrides()
         {
             var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: apple) Value: 4.5 Seconds")
@@ -287,6 +308,39 @@ namespace CloudWatchAppender.Tests
 
             foreach (var r in parser)
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
+        }
+
+        [Test]
+        public void StringWithDimensionsList_Overrides_Empties()
+        {
+            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: , Nuts: walnuts) Value: 4.5 Seconds")
+                             {
+                                 DefaultDimensions = new Dictionary<string, Dimension>
+                                                         {
+                                                             {"InstanceID", new Dimension{Name="InstanceID", Value = "asdfg"}},
+                                                             {"Cake", new Dimension{Name="Cake", Value = "chocolate"}},
+                                                             {"Nuts", new Dimension{Name="Nuts", Value = ""}}
+                                                         }
+                             };
+            parser.Parse();
+
+            var passes = 0;
+            foreach (var r in parser)
+            {
+                Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
+                Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[0].Name);
+                Assert.AreEqual("asdfg", r.MetricData[0].Dimensions[0].Value);
+                Assert.AreEqual("Cake", r.MetricData[0].Dimensions[1].Name);
+                Assert.AreEqual("chocolate", r.MetricData[0].Dimensions[1].Value);
+
+                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(4.5, r.MetricData[0].Value);
+
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+
         }
 
         [Test]

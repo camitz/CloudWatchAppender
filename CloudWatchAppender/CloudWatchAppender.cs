@@ -84,19 +84,21 @@ namespace CloudWatchAppender
             try
             {
 
-            if (!string.IsNullOrEmpty(EndPoint))
-            {
-                if (EndPoint.StartsWith("http"))
+                if (!string.IsNullOrEmpty(EndPoint))
                 {
-                    cloudWatchConfig = new AmazonCloudWatchConfig { ServiceURL = EndPoint };
-                    _client = AWSClientFactory.CreateAmazonCloudWatchClient(cloudWatchConfig);
+                    if (EndPoint.StartsWith("http"))
+                    {
+                        cloudWatchConfig = new AmazonCloudWatchConfig { ServiceURL = EndPoint };
+                        if (string.IsNullOrEmpty(AccessKey))
+                            _client = AWSClientFactory.CreateAmazonCloudWatchClient(cloudWatchConfig);
+                    }
+                    else
+                    {
+                        regionEndpoint = RegionEndpoint.GetBySystemName(EndPoint);
+                        if (string.IsNullOrEmpty(AccessKey))
+                            _client = AWSClientFactory.CreateAmazonCloudWatchClient(regionEndpoint);
+                    }
                 }
-                else
-                {
-                    regionEndpoint = RegionEndpoint.GetBySystemName(EndPoint);
-                    _client = AWSClientFactory.CreateAmazonCloudWatchClient(regionEndpoint);
-                }
-            }
             }
             catch (AmazonServiceException)
             {
@@ -163,9 +165,9 @@ namespace CloudWatchAppender
 
             var parsedDimensions =
                 _dimensions
-                    .Select(x => new Dimension {Name = x.Key, Value = patternParser.Parse(x.Value.Value)}).
+                    .Select(x => new Dimension { Name = x.Key, Value = patternParser.Parse(x.Value.Value) }).
                     ToDictionary(x => x.Name, y => y);
-             
+
             var parser = new EventMessageParser(renderedString, ConfigOverrides)
                         {
                             DefaultMetricName = string.IsNullOrEmpty(MetricName)
@@ -218,14 +220,20 @@ namespace CloudWatchAppender
                     {
                         System.Diagnostics.Debug.WriteLine(e.Message);
 
-                        throw new CloudWatchAppenderException("CloudWatchAppender encountered an error while submitting to CloudWatch.", e);
                     }
                 });
 
             if (!task.IsCompleted)
                 _tasks.TryAdd(task.Id, task);
 
-            task.ContinueWith(t => _tasks.TryRemove(task.Id, out task));
+            task.ContinueWith(t =>
+                                  {
+                                      Task task2;
+                                      _tasks.TryRemove(task.Id, out task2);
+                                      if (task.Exception != null)
+                                          throw new CloudWatchAppenderException("CloudWatchAppender encountered an error while submitting to CloudWatch.", task.Exception);
+                                  }
+                );
         }
     }
 

@@ -90,8 +90,8 @@ namespace CloudWatchAppender
                     var uri = serviceUrl + _metaDataKeys[key];
                     Debug.WriteLine(string.Format("Requesting {0}", uri));
 
-                    var tokenSource2 = new CancellationTokenSource();
-                    CancellationToken ct = tokenSource2.Token;
+                    var tokenSource = new CancellationTokenSource();
+                    CancellationToken ct = tokenSource.Token;
 
 
                     Stream responseStream = null;
@@ -103,14 +103,18 @@ namespace CloudWatchAppender
                                                       var task =
                                                           Task.Factory.StartNew(() =>
                                                                                     {
-                                                                                        responseStream =
-                                                                                            WebRequest.Create(uri)
-                                                                                                .GetResponse()
-                                                                                                .GetResponseStream();
+                                                                                        try
+                                                                                        {
+                                                                                            responseStream =
+                                                                                                WebRequest.Create(uri)
+                                                                                                    .GetResponse()
+                                                                                                    .GetResponseStream();
+                                                                                        }
+                                                                                        catch (Exception) { }
                                                                                     }, ct);
 
                                                       if (!task.Wait(500))
-                                                          tokenSource2.Cancel();
+                                                          tokenSource.Cancel();
 
                                                       if (responseStream == null)
                                                           _cachedValues[key] = null;

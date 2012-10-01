@@ -14,21 +14,21 @@ namespace CloudWatchAppender
 
         static class MetaDataKeys
         {
-            public const string amiid = "ami-id";
-            public const string amilaunchindex = "ami-launch-index";
-            public const string amimanifestpath = "ami-manifest-path";
-            public const string instanceid = "instance-id";
-            public const string instancetype = "instance-type";
-            public const string kernelid = "kernel-id";
-            public const string localhostname = "local-hostname";
-            public const string localipv4 = "local-ipv4";
+            public const string amiid = "amiid";
+            public const string amilaunchindex = "amilaunchindex";
+            public const string amimanifestpath = "amimanifestpath";
+            public const string instanceid = "instanceid";
+            public const string instancetype = "instancetype";
+            public const string kernelid = "kernelid";
+            public const string localhostname = "localhostname";
+            public const string localipv4 = "localipv4";
             public const string mac = "mac";
-            public const string availabilityzone = "placement/availability-zone";
-            public const string productcodes = "product-codes";
-            public const string publichostname = "public-hostname";
-            public const string publicipv4 = "public-ipv4";
-            public const string publickeys = "public-keys";
-            public const string reservationid = "reservation-id";
+            public const string availabilityzone = "placement/availabilityzone";
+            public const string productcodes = "productcodes";
+            public const string publichostname = "publichostname";
+            public const string publicipv4 = "publicipv4";
+            public const string publickeys = "publickeys";
+            public const string reservationid = "reservationid";
         }
 
         private static Dictionary<string, string> _metaDataKeys = new Dictionary<string, string>

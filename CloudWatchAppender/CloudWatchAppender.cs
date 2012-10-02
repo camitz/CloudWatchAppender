@@ -198,7 +198,7 @@ namespace CloudWatchAppender
 
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
 
-        private void SendItOff(PutMetricDataRequest r)
+        private void SendItOff(PutMetricDataRequest metricDataRequest)
         {
             if (_client == null)
                 SetupClient();
@@ -217,7 +217,7 @@ namespace CloudWatchAppender
                             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
 
                             System.Diagnostics.Debug.WriteLine("Sending");
-                            _client.PutMetricData(r);
+                            var response =_client.PutMetricData(metricDataRequest);
 
                             Thread.CurrentThread.CurrentCulture = tmpCulture;
                         }, ct);

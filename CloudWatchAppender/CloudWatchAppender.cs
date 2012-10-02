@@ -222,29 +222,20 @@ namespace CloudWatchAppender
                             Thread.CurrentThread.CurrentCulture = tmpCulture;
                         }, ct);
 
-
-                    task.ContinueWith(t =>
-                    {
-                        //if (task.Exception != null)
-                        //throw new CloudWatchAppenderException("CloudWatchAppender encountered an error while submitting to CloudWatch.", task.Exception);
-                    });
-
                     try
                     {
                         if (!task.Wait(30000))
                         {
                             tokenSource.Cancel();
-                            if (task.Exception != null)
-                                throw new CloudWatchAppenderException("CloudWatchAppender timed out while submitting to CloudWatch. There was an exception.", task.Exception);
-
-                            throw new CloudWatchAppenderException("CloudWatchAppender timed out while submitting to CloudWatch.");
+                            System.Diagnostics.Debug.WriteLine(
+                                string.Format(
+                                    "CloudWatchAppender timed out while submitting to CloudWatch. There was an exception. {0}",
+                                    task.Exception));
                         }
-                    }
-                    catch (Exception e)
+                    }catch(Exception e)
                     {
-                        //Task task2;
-                        //_tasks.TryRemove(task.Id, out task2);
-                        throw;
+                        string.Format(
+                            "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e);
                     }
                 });
 
@@ -256,13 +247,7 @@ namespace CloudWatchAppender
                 Task task2;
                 _tasks.TryRemove(task1.Id, out task2);
                 if (task1.Exception != null)
-                {
-                    if (task1.Exception is CloudWatchAppenderException)
-                        throw task1.Exception;
-
-                    throw new CloudWatchAppenderException(
-                        "CloudWatchAppender encountered an error while submitting to CloudWatch.", task1.Exception);
-                }
+                    System.Diagnostics.Debug.WriteLine(string.Format("CloudWatchAppender encountered an error while submitting to CloudWatch. {0}", task1.Exception));
             });
         }
     }

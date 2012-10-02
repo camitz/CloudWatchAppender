@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CloudWatchAppenderException.cs" />
     <Compile Include="EventRateLimiter.cs" />
     <Compile Include="InstanceMetaDataReader.cs" />
     <Compile Include="CloudWatchAppender.cs" />

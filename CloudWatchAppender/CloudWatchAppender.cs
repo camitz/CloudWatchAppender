@@ -203,46 +203,62 @@ namespace CloudWatchAppender
             if (_client == null)
                 SetupClient();
 
-            Task task =
+
+            var tokenSource = new CancellationTokenSource();
+            CancellationToken ct = tokenSource.Token;
+
+            var task1 =
                 Task.Factory.StartNew(() =>
                 {
-                    try
+                    var task =
+                        Task.Factory.StartNew(() =>
+                        {
+                            try
+                            {
+                                var tmpCulture = Thread.CurrentThread.CurrentCulture;
+                                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
+
+                                System.Diagnostics.Debug.WriteLine("Sending");
+                                _client.PutMetricData(r);
+
+                                Thread.CurrentThread.CurrentCulture = tmpCulture;
+                            }
+                            catch (AmazonCloudWatchException e)
+                            {
+                                System.Diagnostics.Debug.WriteLine(e.Message);
+
+                            }
+                        }, ct);
+
+
+                    task.ContinueWith(t =>
                     {
-                        var tmpCulture = Thread.CurrentThread.CurrentCulture;
-                        Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
+                        Task task2;
+                        _tasks.TryRemove(task.Id, out task2);
+                        if (task.Exception != null)
+                            throw new CloudWatchAppenderException("CloudWatchAppender encountered an error while submitting to CloudWatch.", task.Exception);
+                    });
 
-                        System.Diagnostics.Debug.WriteLine("Sending");
-                        _client.PutMetricData(r);
-
-                        Thread.CurrentThread.CurrentCulture = tmpCulture;
-                    }
-                    catch (AmazonCloudWatchException e)
+                    if (!task.Wait(30000))
                     {
-                        System.Diagnostics.Debug.WriteLine(e.Message);
+                        tokenSource.Cancel();
+                        if (task.Exception != null)
+                            throw new CloudWatchAppenderException("CloudWatchAppender timed out while submitting to CloudWatch. There was an exception.", task.Exception);
 
+                        throw new CloudWatchAppenderException("CloudWatchAppender timed out while submitting to CloudWatch.");
                     }
-                }); 
+                });
 
-            if (!task.IsCompleted)
-                _tasks.TryAdd(task.Id, task);
+            if (!task1.IsCompleted)
+                _tasks.TryAdd(task1.Id, task1);
 
-            task.ContinueWith(t =>
-                                  {
-                                      Task task2;
-                                      _tasks.TryRemove(task.Id, out task2);
-                                      if (task.Exception != null)
-                                          throw new CloudWatchAppenderException("CloudWatchAppender encountered an error while submitting to CloudWatch.", task.Exception);
-                                  }
-                );
-        }
-    }
-
-    internal class CloudWatchAppenderException : Exception
-    {
-        public CloudWatchAppenderException(string msg, Exception innerException)
-            : base(msg, innerException)
-        {
-
+            task1.ContinueWith(t =>
+            {
+                Task task2;
+                _tasks.TryRemove(task1.Id, out task2);
+                if (task1.Exception != null)
+                    throw new CloudWatchAppenderException("CloudWatchAppender encountered an error while submitting to CloudWatch.", task1.Exception);
+            });
         }
     }
 }

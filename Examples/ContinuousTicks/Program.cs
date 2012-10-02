@@ -9,7 +9,7 @@ namespace ContinuousTicks
     internal class ContinuousTicks
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ContinuousTicks));
-        private const int nTicks = 5;
+        private const int nTicks = 1;
 
         private static void Main(string[] args)
         {

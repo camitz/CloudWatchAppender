@@ -321,6 +321,14 @@ Check out the following blog posts that seeded the project.
 
 # Releases
 
+## 2.1.1 <font size="2">(beta) 2012-10-02 </font>
+
+### Bug fixes
+
+* Zeroing out dimensions in config didn't work
+* Exceptions and timeouts not well handled, potentially could crash the iis worker
+* Backwards compatibility for instance id didn't work
+
 ## 2.1.0 <font size="2">(beta) 2012-09-24 </font>
 
 ### New features

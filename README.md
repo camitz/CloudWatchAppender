@@ -321,6 +321,12 @@ Check out the following blog posts that seeded the project.
 
 # Releases
 
+## 2.2 <font size="2">(beta) 2012-10-02 </font>
+
+### Performance enhancements
+
+* Up to 200 % faster on base case i.e. log.Info("") and minimal config.
+
 ## 2.1.1 <font size="2">(beta) 2012-10-02 </font>
 
 ### Bug fixes

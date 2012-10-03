@@ -9,7 +9,7 @@ namespace ContinuousTicks
     internal class ContinuousTicks
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ContinuousTicks));
-        private const int nTicks = 1;
+        private const int nTicks = 200;
 
         private static void Main(string[] args)
         {
@@ -23,13 +23,14 @@ namespace ContinuousTicks
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
                 //log.Info("A tick! Value: 29.4 Kilobytes");
                 //log.Info(String.Format("A tick! Timestamp: {0}", DateTimeOffset.Now.AddMinutes(-10).ToString()));
-                log.Info("A tick! %logger %metadata{instanceid}");
+                log.Info(null);
+                //log.Info("A tick! %logger %metadata{instanceid}");
                 //log.Info(new CloudWatchAppender.MetricDatum("A tick!")
                 //    .WithTimestamp(DateTimeOffset.Now.AddMinutes(-10))
                 //    .WithUnit("Kilobytes")
                 //    .WithValue(29.4));
             }
-
+            
             stopWatch.Stop();
             Console.WriteLine(String.Format("All {0} ticks in {1} ms.\nWaiting for requests to complete.", nTicks, stopWatch.ElapsedMilliseconds));
 

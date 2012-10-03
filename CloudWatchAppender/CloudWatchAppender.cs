@@ -159,32 +159,21 @@ namespace CloudWatchAppender
 
             var patternParser = new PatternParser(loggingEvent);
 
-            renderedString = patternParser.Parse(renderedString);
+            if (renderedString.Contains("%"))
+                renderedString = patternParser.Parse(renderedString);
 
             System.Diagnostics.Debug.WriteLine(string.Format("RenderedString: {0}", renderedString));
 
-            var parsedDimensions =
-                _dimensions
-                    .Select(x => new Dimension { Name = x.Key, Value = patternParser.Parse(x.Value.Value) }).
-                    ToDictionary(x => x.Name, y => y);
+            ParseProperties(patternParser);
+
 
             var parser = new EventMessageParser(renderedString, ConfigOverrides)
                         {
-                            DefaultMetricName = string.IsNullOrEmpty(MetricName)
-                                                ? null
-                                                : patternParser.Parse(MetricName),
-                            DefaultNameSpace = string.IsNullOrEmpty(Namespace)
-                                                    ? null
-                                                    : patternParser.Parse(Namespace),
-                            DefaultUnit = String.IsNullOrEmpty(Unit)
-                                                ? null
-                                                : patternParser.Parse(Unit),
-                            DefaultDimensions = _dimensions.Any()
-                                                        ? parsedDimensions
-                                                        : null,
-                            DefaultTimestamp = string.IsNullOrEmpty(Timestamp)
-                                                        ? null
-                                                        : (DateTimeOffset?)DateTimeOffset.Parse(patternParser.Parse(Timestamp))
+                            DefaultMetricName = _defaultMetricName,
+                            DefaultNameSpace = _parsedNamespace,
+                            DefaultUnit = _parsedUnit,
+                            DefaultDimensions = _parsedDimensions,
+                            DefaultTimestamp = _dateTimeOffset
                         };
 
             if (!string.IsNullOrEmpty(Value) && ConfigOverrides)
@@ -192,11 +181,46 @@ namespace CloudWatchAppender
 
             parser.Parse();
 
-            foreach (var r in parser)
-                SendItOff(r);
+            foreach (var putMetricDataRequest in parser)
+                SendItOff(putMetricDataRequest);
+        }
+
+        private void ParseProperties(PatternParser patternParser)
+        {
+            if (!_parsedProperties)
+            {
+                _parsedDimensions = !_dimensions.Any() ? null :
+                    _dimensions
+                    .Select(x => new Dimension {Name = x.Key, Value = patternParser.Parse(x.Value.Value)}).
+                    ToDictionary(x => x.Name, y => y);
+
+                _parsedUnit = String.IsNullOrEmpty(Unit)
+                                  ? null
+                                  : patternParser.Parse(Unit);
+
+                _parsedNamespace = string.IsNullOrEmpty(Namespace)
+                                       ? null
+                                       : patternParser.Parse(Namespace);
+
+                _defaultMetricName = string.IsNullOrEmpty(MetricName)
+                            ? null
+                            : patternParser.Parse(MetricName);
+
+                _dateTimeOffset = string.IsNullOrEmpty(Timestamp)
+                         ? null
+                         : (DateTimeOffset?)DateTimeOffset.Parse(patternParser.Parse(Timestamp));
+
+                _parsedProperties = true;
+            }
         }
 
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
+        private Dictionary<string, Dimension> _parsedDimensions;
+        private bool _parsedProperties;
+        private string _parsedUnit;
+        private string _parsedNamespace;
+        private string _defaultMetricName;
+        private DateTimeOffset? _dateTimeOffset;
 
         private void SendItOff(PutMetricDataRequest metricDataRequest)
         {

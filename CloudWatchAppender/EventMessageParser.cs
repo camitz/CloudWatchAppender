@@ -34,14 +34,18 @@ namespace CloudWatchAppender
 
         public void Parse()
         {
-            var tokens =
-                Regex.Matches(_renderedMessage,
-                              @"(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
-                    .Cast<Match>()
-                    .ToList()
-                    .GetEnumerator();
+            if (!string.IsNullOrEmpty(_renderedMessage))
+            {
 
-            ParseTokens(tokens, _renderedMessage);
+                var tokens =
+                    Regex.Matches(_renderedMessage,
+                                  @"(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
+                        .Cast<Match>()
+                        .ToList()
+                        .GetEnumerator();
+
+                ParseTokens(tokens, _renderedMessage);
+            }
 
             NewDatum();
             foreach (var p in _values)
@@ -125,7 +129,7 @@ namespace CloudWatchAppender
                     if (t0.StartsWith("Timestamp", StringComparison.InvariantCultureIgnoreCase))
                     {
                         DateTimeOffset time;
-                        if(ExtractTime(renderedMessage.Substring(tokens.Current.Index + "Timestamp".Length), out time))
+                        if (ExtractTime(renderedMessage.Substring(tokens.Current.Index + "Timestamp".Length), out time))
                             _values.Add(new AppenderValue
                                             {
                                                 Name = "Timestamp",
@@ -247,7 +251,7 @@ namespace CloudWatchAppender
             time = DateTimeOffset.UtcNow;
 
             s = s.Trim();
-            s = s.Trim(new[] {':'});
+            s = s.Trim(new[] { ':' });
 
             for (int i = 1; i <= s.Length; i++)
             {
@@ -326,7 +330,9 @@ namespace CloudWatchAppender
 
             _currentDatum = new MetricDatum
                                 {
-                                    Dimensions = dimensions.Values.Where(x => !string.IsNullOrEmpty(x.Value)).ToList(),
+                                    Dimensions = dimensions.Any() ?
+                                        dimensions.Values.Where(x => !string.IsNullOrEmpty(x.Value)).ToList() :
+                                        new List<Dimension>(),
                                     Unit = DefaultUnit
                                 };
 

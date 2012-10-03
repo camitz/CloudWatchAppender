@@ -52,7 +52,7 @@ namespace CloudWatchAppender
                     if (!string.IsNullOrEmpty(_datum.Unit) && _datum.Unit != value)
                         throw new MetricDatumFilledException("Value has been set already.");
 
-                    _datum.Unit = SupportedUnits.SingleOrDefault(x => x.Equals(value, StringComparison.InvariantCultureIgnoreCase));
+                    _datum.Unit = SupportedUnits.Contains(value) ? value : null;
                 }
             }
         }
@@ -222,7 +222,8 @@ namespace CloudWatchAppender
             set { _valueMode = value; }
         }
 
-        public static readonly string[] SupportedUnits = {
+        public static readonly ISet<string> SupportedUnits = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                                                    {
                                                         "Seconds",
                                                         "Microseconds",
                                                         "Milliseconds",
@@ -252,7 +253,8 @@ namespace CloudWatchAppender
                                                         "None"
                                                     };
 
-        public static readonly string[] SupportedNames = {
+        public static readonly ISet<string> SupportedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                                                    {
                                                         "Value",
                                                         "Unit",
                                                         "Dimension",
@@ -262,7 +264,8 @@ namespace CloudWatchAppender
                                                         "Timestamp"
                                                     };
 
-        public static readonly string[] SupportedStatistics = {
+        public static readonly ISet<string> SupportedStatistics = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                                                    {
                                                         "Maximum",
                                                         "Minimum",
                                                         "SampleCount",

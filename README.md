@@ -408,3 +408,5 @@ Check out the following blog posts that seeded the project.
 * Couldn't override dimensions (error)
 
 ## 1.0 (beta)
+
+[![endorse](http://api.coderwall.com/camitz/endorsecount.png)](http://coderwall.com/camitz)

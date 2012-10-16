@@ -191,7 +191,7 @@ namespace CloudWatchAppender
             {
                 _parsedDimensions = !_dimensions.Any() ? null :
                     _dimensions
-                    .Select(x => new Dimension {Name = x.Key, Value = patternParser.Parse(x.Value.Value)}).
+                    .Select(x => new Dimension { Name = x.Key, Value = patternParser.Parse(x.Value.Value) }).
                     ToDictionary(x => x.Name, y => y);
 
                 _parsedUnit = String.IsNullOrEmpty(Unit)
@@ -231,48 +231,62 @@ namespace CloudWatchAppender
             var tokenSource = new CancellationTokenSource();
             CancellationToken ct = tokenSource.Token;
 
-            var task1 =
-                Task.Factory.StartNew(() =>
-                {
-                    var task =
-                        Task.Factory.StartNew(() =>
-                        {
-                            var tmpCulture = Thread.CurrentThread.CurrentCulture;
-                            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
+            try
+            {
 
-                            System.Diagnostics.Debug.WriteLine("Sending");
-                            var response =_client.PutMetricData(metricDataRequest);
-
-                            Thread.CurrentThread.CurrentCulture = tmpCulture;
-                        }, ct);
-
-                    try
+                var task1 =
+                    Task.Factory.StartNew(() =>
                     {
-                        if (!task.Wait(30000))
+                        var task =
+                            Task.Factory.StartNew(() =>
+                            {
+                                var tmpCulture = Thread.CurrentThread.CurrentCulture;
+                                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
+
+                                System.Diagnostics.Debug.WriteLine("Sending");
+                                var response = _client.PutMetricData(metricDataRequest);
+
+                                Thread.CurrentThread.CurrentCulture = tmpCulture;
+                            }, ct);
+
+                        try
                         {
-                            tokenSource.Cancel();
+                            if (!task.Wait(30000))
+                            {
+                                tokenSource.Cancel();
+                                System.Diagnostics.Debug.WriteLine(
+                                    string.Format(
+                                        "CloudWatchAppender timed out while submitting to CloudWatch. There was an exception. {0}",
+                                        task.Exception));
+                            }
+                        }
+                        catch (Exception e)
+                        {
                             System.Diagnostics.Debug.WriteLine(
                                 string.Format(
-                                    "CloudWatchAppender timed out while submitting to CloudWatch. There was an exception. {0}",
-                                    task.Exception));
+                                    "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e));
                         }
-                    }catch(Exception e)
-                    {
-                        string.Format(
-                            "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e);
-                    }
+                    });
+
+                if (!task1.IsCompleted)
+                    _tasks.TryAdd(task1.Id, task1);
+
+                task1.ContinueWith(t =>
+                {
+                    Task task2;
+                    _tasks.TryRemove(task1.Id, out task2);
+                    if (task1.Exception != null)
+                        System.Diagnostics.Debug.WriteLine(string.Format("CloudWatchAppender encountered an error while submitting to CloudWatch. {0}", task1.Exception));
                 });
-
-            if (!task1.IsCompleted)
-                _tasks.TryAdd(task1.Id, task1);
-
-            task1.ContinueWith(t =>
+        
+            }
+            catch (Exception e)
             {
-                Task task2;
-                _tasks.TryRemove(task1.Id, out task2);
-                if (task1.Exception != null)
-                    System.Diagnostics.Debug.WriteLine(string.Format("CloudWatchAppender encountered an error while submitting to CloudWatch. {0}", task1.Exception));
-            });
+                System.Diagnostics.Debug.WriteLine(
+                    string.Format(
+                        "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e));
+            }
+
         }
     }
 }

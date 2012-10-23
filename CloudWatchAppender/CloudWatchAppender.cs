@@ -240,13 +240,22 @@ namespace CloudWatchAppender
                         var task =
                             Task.Factory.StartNew(() =>
                             {
-                                var tmpCulture = Thread.CurrentThread.CurrentCulture;
-                                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
+                                try
+                                {
+                                    var tmpCulture = Thread.CurrentThread.CurrentCulture;
+                                    Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
 
-                                System.Diagnostics.Debug.WriteLine("Sending");
-                                var response = _client.PutMetricData(metricDataRequest);
+                                    System.Diagnostics.Debug.WriteLine("Sending");
+                                    var response = _client.PutMetricData(metricDataRequest);
+                                    System.Diagnostics.Debug.WriteLine("RequestID: " + response.ToString());
 
-                                Thread.CurrentThread.CurrentCulture = tmpCulture;
+                                    Thread.CurrentThread.CurrentCulture = tmpCulture;
+                                }
+                                catch (Exception e)
+                                {
+                                    System.Diagnostics.Debug.WriteLine(e);
+                                    throw e;
+                                }
                             }, ct);
 
                         try
@@ -275,6 +284,7 @@ namespace CloudWatchAppender
                 {
                     Task task2;
                     _tasks.TryRemove(task1.Id, out task2);
+                    System.Diagnostics.Debug.WriteLine("Cloudwatch complete");
                     if (task1.Exception != null)
                         System.Diagnostics.Debug.WriteLine(string.Format("CloudWatchAppender encountered an error while submitting to CloudWatch. {0}", task1.Exception));
                 });

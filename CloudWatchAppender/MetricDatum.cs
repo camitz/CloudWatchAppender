@@ -330,7 +330,7 @@ namespace CloudWatchAppender
             var s = new StringWriter();
             new MetricDatumRenderer().RenderObject(null, this, s);
 
-            return "MetricDatum, " + s;
+            return "MetricDatum, NameSpace: " + NameSpace + ", " + s;
         }
     }
 

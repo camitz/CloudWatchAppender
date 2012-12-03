@@ -15,7 +15,7 @@ namespace CloudWatchAppender
             if (string.IsNullOrEmpty(Option))
                 throw new InvalidOperationException("The option must be set. Example: metadata{instanceid}.");
 
-            var s = InstanceMetaDataReader.GetMetaData(Option);
+            var s = InstanceMetaDataReader.Instance.GetMetaData(Option);
             if (string.IsNullOrEmpty(s))
                 writer.Write("No" + Option);
 

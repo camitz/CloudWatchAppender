@@ -49,6 +49,19 @@ namespace CloudWatchAppender
             set { _eventRateLimiter = new EventRateLimiter(value); }
         }
 
+        private string _instanceMetaDataReaderClass;
+        public string InstanceMetaDataReaderClass
+        {
+            get { return _instanceMetaDataReaderClass; }
+            set
+            {
+                _instanceMetaDataReaderClass = value;
+                InstanceMetaDataReader.Instance =
+                    Activator.CreateInstance(Type.GetType(value)) as IInstanceMetaDataReader;
+            }
+        }
+
+
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
 
         private AmazonCloudWatch _client;
@@ -247,7 +260,7 @@ namespace CloudWatchAppender
 
                                     System.Diagnostics.Debug.WriteLine("Sending");
                                     var response = _client.PutMetricData(metricDataRequest);
-                                    System.Diagnostics.Debug.WriteLine("RequestID: " + response.ToString());
+                                    System.Diagnostics.Debug.WriteLine("RequestID: " + response.ResponseMetadata.RequestId);
 
                                     Thread.CurrentThread.CurrentCulture = tmpCulture;
                                 }
@@ -287,7 +300,7 @@ namespace CloudWatchAppender
                     if (task1.Exception != null)
                         System.Diagnostics.Debug.WriteLine(string.Format("CloudWatchAppender encountered an error while submitting to CloudWatch. {0}", task1.Exception));
                 });
-        
+
             }
             catch (Exception e)
             {

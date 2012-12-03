@@ -10,7 +10,7 @@ namespace CloudWatchAppender
     {
         protected override void Convert(TextWriter writer, LoggingEvent loggingEvent)
         {
-            var s = InstanceMetaDataReader.GetInstanceID();
+            var s = InstanceMetaDataReader.Instance.GetMetaData(MetaDataKeys.instanceid);
             if (string.IsNullOrEmpty(s))
                 writer.Write("NoInstanceID");
 

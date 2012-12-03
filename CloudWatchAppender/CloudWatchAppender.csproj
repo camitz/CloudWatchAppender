@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="CloudWatchAppenderException.cs" />
     <Compile Include="EventRateLimiter.cs" />
+    <Compile Include="FakeInstanceMetaDataReader.cs" />
     <Compile Include="InstanceMetaDataReader.cs" />
     <Compile Include="CloudWatchAppender.cs" />
     <Compile Include="InstanceMetaDataPatternConverter.cs" />

@@ -66,7 +66,7 @@ namespace CloudWatchAppender
 
             foreach (var datum in _data)
             {
-                System.Diagnostics.Debug.WriteLine(string.Format("Datum: {0}", datum));
+                Debug.WriteLine("Datum: {0}", datum);
             }
         }
 

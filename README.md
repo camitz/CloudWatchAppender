@@ -59,10 +59,10 @@ The following example will post a metric with [unit](http://docs.amazonwebservic
 
 	    <rateLimit value="20"/>
 
-        <dimension0 type="Amazon.CloudWatch.Model.Dimension">
+        <dimension type="Amazon.CloudWatch.Model.Dimension">
             <name value="InstanceID"/>
             <value value="%metadata{instanceid}"/>
-        </dimension0>
+        </dimension>
     </appender>
 
 This normally goes in your app.config or web.config. log4net allows any old xml file to be brought in and this is of course fine for CloudWatchAppender too.

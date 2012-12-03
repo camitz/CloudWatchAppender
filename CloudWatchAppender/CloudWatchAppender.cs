@@ -254,7 +254,6 @@ namespace CloudWatchAppender
                                 catch (Exception e)
                                 {
                                     System.Diagnostics.Debug.WriteLine(e);
-                                    throw e;
                                 }
                             }, ct);
 

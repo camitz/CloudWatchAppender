@@ -4,7 +4,7 @@ namespace CloudWatchAppender
 {
     class FakeInstanceMetaDataReader : IInstanceMetaDataReader
     {
-        private Dictionary<string, string> _metaData = new Dictionary<string, string>
+        private Dictionary<string, string> _metaDataKeys = new Dictionary<string, string>
                                                            {
                                                                {"amiid", "fake-ami-id"},
                                                                {"amilaunchindex", "fake-ami-launch-index"},
@@ -25,12 +25,14 @@ namespace CloudWatchAppender
 
         public string GetMetaData(string key)
         {
-            return _metaData[key];
+            return _metaDataKeys[key];
         }
 
         public string GetInstanceID()
         {
-            return _metaData["instanceid"];
+            return _metaDataKeys["instanceid"];
         }
+
+        public IDictionary<string, string> MetaDataKeyLookup { get { return _metaDataKeys; } }
     }
 }

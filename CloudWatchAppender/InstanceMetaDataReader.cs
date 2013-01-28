@@ -57,6 +57,8 @@ namespace CloudWatchAppender
 
         private Dictionary<string, Task> _pendingTasks = new Dictionary<string, Task>();
 
+        private Dictionary<string, int> _attempts = new Dictionary<string, int>();
+
         [Obsolete]
         public string GetInstanceID()
         {
@@ -72,11 +74,11 @@ namespace CloudWatchAppender
             {
                 if (_pendingTasks.ContainsKey(key))
                 {
-                    Debug.WriteLine(string.Format("Waiting for pending {0}", key));
+                    Debug.WriteLine("Waiting for pending {0}", key);
                     return
                         _pendingTasks[key].ContinueWith(x =>
                                                             {
-                                                                Debug.WriteLine(string.Format("Pending {0} completed", key));
+                                                                Debug.WriteLine("Pending {0} completed", key);
 
                                                                 if (_cachedValues.ContainsKey(key))
                                                                     return _cachedValues[key];
@@ -86,13 +88,16 @@ namespace CloudWatchAppender
                                                             .Result;
                 }
 
+                if (!_attempts.ContainsKey(key))
+                    _attempts[key] = 0;
+
                 if (!_cachedValues.ContainsKey(key))
                 {
                     var uri = serviceUrl + _metaDataKeys[key];
-                    Debug.WriteLine(string.Format("Requesting {0}", uri));
+                    Debug.WriteLine("Requesting {0}", uri);
 
                     var tokenSource = new CancellationTokenSource();
-                    CancellationToken ct = tokenSource.Token;
+                    var ct = tokenSource.Token;
 
 
                     Stream responseStream = null;
@@ -101,6 +106,9 @@ namespace CloudWatchAppender
                     _pendingTasks[key] =
                         Task.Factory.StartNew(() =>
                                                   {
+                                                      if (++_attempts[key] > 3)
+                                                          _cachedValues[key] = "MaxAttemptsExceeded";
+
                                                       var task =
                                                           Task.Factory.StartNew(() =>
                                                                                     {
@@ -114,22 +122,24 @@ namespace CloudWatchAppender
                                                                                         catch (Exception) { }
                                                                                     }, ct);
 
-                                                      if (!task.Wait(500))
+                                                      if (!task.Wait(1000))
                                                           tokenSource.Cancel();
 
-                                                      if (responseStream == null)
-                                                          _cachedValues[key] = null;
-                                                      else
-                                                          _cachedValues[key] = new StreamReader(
-                                                              responseStream, true)
-                                                              .ReadToEnd();
-
+                                                      if (responseStream != null)
+                                                      {
+                                                          var s = new StreamReader(responseStream, true).ReadToEnd();
+                                                          if (!string.IsNullOrEmpty(s))
+                                                          {
+                                                              _cachedValues[key] = s;
+                                                              _attempts[key] = 0;
+                                                          }
+                                                      }
                                                   });
 
                     return task1
                             .ContinueWith(x =>
                                               {
-                                                  Debug.WriteLine(string.Format("Got {0}: {1}", key, _cachedValues[key]));
+                                                  Debug.WriteLine("Got {0}: {1}", key, _cachedValues[key]);
                                                   _pendingTasks.Remove(key);
                                                   return _cachedValues[key];
                                               })
@@ -138,7 +148,7 @@ namespace CloudWatchAppender
 
                 }
 
-                Debug.WriteLine(string.Format("Returning cached {0}: {1}", key, _cachedValues[key]));
+                Debug.WriteLine("Returning cached {0}: {1}", key, _cachedValues[key]);
                 return _cachedValues[key];
             }
             catch (WebException)
@@ -162,6 +172,8 @@ namespace CloudWatchAppender
 
         [Obsolete]
         string GetInstanceID();
+
+        IDictionary<string, string> MetaDataKeyLookup { get; }
     }
 }
 

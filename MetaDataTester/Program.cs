@@ -28,9 +28,9 @@ namespace MetaDataTester
                         };
 
             foreach (var key in keys)
-                Console.WriteLine(string.Format("{0}: {1}", 
-                    InstanceMetaDataReader.MetaDataKeyLookup[key], 
-                    InstanceMetaDataReader.GetMetaData(key)));
+                Console.WriteLine(string.Format("{0}: {1}",
+                    InstanceMetaDataReader.Instance.MetaDataKeyLookup[key],
+                    InstanceMetaDataReader.Instance.GetMetaData(key)));
         }
 
 

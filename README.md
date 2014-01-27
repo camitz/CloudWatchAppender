@@ -321,6 +321,11 @@ Check out the following blog posts that seeded the project.
 
 # Releases
 
+
+## 3.0 <font size="2">(beta) 2014-01-27 </font>
+
+Long over due upgrade to .NET 4.5 and version 2 (2.0.6.1) of the AWS SDK.
+
 ## 2.2 <font size="2">(beta) 2012-10-02 </font>
 
 ### Performance enhancements

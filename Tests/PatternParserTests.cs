@@ -22,7 +22,8 @@ namespace CloudWatchAppender.Tests
             var p = new PatternParser(GetLoggingEvent());
             var s = p.Parse("%stacktrace{6}");
 
-            Assert.AreEqual("LayoutSkeleton.Format > PatternLayout.Format > PatternConverter.Format > PatternLayoutConverter.Convert > StackTracePatternConverter.Convert > LoggingEvent.get_LocationInformation", s);
+            Assert.AreEqual("log4net.Layout.LayoutSkeleton.Format > log4net.Layout.PatternLayout.Format > log4net.Util.PatternConverter.Format > log4net.Layout.Pattern.PatternLayoutConverter.Convert > log4net.Layout.Pattern.StackTracePatternConverter.Convert > log4net.Core.LoggingEvent.get_LocationInformation",
+                s);
         }
     
         [Test]

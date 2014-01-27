@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using MbUnit.Framework;
 
@@ -24,7 +25,7 @@ namespace CloudWatchAppender.Tests
             var passes = 0;
             foreach (var r in parser)
             {
-                Assert.AreEqual("Kilobytes/Second", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.KilobytesSecond, r.MetricData[0].Unit);
                 Assert.AreEqual(3.0, r.MetricData[0].Value);
                 passes++;
             }
@@ -45,7 +46,7 @@ namespace CloudWatchAppender.Tests
             var passes = 0;
             foreach (var r in parser)
             {
-                Assert.AreEqual("Megabytes/Second", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.MegabytesSecond, r.MetricData[0].Unit);
                 Assert.AreEqual(4.0, r.MetricData[0].Value);
                 passes++;
             }
@@ -62,7 +63,7 @@ namespace CloudWatchAppender.Tests
             var passes = 0;
             foreach (var r in parser)
             {
-                Assert.AreEqual("Gigabits/Second", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.GigabitsSecond, r.MetricData[0].Unit);
                 Assert.AreEqual(1.3, r.MetricData[0].StatisticValues.Minimum);
                 Assert.AreEqual(127.9, r.MetricData[0].StatisticValues.Maximum);
                 Assert.AreEqual(15000.5, r.MetricData[0].StatisticValues.Sum);
@@ -90,7 +91,7 @@ namespace CloudWatchAppender.Tests
             var passes = 0;
             foreach (var r in parser)
             {
-                Assert.AreEqual("Gigabits/Second", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.GigabitsSecond, r.MetricData[0].Unit);
                 Assert.AreEqual(1.2, r.MetricData[0].StatisticValues.Minimum);
                 Assert.AreEqual(130.5, r.MetricData[0].StatisticValues.Maximum);
                 Assert.AreEqual(16000.5, r.MetricData[0].StatisticValues.Sum);
@@ -115,7 +116,7 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual(1, r.MetricData.Count);
                 Assert.AreEqual(0, r.MetricData[0].Dimensions.Count);
                 Assert.AreEqual("CloudWatchAppender", r.MetricData[0].MetricName);
-                Assert.AreEqual("Count", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.Count, r.MetricData[0].Unit);
                 Assert.AreEqual(1.0, r.MetricData[0].Value);
 
                 passes++;
@@ -233,7 +234,7 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual("Fruit", r.MetricData[0].Dimensions[1].Name);
                 Assert.AreEqual("apple", r.MetricData[0].Dimensions[1].Value);
 
-                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.Seconds, r.MetricData[0].Unit);
                 Assert.AreEqual(4.5, r.MetricData[0].Value);
 
                 passes++;
@@ -260,7 +261,7 @@ namespace CloudWatchAppender.Tests
             {
                 Assert.AreEqual(0, r.MetricData[0].Dimensions.Count);
 
-                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.Seconds, r.MetricData[0].Unit);
                 Assert.AreEqual(4.5, r.MetricData[0].Value);
 
                 passes++;
@@ -294,7 +295,7 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual("Fruit", r.MetricData[0].Dimensions[2].Name);
                 Assert.AreEqual("apple", r.MetricData[0].Dimensions[2].Value);
 
-                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.Seconds, r.MetricData[0].Unit);
                 Assert.AreEqual(4.5, r.MetricData[0].Value);
 
                 passes++;
@@ -333,7 +334,7 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual("Cake", r.MetricData[0].Dimensions[1].Name);
                 Assert.AreEqual("chocolate", r.MetricData[0].Dimensions[1].Value);
 
-                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.Seconds, r.MetricData[0].Unit);
                 Assert.AreEqual(4.5, r.MetricData[0].Value);
 
                 passes++;
@@ -359,7 +360,7 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual("Fruit", r.MetricData[0].Dimensions[1].Name);
                 Assert.AreEqual("apple", r.MetricData[0].Dimensions[1].Value);
 
-                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.Seconds, r.MetricData[0].Unit);
                 Assert.AreEqual(4.5, r.MetricData[0].Value);
 
                 passes++;
@@ -388,7 +389,7 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[0].Name);
                 Assert.AreEqual("qwerty", r.MetricData[0].Dimensions[0].Value);
 
-                Assert.AreEqual("Seconds", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.Seconds, r.MetricData[0].Unit);
                 Assert.AreEqual(4.5, r.MetricData[0].Value);
 
                 passes++;
@@ -411,7 +412,7 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual("Value", r.MetricData[0].Dimensions[1].Name);
                 Assert.AreEqual("4.5", r.MetricData[0].Dimensions[1].Value);
 
-                Assert.AreEqual("Count", r.MetricData[0].Unit);
+                Assert.AreEqual(StandardUnit.Count, r.MetricData[0].Unit);
                 Assert.AreEqual(1.0, r.MetricData[0].Value);
             }
         }

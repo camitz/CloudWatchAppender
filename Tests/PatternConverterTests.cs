@@ -31,7 +31,7 @@ namespace CloudWatchAppender.Tests
 
             log1.Info("TestMessage");
 #if !MONO
-            Assert.AreEqual("RuntimeMethodHandle._InvokeMethodFast > PatternConverterTests.TestStackTracePattern", stringAppender.GetString(), "stack trace value set");
+            Assert.AreEqual("System.RuntimeMethodHandle.InvokeMethod > CloudWatchAppender.Tests.PatternConverterTests.TestStackTracePattern", stringAppender.GetString(), "stack trace value set");
 #else
             Assert.AreEqual("MonoMethod.InternalInvoke > PatternConverterTests.TestStackTracePattern", stringAppender.GetString(), "stack trace value set");
 #endif

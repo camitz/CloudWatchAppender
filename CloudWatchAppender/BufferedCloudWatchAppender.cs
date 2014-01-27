@@ -60,7 +60,7 @@ namespace CloudWatchAppender
 
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
 
-        private AmazonCloudWatch _client;
+        private IAmazonCloudWatch _client;
 
         public BufferingCloudWatchAppender()
         {
@@ -122,7 +122,12 @@ namespace CloudWatchAppender
                     _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret);
 
             //Debug
-            var metricDatum = new Amazon.CloudWatch.Model.MetricDatum().WithMetricName("CloudWatchAppender").WithValue(1).WithUnit("Count");
+            var metricDatum = new Amazon.CloudWatch.Model.MetricDatum
+                                  {
+                                      MetricName = "CloudWatchAppender",
+                                      Value = 1,
+                                      Unit = "Count"
+                                  };
             //_client.PutMetricData(new PutMetricDataRequest().WithNamespace("CloudWatchAppender").WithMetricData(metricDatum));
         }
 

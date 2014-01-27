@@ -64,7 +64,7 @@ namespace CloudWatchAppender
 
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
 
-        private AmazonCloudWatch _client;
+        private IAmazonCloudWatch _client;
 
         public CloudWatchAppender()
         {
@@ -92,7 +92,7 @@ namespace CloudWatchAppender
             if (string.IsNullOrEmpty(Secret) && ConfigurationManager.AppSettings["AWSSecretKey"] != null)
                 Secret = ConfigurationManager.AppSettings["AWSSecretKey"];
 
-            _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret);
+            //_client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret); //Can't do this anymore.
 
             try
             {
@@ -122,11 +122,18 @@ namespace CloudWatchAppender
                     _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret, regionEndpoint);
                 else if (cloudWatchConfig != null)
                     _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret, cloudWatchConfig);
-                else
-                    _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret);
+                //else //Can't do this anymore.
+                //    _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret);
 
+            if (_client==null)
+                throw new InvalidOperationException("Couldn't create AWS client due to configuration missing vital parts.");
             //Debug
-            var metricDatum = new Amazon.CloudWatch.Model.MetricDatum().WithMetricName("CloudWatchAppender").WithValue(1).WithUnit("Count");
+            var metricDatum = new Amazon.CloudWatch.Model.MetricDatum
+            {
+                MetricName = "CloudWatchAppender",
+                Value = 1,
+                Unit = "Count"
+            };
             //_client.PutMetricData(new PutMetricDataRequest().WithNamespace("CloudWatchAppender").WithMetricData(metricDatum));
         }
 

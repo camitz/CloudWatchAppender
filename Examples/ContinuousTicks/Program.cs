@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using CloudWatchAppender;
 using log4net;
 using log4net.Config;
 

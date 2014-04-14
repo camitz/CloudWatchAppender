@@ -230,9 +230,9 @@ The old pattern %instanceid is deprecated, but still works.
 
 If you download the source code there is a tiny utility that tests all these keys on your system.
 
-## Augmented %logger functionality
+## Augmented %logger functionality<a name="logger"></a>
 
-The log4net PatternLayout provides the %logger or %c pattern, which translates to the name of the logger, typically the qualified name of the type issuing the event. You can also specify a precision specifier as a integer enclosed in curly brackets following the pattern, to filter out the end part of the name. 
+The log4net PatternLayout provides the %logger or %c pattern, which translates to the name of the logger, typically the qualified name of the type issuing the event. You can also specify a precision specifier as a integer enclosed in curly brackets following the pattern, to include only the right most elements of the name. 
 
 CloudWathcAppender adds support for negative precision specifiers, filtering out the beginning part of the name. This is useful for providing the type and namespace as metric name and namespace respectively to CloudWatch.
 
@@ -240,13 +240,17 @@ Typically you'd create the logger like so.
 
     ILog log = LogManager.GetLogger(typeof(MyClass));
 
-If the namespace is MyApp.MyNamespace, then *MetricName: %logger{2}* in your pattern would post "MyNamespace.MyClass" as the metric name to CloudWatch. The following may be more suitable for your needs.
+If the namespace is MyApp.MyNamespace, then *MetricName: %logger{2}* in your pattern would post "MyNamespace.MyClass" as the metric name to CloudWatch. 
+
+However, the following may be more suitable for your needs.
 
     MetricName: %logger{1}, NameSpace: %logger{-1}
 
-The negative precision specifier removes the last word from the name. The metric name will now by MyClass and the namespace will be MyApp.MyNamespace.
+The negative precision specifier includes only the left elements of the name. The metric name will now by MyClass and the namespace will be MyApp.MyNamespace.
 
 Dots (.) are converted to slashes (/) before sending. This is true of all strings passed as namespace anywhere.
+
+**Breaking change as of 4.0:** The negative precision specifier used to work slightly differently, clearly not very useful. It stripped the right most elements as a complement to the positive specifier keeping them in. That means that the result was dependent on the number of elements, x less than the number of elements. The new function includes the left most elements which is independent of the number of elements. Rather more useful I think and motivating a breaking change.
 
 ## RateLimit
 
@@ -321,6 +325,11 @@ Check out the following blog posts that seeded the project.
 
 # Releases
 
+## 4.0 <font size="2">(beta) 2014-04-14 </font>
+
+### Breaking changes
+
+* Negative specifier of the %logger with negative precision specifier pattern changed. Now includes n left most elements. See [Augmented %logger functionality](#logger).
 
 ## 3.0 <font size="2">(beta) 2014-01-27 </font>
 

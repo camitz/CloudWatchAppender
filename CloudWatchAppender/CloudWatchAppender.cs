@@ -147,12 +147,12 @@ namespace CloudWatchAppender
 
         public static void WaitForPendingRequests(TimeSpan timeout)
         {
-            var startedTime = DateTime.Now;
+            var startedTime = DateTime.UtcNow;
             var timeConsumed = TimeSpan.Zero;
             while (HasPendingRequests && timeConsumed < timeout)
             {
                 Task.WaitAll(_tasks.Values.ToArray(), timeout - timeConsumed);
-                timeConsumed = DateTime.Now - startedTime;
+                timeConsumed = DateTime.UtcNow - startedTime;
             }
         }
 
@@ -283,16 +283,14 @@ namespace CloudWatchAppender
                             {
                                 tokenSource.Cancel();
                                 System.Diagnostics.Debug.WriteLine(
-                                    string.Format(
-                                        "CloudWatchAppender timed out while submitting to CloudWatch. There was an exception. {0}",
-                                        task.Exception));
+                                        "CloudWatchAppender timed out while submitting to CloudWatch. Exception (if any): {0}",
+                                        task.Exception);
                             }
                         }
                         catch (Exception e)
                         {
                             System.Diagnostics.Debug.WriteLine(
-                                string.Format(
-                                    "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e));
+                                    "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e);
                         }
                     });
 

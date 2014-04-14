@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Amazon.CloudWatch.Model;
-using MbUnit.Framework;
+using NUnit.Framework;
 
 namespace CloudWatchAppender.Tests
 {
@@ -38,11 +38,11 @@ namespace CloudWatchAppender.Tests
 
 
 
-            Assert.Contains(t.ToString(), "MetricName: TheMetricName");
-            Assert.Contains(t.ToString(), "Unit: Seconds");
-            Assert.Contains(t.ToString(), "Value: 5.1");
-            Assert.Contains(t.ToString(), "Timestamp: 2012-09-11 11:11");
-            Assert.Contains(t.ToString(), "Dimensions: dim1: v1, dim2: v2");
+            Assert.That(t.ToString(), Is.StringContaining("MetricName: TheMetricName"));
+            Assert.That(t.ToString(), Is.StringContaining("Unit: Seconds"));
+            Assert.That(t.ToString(), Is.StringContaining("Value: 5.1"));
+            Assert.That(t.ToString(), Is.StringContaining("Timestamp: 2012-09-11 11:11"));
+            Assert.That(t.ToString(), Is.StringContaining("Dimensions: dim1: v1, dim2: v2"));
         }
 
         [Test]
@@ -65,12 +65,12 @@ namespace CloudWatchAppender.Tests
                                          .WithTimestamp(DateTime.Parse("2012-09-11 11:11")),
                                      t);
 
-            Assert.Contains(t.ToString(), "MetricName: TheMetricName");
-            Assert.Contains(t.ToString(), "Unit: Seconds");
-            Assert.Contains(t.ToString(), "Value: 5.1");
-            Assert.Contains(t.ToString(), "Timestamp: 2012-09-11 11:11");
-            Assert.Contains(t.ToString(), "Dimensions: dim1: v1, dim2: v2");
-            Assert.Contains(t.ToString(), "A tick!");
+            Assert.That(t.ToString(), Is.StringContaining("MetricName: TheMetricName"));
+            Assert.That(t.ToString(), Is.StringContaining("Unit: Seconds"));
+            Assert.That(t.ToString(), Is.StringContaining("Value: 5.1"));
+            Assert.That(t.ToString(), Is.StringContaining("Timestamp: 2012-09-11 11:11"));
+            Assert.That(t.ToString(), Is.StringContaining("Dimensions: dim1: v1, dim2: v2"));
+            Assert.That(t.ToString(), Is.StringContaining("A tick!"));
         }
 
 
@@ -83,7 +83,7 @@ namespace CloudWatchAppender.Tests
                                          .WithTimestamp(DateTimeOffset.Parse("2012-09-11 11:11")),
                                      t);
 
-            Assert.Contains(t.ToString(), "Timestamp: 2012-09-11 09:11");
+            Assert.That(t.ToString(), Is.StringContaining("Timestamp: 2012-09-11 09:11"));
         }
 
         [Test]
@@ -99,10 +99,10 @@ namespace CloudWatchAppender.Tests
                                                                                        }
                                                              },t);
 
-            Assert.Contains(t.ToString(), "Maximum: 100.1");
-            Assert.Contains(t.ToString(), "Minimum: 2.1");
-            Assert.Contains(t.ToString(), "Sum: 250.1");
-            Assert.Contains(t.ToString(), "SampleCount: ");
+            Assert.That(t.ToString(), Is.StringContaining("Maximum: 100.1"));
+            Assert.That(t.ToString(), Is.StringContaining("Minimum: 2.1"));
+            Assert.That(t.ToString(), Is.StringContaining("Sum: 250.1"));
+            Assert.That(t.ToString(), Is.StringContaining("SampleCount: "));
         }
 
         [Test]
@@ -120,10 +120,10 @@ namespace CloudWatchAppender.Tests
                                                                  }),
                                      t);
 
-            Assert.Contains(t.ToString(), "Maximum: 100.1");
-            Assert.Contains(t.ToString(), "Minimum: 2.1");
-            Assert.Contains(t.ToString(), "Sum: 250.1");
-            Assert.Contains(t.ToString(), "SampleCount: ");
+            Assert.That(t.ToString(), Is.StringContaining("Maximum: 100.1"));
+            Assert.That(t.ToString(), Is.StringContaining("Minimum: 2.1"));
+            Assert.That(t.ToString(), Is.StringContaining("Sum: 250.1"));
+            Assert.That(t.ToString(), Is.StringContaining("SampleCount: "));
         }
     }
 }

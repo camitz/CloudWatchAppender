@@ -1,5 +1,5 @@
 ﻿using System;
-using MbUnit.Framework;
+using NUnit.Framework;
 using log4net;
 using log4net.Config;
 using log4net.Core;
@@ -194,23 +194,23 @@ namespace CloudWatchAppender.Tests
             ILog log1 = LogManager.GetLogger(rep.Name, "TestAddingCustomPattern");
 
             log1.Info("Tw.o.Dots");
-            Assert.AreEqual("Tw", stringAppender.GetString(), "%message-as-name not registered");
+            Assert.AreEqual("Tw/o", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
 
             log1.Info("NoDots");
-            Assert.AreEqual("", stringAppender.GetString(), "%message-as-name not registered");
+            Assert.AreEqual("NoDots", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
 
             log1.Info("One.Dot");
-            Assert.AreEqual("", stringAppender.GetString(), "%message-as-name not registered");
+            Assert.AreEqual("One/Dot", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
 
             log1.Info("TrailingDot.");
-            Assert.AreEqual("", stringAppender.GetString(), "%message-as-name not registered");
+            Assert.AreEqual("TrailingDot", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
 
             log1.Info(".LeadingDot");
-            Assert.AreEqual("", stringAppender.GetString(), "%message-as-name not registered");
+            Assert.AreEqual("LeadingDot", stringAppender.GetString(), "%message-as-name not registered");
             stringAppender.Reset();
 
             // empty string and other evil combinations as tests for of-by-one mistakes in index calculations

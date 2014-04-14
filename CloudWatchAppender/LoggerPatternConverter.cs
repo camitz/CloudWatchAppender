@@ -45,7 +45,7 @@ namespace CloudWatchAppender
             writer.Write(
                 string.Join("/",
                             elements
-                                .Take(elements.Count() + m_precision)
+                                .Take(-m_precision)
                     )
                 );
         }

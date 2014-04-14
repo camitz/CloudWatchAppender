@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
-using MbUnit.Framework;
+using NUnit.Framework;
 
 namespace CloudWatchAppender.Tests
 {

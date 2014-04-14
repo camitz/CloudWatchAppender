@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using MbUnit.Framework;
+using NUnit.Framework;
 using log4net;
 using log4net.Core;
 

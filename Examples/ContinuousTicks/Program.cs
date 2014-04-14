@@ -8,7 +8,7 @@ namespace ContinuousTicks
     internal class ContinuousTicks
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ContinuousTicks));
-        private const int nTicks = 200;
+        private const int nTicks = 50;
 
         private static void Main(string[] args)
         {

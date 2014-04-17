@@ -1,6 +1,6 @@
 using System;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.Appenders
 {
     internal class CloudWatchAppenderException : Exception
     {

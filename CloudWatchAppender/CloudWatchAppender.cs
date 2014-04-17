@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon;
-using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
-using Amazon.Runtime;
 using log4net.Appender;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
@@ -37,11 +33,9 @@ namespace CloudWatchAppender
             set { _configOverrides = value; }
         }
 
-        private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
-
         private void AddDimension(Dimension value)
         {
-            _dimensions[value.Name] = value;
+            _eventProcessor.Dimensions[value.Name] = value;
         }
 
         public int RateLimit
@@ -64,7 +58,6 @@ namespace CloudWatchAppender
 
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
 
-        private IAmazonCloudWatch _client;
 
         public CloudWatchAppender()
         {
@@ -73,77 +66,14 @@ namespace CloudWatchAppender
             logger.Level = Level.Off;
 
             hierarchy.AddRenderer(typeof(Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
+            _eventProcessor = new EventProcessor(ConfigOverrides, Unit, Namespace, MetricName, Timestamp, Value);
         }
-
-        private void SetupClient()
-        {
-            if (_client != null)
-                return;
-
-            AmazonCloudWatchConfig cloudWatchConfig = null;
-            RegionEndpoint regionEndpoint = null;
-
-            if (string.IsNullOrEmpty(EndPoint) && ConfigurationManager.AppSettings["AWSServiceEndpoint"] != null)
-                EndPoint = ConfigurationManager.AppSettings["AWSServiceEndpoint"];
-
-            if (string.IsNullOrEmpty(AccessKey) && ConfigurationManager.AppSettings["AWSAccessKey"] != null)
-                AccessKey = ConfigurationManager.AppSettings["AWSAccessKey"];
-
-            if (string.IsNullOrEmpty(Secret) && ConfigurationManager.AppSettings["AWSSecretKey"] != null)
-                Secret = ConfigurationManager.AppSettings["AWSSecretKey"];
-
-            //_client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret); //Can't do this anymore.
-
-            try
-            {
-
-                if (!string.IsNullOrEmpty(EndPoint))
-                {
-                    if (EndPoint.StartsWith("http"))
-                    {
-                        cloudWatchConfig = new AmazonCloudWatchConfig { ServiceURL = EndPoint };
-                        if (string.IsNullOrEmpty(AccessKey))
-                            _client = AWSClientFactory.CreateAmazonCloudWatchClient(cloudWatchConfig);
-                    }
-                    else
-                    {
-                        regionEndpoint = RegionEndpoint.GetBySystemName(EndPoint);
-                        if (string.IsNullOrEmpty(AccessKey))
-                            _client = AWSClientFactory.CreateAmazonCloudWatchClient(regionEndpoint);
-                    }
-                }
-            }
-            catch (AmazonServiceException)
-            {
-            }
-
-            if (!string.IsNullOrEmpty(AccessKey))
-                if (regionEndpoint != null)
-                    _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret, regionEndpoint);
-                else if (cloudWatchConfig != null)
-                    _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret, cloudWatchConfig);
-                //else //Can't do this anymore.
-                //    _client = AWSClientFactory.CreateAmazonCloudWatchClient(AccessKey, Secret);
-
-            if (_client==null)
-                throw new InvalidOperationException("Couldn't create AWS client due to configuration missing vital parts.");
-            //Debug
-            var metricDatum = new Amazon.CloudWatch.Model.MetricDatum
-            {
-                MetricName = "CloudWatchAppender",
-                Value = 1,
-                Unit = "Count"
-            };
-            //_client.PutMetricData(new PutMetricDataRequest().WithNamespace("CloudWatchAppender").WithMetricData(metricDatum));
-        }
-
 
 
         public static bool HasPendingRequests
         {
             get { return _tasks.Values.Any(t => !t.IsCompleted); }
         }
-
 
         public static void WaitForPendingRequests(TimeSpan timeout)
         {
@@ -175,77 +105,20 @@ namespace CloudWatchAppender
             if (Layout == null)
                 Layout = new PatternLayout("%message");
 
-            var renderedString = RenderLoggingEvent(loggingEvent);
+            var parser = _eventProcessor.ProcessEvent(loggingEvent, RenderLoggingEvent(loggingEvent));
 
-            var patternParser = new PatternParser(loggingEvent);
-
-            if (renderedString.Contains("%"))
-                renderedString = patternParser.Parse(renderedString);
-
-            System.Diagnostics.Debug.WriteLine(string.Format("RenderedString: {0}", renderedString));
-
-            ParseProperties(patternParser);
-
-
-            var parser = new EventMessageParser(renderedString, ConfigOverrides)
-                        {
-                            DefaultMetricName = _defaultMetricName,
-                            DefaultNameSpace = _parsedNamespace,
-                            DefaultUnit = _parsedUnit,
-                            DefaultDimensions = _parsedDimensions,
-                            DefaultTimestamp = _dateTimeOffset
-                        };
-
-            if (!string.IsNullOrEmpty(Value) && ConfigOverrides)
-                parser.DefaultValue = Double.Parse(Value, CultureInfo.InvariantCulture);
-
-            parser.Parse();
-
-            foreach (var putMetricDataRequest in parser)
+            foreach (var putMetricDataRequest in _eventProcessor.GetMetricDataRequests())
                 SendItOff(putMetricDataRequest);
         }
 
-        private void ParseProperties(PatternParser patternParser)
-        {
-            if (!_parsedProperties)
-            {
-                _parsedDimensions = !_dimensions.Any() ? null :
-                    _dimensions
-                    .Select(x => new Dimension { Name = x.Key, Value = patternParser.Parse(x.Value.Value) }).
-                    ToDictionary(x => x.Name, y => y);
-
-                _parsedUnit = String.IsNullOrEmpty(Unit)
-                                  ? null
-                                  : patternParser.Parse(Unit);
-
-                _parsedNamespace = string.IsNullOrEmpty(Namespace)
-                                       ? null
-                                       : patternParser.Parse(Namespace);
-
-                _defaultMetricName = string.IsNullOrEmpty(MetricName)
-                            ? null
-                            : patternParser.Parse(MetricName);
-
-                _dateTimeOffset = string.IsNullOrEmpty(Timestamp)
-                         ? null
-                         : (DateTimeOffset?)DateTimeOffset.Parse(patternParser.Parse(Timestamp));
-
-                _parsedProperties = true;
-            }
-        }
-
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
-        private Dictionary<string, Dimension> _parsedDimensions;
-        private bool _parsedProperties;
-        private string _parsedUnit;
-        private string _parsedNamespace;
-        private string _defaultMetricName;
-        private DateTimeOffset? _dateTimeOffset;
+        private ClientWrapper _client;
+        private readonly EventProcessor _eventProcessor;
 
         private void SendItOff(PutMetricDataRequest metricDataRequest)
         {
             if (_client == null)
-                SetupClient();
+                _client = new ClientWrapper(EndPoint, AccessKey, Secret);
 
 
             var tokenSource = new CancellationTokenSource();

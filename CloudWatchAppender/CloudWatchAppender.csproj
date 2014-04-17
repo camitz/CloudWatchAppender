@@ -108,7 +108,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BufferedCloudWatchAppender.cs" />
+    <Compile Include="ClientWrapper.cs" />
     <Compile Include="CloudWatchAppenderException.cs" />
+    <Compile Include="EventProcessor.cs" />
     <Compile Include="EventRateLimiter.cs" />
     <Compile Include="FakeInstanceMetaDataReader.cs" />
     <Compile Include="InstanceMetaDataReader.cs" />

@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch.Model;
-using log4net;
 
 namespace CloudWatchAppender
 {
@@ -53,7 +52,6 @@ namespace CloudWatchAppender
                 try
                 {
                     FillName(p);
-
                 }
                 catch (MetricDatumFilledException)
                 {
@@ -400,6 +398,14 @@ namespace CloudWatchAppender
         object IEnumerator.Current
         {
             get { return Current; }
+        }
+
+        public IEnumerable<PutMetricDataRequest> GetMetricDataRequests()
+        {
+            foreach (var putMetricDataRequest in this)
+            {
+                yield return Current;
+            }
         }
     }
 }

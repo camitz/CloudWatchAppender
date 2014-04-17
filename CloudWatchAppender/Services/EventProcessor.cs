@@ -6,7 +6,7 @@ using Amazon.CloudWatch.Model;
 using log4net.Core;
 using log4net.Layout;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.Services
 {
     public class EventProcessor
     {
@@ -43,15 +43,9 @@ namespace CloudWatchAppender
             get { return _dimensions; }
         }
 
-        public IEnumerable<PutMetricDataRequest> GetMetricDataRequests()
+
+        public IEnumerable<PutMetricDataRequest> ProcessEvent(LoggingEvent loggingEvent, string renderedString)
         {
-            return _eventMessageParser.GetMetricDataRequests();
-        }
-
-        public EventMessageParser ProcessEvent(LoggingEvent loggingEvent, string renderedString)
-        {
-
-
             var patternParser = new PatternParser(loggingEvent);
 
             if (renderedString.Contains("%"))
@@ -61,11 +55,9 @@ namespace CloudWatchAppender
 
             if (!_hasParsedProperties)
             {
-                ParProperties(patternParser);
+                ParseProperties(patternParser);
                 _hasParsedProperties = true;
             }
-
-
             
             _eventMessageParser = new EventMessageParser(renderedString, _configOverrides)
                          {
@@ -80,10 +72,11 @@ namespace CloudWatchAppender
                 _eventMessageParser.DefaultValue = Double.Parse(_value, CultureInfo.InvariantCulture);
 
             _eventMessageParser.Parse();
-            return _eventMessageParser;
+
+            return _eventMessageParser.GetMetricDataRequests();
         }
 
-        private void ParProperties(PatternParser patternParser)
+        private void ParseProperties(PatternParser patternParser)
         {
             _parsedDimensions = !_dimensions.Any()
                 ? null

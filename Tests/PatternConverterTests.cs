@@ -1,4 +1,6 @@
 ﻿using System;
+using CloudWatchAppender.Layout;
+using CloudWatchAppender.PatternConverter;
 using NUnit.Framework;
 using log4net;
 using log4net.Config;

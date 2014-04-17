@@ -6,7 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.Services
 {
     public static class MetaDataKeys
     {
@@ -27,6 +27,16 @@ namespace CloudWatchAppender
         public const string reservationid = "reservationid";
     }
 
+
+    public interface IInstanceMetaDataReader
+    {
+        string GetMetaData(string key);
+
+        [Obsolete]
+        string GetInstanceID();
+
+        IDictionary<string, string> MetaDataKeyLookup { get; }
+    }
 
     class InstanceMetaDataReader : IInstanceMetaDataReader
     {
@@ -166,14 +176,5 @@ namespace CloudWatchAppender
         }
     }
 
-    public interface IInstanceMetaDataReader
-    {
-        string GetMetaData(string key);
-
-        [Obsolete]
-        string GetInstanceID();
-
-        IDictionary<string, string> MetaDataKeyLookup { get; }
-    }
 }
 

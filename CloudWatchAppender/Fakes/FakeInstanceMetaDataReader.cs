@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using CloudWatchAppender.Services;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.Fakes
 {
+
     class FakeInstanceMetaDataReader : IInstanceMetaDataReader
     {
         private Dictionary<string, string> _metaDataKeys = new Dictionary<string, string>

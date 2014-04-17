@@ -1,15 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch.Model;
+using CloudWatchAppender.Model;
+using MetricDatum = CloudWatchAppender.Model.MetricDatum;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.Services
 {
-    public class EventMessageParser : IEnumerable<PutMetricDataRequest>, IEnumerator<PutMetricDataRequest>
+    public class EventMessageParser 
     {
         private readonly string _renderedMessage;
         private readonly bool _defaultsOverridePattern;
@@ -266,46 +267,46 @@ namespace CloudWatchAppender
 
         private void FillName(AppenderValue p)
         {
-            switch (p.Name)
+            switch (p.Name.ToLowerInvariant())
             {
-                case "Value":
+                case "value":
                     _currentDatum.Value = _defaultsOverridePattern ? DefaultValue ?? p.dValue.Value : p.dValue.Value;
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
                     break;
 
-                case "Unit":
+                case "unit":
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.sValue : p.sValue;
                     break;
 
-                case "MetricName":
+                case "metricname":
                     _currentDatum.MetricName = _defaultsOverridePattern ? DefaultMetricName ?? p.sValue : p.sValue;
                     break;
 
-                case "NameSpace":
+                case "namespace":
                     _currentDatum.NameSpace = _defaultsOverridePattern ? DefaultNameSpace ?? p.sValue : p.sValue;
                     break;
 
-                case "Maximum":
+                case "maximum":
                     _currentDatum.Maximum = _defaultsOverridePattern ? DefaultMaximum ?? p.dValue.Value : p.dValue.Value;
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
                     break;
 
-                case "Minimum":
+                case "minimum":
                     _currentDatum.Minimum = _defaultsOverridePattern ? DefaultMinimum ?? p.dValue.Value : p.dValue.Value;
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
                     break;
 
-                case "SampleCount":
+                case "samplecount":
                     _currentDatum.SampleCount = _defaultsOverridePattern ? DefaultSampleCount ?? p.dValue.Value : p.dValue.Value;
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
                     break;
 
-                case "Sum":
+                case "sum":
                     _currentDatum.Sum = _defaultsOverridePattern ? DefaultSum ?? p.dValue.Value : p.dValue.Value;
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
                     break;
 
-                case "Timestamp":
+                case "timestamp":
                     _currentDatum.Timestamp = _defaultsOverridePattern ? DefaultTimestamp ?? p.Time.Value : p.Time.Value;
                     break;
             }
@@ -315,7 +316,7 @@ namespace CloudWatchAppender
         {
             var dimensions = DefaultDimensions ?? _dimensions;
 
-            foreach (var dimension in _dimensions.Values)
+            foreach (var dimension in _dimensions.Values.ToArray())
             {
                 if (dimensions.ContainsKey(dimension.Name))
                 {
@@ -347,8 +348,6 @@ namespace CloudWatchAppender
         }
 
 
-        private List<MetricDatum>.Enumerator _dataEnumerator;
-        private bool _initialized;
 
         public EventMessageParser(string renderedMessage, bool useOverrides = true)
         {
@@ -356,56 +355,12 @@ namespace CloudWatchAppender
             _defaultsOverridePattern = useOverrides;
         }
 
-        public IEnumerator<PutMetricDataRequest> GetEnumerator()
-        {
-            return this;
-        }
+       
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public void Dispose()
-        {
-
-        }
-
-        public bool MoveNext()
-        {
-            if (!_initialized)
-                Reset();
-
-            return _dataEnumerator.MoveNext();
-        }
-
-        public void Reset()
-        {
-            _dataEnumerator = _data.GetEnumerator();
-            _initialized = true;
-        }
-
-        public PutMetricDataRequest Current
-        {
-            get
-            {
-                var r = _dataEnumerator.Current.Request;
-                r.MetricData.Add(_dataEnumerator.Current.AWSDatum); //Todo: if namespace is the same we can just, add to the list. Needs ordering of namespace etc.
-                return r;
-            }
-        }
-
-        object IEnumerator.Current
-        {
-            get { return Current; }
-        }
-
+     
         public IEnumerable<PutMetricDataRequest> GetMetricDataRequests()
         {
-            foreach (var putMetricDataRequest in this)
-            {
-                yield return Current;
-            }
+            return _data.Select(x=>x.Request);
         }
     }
 }

@@ -1,7 +1,6 @@
 using System;
-using System.Linq;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.Services
 {
     public class EventRateLimiter
     {

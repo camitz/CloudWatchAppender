@@ -107,24 +107,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BufferedCloudWatchAppender.cs" />
-    <Compile Include="ClientWrapper.cs" />
+    <Compile Include="BufferingAggregatingCloudWatchAppender.cs" />
     <Compile Include="CloudWatchAppenderException.cs" />
-    <Compile Include="EventProcessor.cs" />
-    <Compile Include="EventRateLimiter.cs" />
-    <Compile Include="FakeInstanceMetaDataReader.cs" />
-    <Compile Include="InstanceMetaDataReader.cs" />
     <Compile Include="CloudWatchAppender.cs" />
-    <Compile Include="InstanceMetaDataPatternConverter.cs" />
-    <Compile Include="MetricDatumRenderer.cs" />
-    <Compile Include="MetricDatum.cs" />
-    <Compile Include="PatternLayout.cs" />
-    <Compile Include="EventMessageParser.cs" />
-    <Compile Include="InstanceIDPatternConverter.cs" />
-    <Compile Include="LoggerPatternConverter.cs" />
-    <Compile Include="NamedPatternConverter.cs" />
-    <Compile Include="PatternParser.cs" />
+    <Compile Include="Fakes\FakeInstanceMetaDataReader.cs" />
+    <Compile Include="Layout\PatternLayout.cs" />
+    <Compile Include="Model\MetricDatum.cs" />
+    <Compile Include="Model\MetricDatumRenderer.cs" />
+    <Compile Include="PatternConverter\InstanceIDPatternConverter.cs" />
+    <Compile Include="PatternConverter\InstanceMetaDataPatternConverter.cs" />
+    <Compile Include="PatternConverter\LoggerPatternConverter.cs" />
+    <Compile Include="PatternConverter\NamedPatternConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ClientWrapper.cs" />
+    <Compile Include="Services\EventMessageParser.cs" />
+    <Compile Include="Services\EventProcessor.cs" />
+    <Compile Include="Services\EventRateLimiter.cs" />
+    <Compile Include="Services\InstanceMetaDataReader.cs" />
+    <Compile Include="Services\PatternParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

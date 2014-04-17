@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using CloudWatchAppender.Services;
 using NUnit.Framework;
 using log4net;
 using log4net.Core;

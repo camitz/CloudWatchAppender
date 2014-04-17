@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
+using CloudWatchAppender.PatternConverter;
 using log4net.Core;
 using log4net.Util;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.Layout
 {
     public class PatternLayout : log4net.Layout.PatternLayout
     {

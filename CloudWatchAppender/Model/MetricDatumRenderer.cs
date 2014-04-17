@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using log4net.ObjectRenderer;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.Model
 {
     public class MetricDatumRenderer : IObjectRenderer
     {
@@ -27,11 +27,11 @@ namespace CloudWatchAppender
         private void RenderAWSMetricDatum(Amazon.CloudWatch.Model.MetricDatum metricDatum, TextWriter writer)
         {
             if (!String.IsNullOrEmpty(metricDatum.MetricName))
-                writer.Write(String.Format("MetricName: {0}, ", metricDatum.MetricName));
+                writer.Write("MetricName: {0}, ", metricDatum.MetricName);
             if (!String.IsNullOrEmpty(metricDatum.Unit))
-                writer.Write(String.Format("Unit: {0}, ", metricDatum.Unit));
+                writer.Write("Unit: {0}, ", metricDatum.Unit);
 
-            writer.Write(String.Format("Value: {0}, ", metricDatum.Value.ToString(CultureInfo.InvariantCulture)));
+            writer.Write("Value: {0}, ", metricDatum.Value.ToString(CultureInfo.InvariantCulture));
 
             if (metricDatum.Dimensions.Any())
             {
@@ -42,21 +42,20 @@ namespace CloudWatchAppender
             }
 
             if (metricDatum.Timestamp != default(DateTime))
-                writer.Write(String.Format("Timestamp: {0}, ",
-                                           metricDatum.Timestamp.ToString(CultureInfo.CurrentCulture)));
+                writer.Write("Timestamp: {0}, ", metricDatum.Timestamp.ToString(CultureInfo.CurrentCulture));
 
             if (metricDatum.StatisticValues != null)
             {
                 if (metricDatum.StatisticValues.Maximum > 0)
-                    writer.Write(String.Format("Maximum: {0}, ", metricDatum.StatisticValues.Maximum.ToString(CultureInfo.InvariantCulture)));
+                    writer.Write("Maximum: {0}, ", metricDatum.StatisticValues.Maximum.ToString(CultureInfo.InvariantCulture));
 
-                writer.Write(String.Format("Minimum: {0}, ", metricDatum.StatisticValues.Minimum.ToString(CultureInfo.InvariantCulture)));
+                writer.Write("Minimum: {0}, ", metricDatum.StatisticValues.Minimum.ToString(CultureInfo.InvariantCulture));
 
                 if (metricDatum.StatisticValues.SampleCount > 1)
-                    writer.Write(String.Format("SampleCount: {0}, ", metricDatum.StatisticValues.SampleCount.ToString(CultureInfo.InvariantCulture)));
+                    writer.Write("SampleCount: {0}, ", metricDatum.StatisticValues.SampleCount.ToString(CultureInfo.InvariantCulture));
 
                 if (metricDatum.StatisticValues.Sum > 0)
-                    writer.Write(String.Format("Sum: {0}, ", metricDatum.StatisticValues.Sum.ToString(CultureInfo.InvariantCulture)));
+                    writer.Write("Sum: {0}, ", metricDatum.StatisticValues.Sum.ToString(CultureInfo.InvariantCulture));
             }
         }
     }

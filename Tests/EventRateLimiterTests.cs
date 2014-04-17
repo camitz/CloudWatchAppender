@@ -1,4 +1,5 @@
 using System;
+using CloudWatchAppender.Services;
 using NUnit.Framework;
 
 namespace CloudWatchAppender.Tests

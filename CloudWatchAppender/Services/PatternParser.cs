@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using CloudWatchAppender.Layout;
 using log4net.Core;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.Services
 {
     public class PatternParser
     {

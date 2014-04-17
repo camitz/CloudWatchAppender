@@ -1,9 +1,10 @@
 using System;
 using System.IO;
+using CloudWatchAppender.Services;
 using log4net.Core;
 using log4net.Layout.Pattern;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.PatternConverter
 {
     [Obsolete]
     internal sealed class InstanceIDPatternConverter : PatternLayoutConverter

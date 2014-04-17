@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E38702
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedTicks", "..\BufferedTicks\BufferedTicks.csproj", "{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,16 @@ Global
 		{EB37B258-908D-4B1A-92C7-D235AA33F408}.Release|Mixed Platforms.Build.0 = Release|x86
 		{EB37B258-908D-4B1A-92C7-D235AA33F408}.Release|x86.ActiveCfg = Release|x86
 		{EB37B258-908D-4B1A-92C7-D235AA33F408}.Release|x86.Build.0 = Release|x86
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,5 +100,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8B622E00-6AF5-43FB-8E5C-EB302C07AD8A} = {454F1AF8-8B2E-4ED9-AD57-6765C371C79A}
 		{B09B68DB-FB7F-4FA5-A4BA-DE9B0618E491} = {454F1AF8-8B2E-4ED9-AD57-6765C371C79A}
+		{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC} = {454F1AF8-8B2E-4ED9-AD57-6765C371C79A}
 	EndGlobalSection
 EndGlobal

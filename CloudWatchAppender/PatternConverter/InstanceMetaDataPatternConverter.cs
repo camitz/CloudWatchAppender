@@ -1,12 +1,13 @@
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using CloudWatchAppender.Services;
 using log4net.Core;
 using log4net.Layout.Pattern;
 
 [assembly: InternalsVisibleTo("MetaDataTester")]
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.PatternConverter
 {
     internal sealed class InstanceMetaDataPatternConverter : PatternLayoutConverter, IOptionHandler
     {

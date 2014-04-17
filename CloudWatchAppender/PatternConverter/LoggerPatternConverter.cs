@@ -5,7 +5,7 @@ using log4net.Core;
 
 [assembly: InternalsVisibleTo("CloudWatchAppender.Tests")]
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.PatternConverter
 {
     internal class LoggerPatternConverter : NamedPatternConverter
     {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Amazon.CloudWatch.Model;
+using CloudWatchAppender.Model;
 using NUnit.Framework;
 
 namespace CloudWatchAppender.Tests
@@ -50,7 +51,7 @@ namespace CloudWatchAppender.Tests
         {
             var t = new StringWriter();
 
-            new MetricDatumRenderer().RenderObject(null, new MetricDatum("A tick!")
+            new MetricDatumRenderer().RenderObject(null, new Model.MetricDatum("A tick!")
                                         .WithMetricName("TheMetricName")
                                         .WithDimensions(new[]{new Dimension
                                                                    {
@@ -79,7 +80,7 @@ namespace CloudWatchAppender.Tests
         {
             var t = new StringWriter();
 
-            new MetricDatumRenderer().RenderObject(null, new MetricDatum()
+            new MetricDatumRenderer().RenderObject(null, new Model.MetricDatum()
                                          .WithTimestamp(DateTimeOffset.Parse("2012-09-11 11:11")),
                                      t);
 
@@ -110,7 +111,7 @@ namespace CloudWatchAppender.Tests
         {
             var t = new StringWriter();
 
-            new MetricDatumRenderer().RenderObject(null, new MetricDatum()
+            new MetricDatumRenderer().RenderObject(null, new Model.MetricDatum()
                                         .WithStatisticValues(new StatisticSet
                                                                  {
                                                                      Maximum = 100.1,

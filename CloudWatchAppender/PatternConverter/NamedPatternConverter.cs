@@ -4,7 +4,7 @@ using log4net.Core;
 using log4net.Layout.Pattern;
 using log4net.Util;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.PatternConverter
 {
     public abstract class NamedPatternConverter : PatternLayoutConverter, IOptionHandler
     {

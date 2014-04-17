@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Amazon.CloudWatch.Model;
 
-namespace CloudWatchAppender
+namespace CloudWatchAppender.Model
 {
     public class MetricDatum
     {
@@ -191,7 +191,12 @@ namespace CloudWatchAppender
 
         internal PutMetricDataRequest Request
         {
-            get { return _request; }
+            get
+            {
+                if(!_request.MetricData.Any())
+                    _request.MetricData.Add(_datum);
+                return _request;
+            }
         }
 
         internal Amazon.CloudWatch.Model.MetricDatum AWSDatum

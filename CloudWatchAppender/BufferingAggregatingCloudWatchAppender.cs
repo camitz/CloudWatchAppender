@@ -21,7 +21,17 @@ namespace CloudWatchAppender
         public string Secret { get; set; }
         public string EndPoint { get; set; }
 
-        public string Unit { get; set; }
+        public string Unit
+        {
+            set { _standardUnit = value; }
+        }
+
+        public StandardUnit StandardUnit
+        {
+            get { return _standardUnit; }
+            set { _standardUnit = value; }
+        }
+
         public string Value { get; set; }
         public string MetricName { get; set; }
         public string Namespace { get; set; }
@@ -76,7 +86,7 @@ namespace CloudWatchAppender
                 _client = new ClientWrapper(EndPoint, AccessKey, Secret);
 
             if (_eventProcessor == null)
-                _eventProcessor = new EventProcessor(ConfigOverrides, Unit, Namespace, MetricName, Timestamp, Value);
+                _eventProcessor = new EventProcessor(ConfigOverrides, StandardUnit, Namespace, MetricName, Timestamp, Value);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
@@ -155,6 +165,7 @@ namespace CloudWatchAppender
         private DateTimeOffset? _dateTimeOffset;
         private ClientWrapper _client;
         private EventProcessor _eventProcessor;
+        private StandardUnit _standardUnit;
 
 
         public static bool HasPendingRequests

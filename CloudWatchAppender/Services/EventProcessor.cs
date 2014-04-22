@@ -29,7 +29,7 @@ namespace CloudWatchAppender.Services
         private readonly string _timestamp;
         private readonly string _value;
 
-        public EventProcessor(bool configOverrides, string unit, string @namespace, string metricName, string timestamp, string value)
+        public EventProcessor(bool configOverrides, StandardUnit unit, string @namespace, string metricName, string timestamp, string value)
         {
             _configOverrides = configOverrides;
             _unit = unit;

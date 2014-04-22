@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Model;
 using log4net.Util;
@@ -23,7 +24,7 @@ namespace CloudWatchAppender.Services
         public string DefaultMetricName { get; set; }
         public double? DefaultValue { get; set; }
         public DateTimeOffset? DefaultTimestamp { get; set; }
-        public string DefaultUnit { get; set; }
+        public StandardUnit DefaultUnit { get; set; }
         public string DefaultNameSpace { get; set; }
 
         public IDictionary<string, Dimension> DefaultDimensions { get; set; }
@@ -230,11 +231,9 @@ namespace CloudWatchAppender.Services
 
                         if (tokens.MoveNext())
                             if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
-                                if (MetricDatum.SupportedUnits.Any(
-                                        x => x.Equals(unit, StringComparison.InvariantCultureIgnoreCase)))
-                                    v.Unit = unit;
-                                else
-                                    LogLog.Warn(typeof(EventMessageParser), string.Format("Unit {0} not supported. Defaulting to count.", unit));
+                            {
+                                v.Unit = unit;                                    
+                            }
 
                         _values.Add(v);
                     }
@@ -267,49 +266,50 @@ namespace CloudWatchAppender.Services
         }
 
 
-        private void FillName(AppenderValue p)
+        private void FillName(AppenderValue value)
         {
-            switch (p.Name.ToLowerInvariant())
+            switch (value.Name.ToLowerInvariant())
             {
                 case "value":
-                    _currentDatum.Value = _defaultsOverridePattern ? DefaultValue ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
+                    _currentDatum.Value = _defaultsOverridePattern ? DefaultValue ?? value.dValue.Value : value.dValue.Value;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
                     break;
 
                 case "unit":
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.sValue : p.sValue;
+                    if (_defaultsOverridePattern) _currentDatum.Unit = DefaultUnit ?? value.sValue;
+                    else _currentDatum.Unit = value.sValue;
                     break;
 
                 case "metricname":
-                    _currentDatum.MetricName = _defaultsOverridePattern ? DefaultMetricName ?? p.sValue : p.sValue;
+                    _currentDatum.MetricName = _defaultsOverridePattern ? DefaultMetricName ?? value.sValue : value.sValue;
                     break;
 
                 case "namespace":
-                    _currentDatum.NameSpace = _defaultsOverridePattern ? DefaultNameSpace ?? p.sValue : p.sValue;
+                    _currentDatum.NameSpace = _defaultsOverridePattern ? DefaultNameSpace ?? value.sValue : value.sValue;
                     break;
 
                 case "maximum":
-                    _currentDatum.Maximum = _defaultsOverridePattern ? DefaultMaximum ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
+                    _currentDatum.Maximum = _defaultsOverridePattern ? DefaultMaximum ?? value.dValue.Value : value.dValue.Value;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
                     break;
 
                 case "minimum":
-                    _currentDatum.Minimum = _defaultsOverridePattern ? DefaultMinimum ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
+                    _currentDatum.Minimum = _defaultsOverridePattern ? DefaultMinimum ?? value.dValue.Value : value.dValue.Value;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
                     break;
 
                 case "samplecount":
-                    _currentDatum.SampleCount = _defaultsOverridePattern ? DefaultSampleCount ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
+                    _currentDatum.SampleCount = _defaultsOverridePattern ? DefaultSampleCount ?? value.dValue.Value : value.dValue.Value;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
                     break;
 
                 case "sum":
-                    _currentDatum.Sum = _defaultsOverridePattern ? DefaultSum ?? p.dValue.Value : p.dValue.Value;
-                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? p.Unit : p.Unit;
+                    _currentDatum.Sum = _defaultsOverridePattern ? DefaultSum ?? value.dValue.Value : value.dValue.Value;
+                    _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
                     break;
 
                 case "timestamp":
-                    _currentDatum.Timestamp = _defaultsOverridePattern ? DefaultTimestamp ?? p.Time.Value : p.Time.Value;
+                    _currentDatum.Timestamp = _defaultsOverridePattern ? DefaultTimestamp ?? value.Time.Value : value.Time.Value;
                     break;
             }
         }
@@ -344,7 +344,7 @@ namespace CloudWatchAppender.Services
         {
             public string Name;
             public double? dValue;
-            public string Unit;
+            public StandardUnit Unit;
             public string sValue;
             public DateTimeOffset? Time;
         }

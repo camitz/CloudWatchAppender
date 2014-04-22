@@ -27,7 +27,7 @@ namespace BufferedTicks
             {
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
 
-                log.InfoFormat("A tick! Namespace: {1} MetricName: {2} Dimension: TestDim: {3} Value: {0} Kilobytes",
+                log.InfoFormat("A tick! Namespace: {1} MetricName: {2} Dimension: TestDim: {3} Value: {0} Kilobyte",
                     random.NextDouble() * (1e5 - 1e2) + 1e2,
                     nss[random.Next(2)], names[random.Next(2)], dims[random.Next(2)]);
 

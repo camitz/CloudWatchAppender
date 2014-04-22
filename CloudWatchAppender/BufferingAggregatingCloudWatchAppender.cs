@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
@@ -148,7 +149,7 @@ namespace CloudWatchAppender
 
         private Dictionary<string, Dimension> _parsedDimensions;
         private bool _parsedProperties;
-        private string _parsedUnit;
+        private StandardUnit _parsedUnit;
         private string _parsedNamespace;
         private string _defaultMetricName;
         private DateTimeOffset? _dateTimeOffset;

@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using log4net.Util;
 
 namespace CloudWatchAppender.Model
 {
@@ -42,7 +44,7 @@ namespace CloudWatchAppender.Model
             }
         }
 
-        public string Unit
+        public StandardUnit Unit
         {
             get { return _datum.Unit; }
             set
@@ -50,9 +52,12 @@ namespace CloudWatchAppender.Model
                 if (!string.IsNullOrEmpty(value))
                 {
                     if (!string.IsNullOrEmpty(_datum.Unit) && _datum.Unit != value)
-                        throw new MetricDatumFilledException("Value has been set already.");
+                        throw new MetricDatumFilledException("Unit has been set already.");
 
-                    _datum.Unit = SupportedUnits.Contains(value) ? value : null;
+                    _datum.Unit = value;
+
+                    if (_datum.Unit != value)
+                        LogLog.Warn(typeof(MetricDatum), string.Format("Unit {0} not supported. Using default.", value));
                 }
             }
         }
@@ -63,7 +68,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (!string.IsNullOrEmpty(_datum.MetricName))
-                    throw new MetricDatumFilledException("Value has been set already.");
+                    throw new MetricDatumFilledException("MetricName has been set already.");
 
                 _datum.MetricName = value;
             }
@@ -75,7 +80,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (!string.IsNullOrEmpty(_request.Namespace))
-                    throw new MetricDatumFilledException("Value has been set already.");
+                    throw new MetricDatumFilledException("NameSpace has been set already.");
 
                 _request.Namespace = value.Replace(".", "/");
             }
@@ -193,7 +198,7 @@ namespace CloudWatchAppender.Model
         {
             get
             {
-                if(!_request.MetricData.Any())
+                if (!_request.MetricData.Any())
                     _request.MetricData.Add(_datum);
                 return _request;
             }
@@ -226,37 +231,6 @@ namespace CloudWatchAppender.Model
             get { return _valueMode; }
             set { _valueMode = value; }
         }
-
-        public static readonly ISet<string> SupportedUnits = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-                                                    {
-                                                        "Seconds",
-                                                        "Microseconds",
-                                                        "Milliseconds",
-                                                        "Bytes",
-                                                        "Kilobytes",
-                                                        "Megabytes",
-                                                        "Gigabytes",
-                                                        "Terabytes",
-                                                        "Bits",
-                                                        "Kilobits",
-                                                        "Megabits",
-                                                        "Gigabits",
-                                                        "Terabits",
-                                                        "Percent",
-                                                        "Count",
-                                                        "Bytes/Second",
-                                                        "Kilobytes/Second",
-                                                        "Megabytes/Second",
-                                                        "Gigabytes/Second",
-                                                        "Terabytes/Second",
-                                                        "Bits/Second",
-                                                        "Kilobits/Second",
-                                                        "Megabits/Second",
-                                                        "Gigabits/Second",
-                                                        "Terabits/Second",
-                                                        "Second",
-                                                        "None"
-                                                    };
 
         public static readonly ISet<string> SupportedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                                                     {
@@ -294,7 +268,7 @@ namespace CloudWatchAppender.Model
             return this;
         }
 
-        public MetricDatum WithUnit(string value)
+        public MetricDatum WithUnit(StandardUnit value)
         {
             _datum.Unit = value;
             return this;

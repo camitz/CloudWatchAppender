@@ -333,8 +333,7 @@ namespace CloudWatchAppender.Services
                                 {
                                     Dimensions = dimensions.Any() ?
                                         dimensions.Values.Where(x => !string.IsNullOrEmpty(x.Value)).ToList() :
-                                        new List<Dimension>(),
-                                    Unit = DefaultUnit
+                                        new List<Dimension>()
                                 };
 
             _data.Add(_currentDatum);

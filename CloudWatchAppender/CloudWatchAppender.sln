@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchAppender", "CloudWatchAppender.csproj", "{9D22716F-0CF0-45DB-8957-9DACADFFF930}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{454F1AF8-8B2E-4ED9-AD57-6765C371C79A}"
@@ -21,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E38702
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedTicks", "..\BufferedTicks\BufferedTicks.csproj", "{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedTicks", "..\Examples\BufferedTicks\BufferedTicks.csproj", "{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -109,11 +109,11 @@ namespace CloudWatchAppender.Services
 
             try
             {
-
-                var task1 =
-                    Task.Factory.StartNew(() =>
+                Task superTask = null;
+                superTask =
+                    new Task(() =>
                                           {
-                                              var task =
+                                              var nestedTask =
                                                   Task.Factory.StartNew(() =>
                                                                         {
                                                                             try
@@ -135,37 +135,36 @@ namespace CloudWatchAppender.Services
 
                                               try
                                               {
-                                                  if (!task.Wait(30000))
+                                                  if (!nestedTask.Wait(30000))
                                                   {
                                                       tokenSource.Cancel();
-                                                      LogLog.Error(_declaringType, 
+                                                      LogLog.Error(_declaringType,
                                                           "CloudWatchAppender timed out while submitting to CloudWatch. Exception (if any): {0}",
-                                                          task.Exception);
+                                                          nestedTask.Exception);
                                                   }
                                               }
                                               catch (Exception e)
                                               {
-                                                  LogLog.Error(_declaringType, 
+                                                  LogLog.Error(_declaringType,
                                                       "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e);
                                               }
+
+                                              superTask.ContinueWith(t =>
+                                              {
+                                                  Task task2;
+                                                  _tasks.TryRemove(superTask.Id, out task2);
+                                                  LogLog.Debug(_declaringType, "Cloudwatch complete");
+                                                  if (superTask.Exception != null)
+                                                      LogLog.Error(_declaringType, string.Format("CloudWatchAppender encountered an error while submitting to CloudWatch. {0}", superTask.Exception));
+                                              });
                                           });
 
-                if (!task1.IsCompleted)
-                    _tasks.TryAdd(task1.Id, task1);
-
-                task1.ContinueWith(t =>
-                                   {
-                                       Task task2;
-                                       _tasks.TryRemove(task1.Id, out task2);
-                                       LogLog.Debug(_declaringType, "Cloudwatch complete");
-                                       if (task1.Exception != null)
-                                           LogLog.Error(_declaringType, string.Format("CloudWatchAppender encountered an error while submitting to CloudWatch. {0}", task1.Exception));
-                                   });
-
+                _tasks.TryAdd(superTask.Id, superTask);
+                superTask.Start();
             }
             catch (Exception e)
             {
-                LogLog.Error(_declaringType, 
+                LogLog.Error(_declaringType,
                     string.Format(
                         "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e));
             }

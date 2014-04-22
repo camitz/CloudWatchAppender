@@ -56,7 +56,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CloudWatchAppender\CloudWatchAppender.csproj">
+    <ProjectReference Include="..\..\CloudWatchAppender\CloudWatchAppender.csproj">
       <Project>{9D22716F-0CF0-45DB-8957-9DACADFFF930}</Project>
       <Name>CloudWatchAppender</Name>
     </ProjectReference>

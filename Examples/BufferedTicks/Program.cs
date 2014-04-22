@@ -8,7 +8,7 @@ namespace BufferedTicks
     internal class BufferedTicks
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(BufferedTicks));
-        private const int nTicks = 50;
+        private const int nTicks = 500;
 
         private static void Main(string[] args)
         {
@@ -29,7 +29,7 @@ namespace BufferedTicks
 
                 log.InfoFormat("A tick! Namespace: {1} MetricName: {2} Dimension: TestDim: {3} Value: {0} Kilobytes",
                     random.NextDouble() * (1e5 - 1e2) + 1e2,
-                    nss[random.Next(2)], names[random.Next(2)], dims[random.Next(2)]);
+                    nss[random.Next(1)], names[random.Next(1)], dims[random.Next(1)]);
 
                 //log.Info(String.Format("A tick! Timestamp: {0}", DateTimeOffset.Now.AddMinutes(-10).ToString()));
                 //log.Info(null);

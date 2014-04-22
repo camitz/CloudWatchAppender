@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Model;
 using NUnit.Framework;
@@ -61,7 +62,7 @@ namespace CloudWatchAppender.Tests
                                                                     {
                                                                         Name = "dim2", Value = "v2"
                                                                     } })
-                                         .WithUnit("Seconds")
+                                         .WithUnit(new StandardUnit("Seconds"))
                                          .WithValue(5.1)
                                          .WithTimestamp(DateTime.Parse("2012-09-11 11:11")),
                                      t);
@@ -72,6 +73,29 @@ namespace CloudWatchAppender.Tests
             Assert.That(t.ToString(), Is.StringContaining("Timestamp: 2012-09-11 11:11"));
             Assert.That(t.ToString(), Is.StringContaining("Dimensions: dim1: v1, dim2: v2"));
             Assert.That(t.ToString(), Is.StringContaining("A tick!"));
+        }
+
+        [Test]
+        public void AppenderMetricDatum_StringUnitk()
+        {
+            var t = new StringWriter();
+
+            new MetricDatumRenderer().RenderObject(null, new Model.MetricDatum("A tick!")
+                                        .WithMetricName("TheMetricName")
+                                        .WithDimensions(new[]{new Dimension
+                                                                   {
+                                                                       Name = "dim1", Value = "v1"
+                                                                   },
+                                                                new Dimension
+                                                                    {
+                                                                        Name = "dim2", Value = "v2"
+                                                                    } })
+                                         .WithUnit("Seconds")
+                                         .WithValue(5.1)
+                                         .WithTimestamp(DateTime.Parse("2012-09-11 11:11")),
+                                     t);
+
+            Assert.That(t.ToString(), Is.StringContaining("Unit: Seconds"));
         }
 
 
@@ -96,9 +120,12 @@ namespace CloudWatchAppender.Tests
                                                              {
                                                                  StatisticValues = new StatisticSet
                                                                                        {
-                                                                                           Maximum = 100.1, Minimum = 2.1, Sum = 250.1, SampleCount = 4
+                                                                                           Maximum = 100.1,
+                                                                                           Minimum = 2.1,
+                                                                                           Sum = 250.1,
+                                                                                           SampleCount = 4
                                                                                        }
-                                                             },t);
+                                                             }, t);
 
             Assert.That(t.ToString(), Is.StringContaining("Maximum: 100.1"));
             Assert.That(t.ToString(), Is.StringContaining("Minimum: 2.1"));

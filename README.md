@@ -4,7 +4,7 @@ All posts are made asynchronously to CloudWatch via the [AWSSDK](http://aws.amaz
 
 # Installation
 
-To add CloudWatchAppender to your Visual Studio (>2010) project, run the following command in <a href="http://docs.nuget.org/docs/start-here/using-the-package-manager-console">Package Manager Console</a> or download the source from [GitHub](https://github.com/camitz/CloudWatchAppender).
+To add CloudWatchAppender to your Visual Studio project, run the following command in <a href="http://docs.nuget.org/docs/start-here/using-the-package-manager-console">Package Manager Console</a> or download the source from [GitHub](https://github.com/camitz/CloudWatchAppender).
 
 <div class="nuget-badge">
 <p>
@@ -14,7 +14,7 @@ To add CloudWatchAppender to your Visual Studio (>2010) project, run the followi
 
 # Configuration
 
-CloudWatchAppender is easy to configure in web.config or app.config. If you've been using log4net you, probably already have the section and some of the elements defined. The following will divert all your logs events to CloudWatch. It will send a value of 1 with unit "Count". The default metric name as well as namespace is "CloudWatchAppender".
+CloudWatchAppender is easy to configure in web.config or app.config. If you've been using log4net you, probably already have the section and some of the elements defined. The following will direct all your logs events to CloudWatch. It will send a value of 1 with unit "Count". The default metric name as well as namespace is "CloudWatchAppender".
 
     <log4net>
         <appender name="CloudWatchAppender" type="CloudwatchAppender.CloudwatchAppender, CloudwatchAppender">
@@ -23,27 +23,35 @@ CloudWatchAppender is easy to configure in web.config or app.config. If you've b
 			<endPoint value="url or system name like: eu-west-1" />
         </appender>
 
-
-        <!-- As of version 1.3, this is no longer necessary.
-        <logger name="Amazon">
-          <level value="OFF" />
-        </logger>
-        -->
-
         <root>
           <appender-ref ref="CloudWatchAppender" />
         </root>
     </log4net>
 
-CloudWatchAppender can do more than this. Pretty much anything you can post to CloudWatch via the AWSSDK is supported by the appender in different ways. <strike>A notable exception is timestamp which will of course be supported in the near future.</strike> **Update!** *Supported as of version 1.2.*
+CloudWatchAppender can do more than this. Pretty much anything you can post to CloudWatch via the AWSSDK is supported by the appender in different ways. 
 
 To change the default behavior, you can either provide the info in the config-file or as part of the log event message. The former is cleaner in that the code can remain agnostic to the log event endpoint. The latter provides more power and granularity over what is posted. Other appenders that you might have added will the simply output the data as if it were any old message.
 
 **Warning** Make sure you read about CloudWatch [pricing](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/DeveloperGuide/cloudwatch_concepts.html) so you'll not get any surprises. Particularly, CloudWatch treats each combination of metric name, namespace and dimension as a different custom metric. You have just 10 free custom metrics. After that they start charging you.
 
-## Config-file
+## BufferingAggregatingCloudWatchAppender
 
-**Note!** *Changes as of version 1.3:* Before crendentials and endpoint was provided in AppSettings, a small but vital element that I had overlooked and hence failed to implement properly or even document. It is essential that you put it in your config file. AppSettings still work, of course, for backwards compatibility. As an EndPoint you can provide both the system name as below, or the full url, for instance https://monitoring.eu-west-1.amazonaws.com.
+Besides the regular CloudwatchAppender there is the BufferingAggregatingCloudWatchAppender that has several key benefits. Log events are stored in a buffer and only sent to CloudWatch once certain conditions are met, usually when the buffer reaches a certain limit.
+
+The events are assembled to statistics sets so that a minumum number of requests are performed. 
+
+This feature can potentially reduce the frequency of http requests to the AWS API by several orders of magnitude. As such it is the recommended appender for most purposes. Use the regular CloudwatchAppender when real time updates to CloudWatch is essential.
+
+Replacing the following in the right place above will post a request to AWS API only after 1000 log events have been recorded by the appender.
+
+     <appender name="CloudWatchAppender" type="CloudWatchAppender.BufferingAggregatingCloudWatchAppender, CloudWatchAppender">
+          <bufferSize value="1000"/>
+
+Most usage patterns describes below are applicable to BufferingAggregatingCloudWatchAppender as well.
+
+See [BufferingForwardingAppender](http://logging.apache.org/log4net/release/config-examples.html) and [BufferingApenderSkeleton](http://logging.apache.org/log4net/release/sdk/log4net.Appender.BufferingAppenderSkeleton.html) for more information on how to customize a buffering appender and set conditions for flushing the event buffer. For example, a TimeEvaluator can be used to trigger a buffer flush at certain time intervals. See my blog for an example of this.
+
+## Config-file
 
 The following example will post a metric with [unit](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html) Milliseconds and the value 20 for all loggers using this appender. The metric name will be ProcessingTime and the namespace MyApp/Process.
 
@@ -69,9 +77,11 @@ This normally goes in your app.config or web.config. log4net allows any old xml 
 
 Notice also we've provided the first of ten possible ["dimensions"](#dimensions). You can specify any string you like for name and value of the dimension. Above, however, we're using a special token for the value, "%metadata{instanceid}". This will be translated to the EC2 instance ID, see [Instance Metadata](#metadata) below. In fact, any token recognized by any regular PatternLayout conversion [patterns](http://logging.apache.org/log4net/release/sdk/log4net.Layout.PatternLayout.html), for instance %logger, will be translated as such.
 
-The *rateLimit* limits the number of requests sent to CloudWatch to 20 per second. 
+The *rateLimit* limits the number of requests sent to CloudWatch to 20 per second. It is not applicable for BufferingAggregatingCloudWatchAppender and will be ignored.
 
-The exact same can be accomplished by using the ["PatternLayout"](#patternlayout) we provide and using the format rules outlined below to format the input string to the appender.
+## Using PatternLayout
+
+The same result as above can be accomplished by using the version of ["PatternLayout"](#patternlayout) provided by CloudWatchAppender and using the format rules outlined below to format the input string to the appender.
 
       <layout type="CloudWatchAppender.PatternLayout, CloudWatchAppender">
            <conversionPattern value="%message Value: 20 Milliseconds, MetricName: ProcessingTime, NameSpace: MyApp/Processor, Dimension0: InstanceID: %metadata{instanceid}"/>
@@ -110,7 +120,7 @@ or
 
     log.Info(new Amazon.CloudWatch.Model.MetricDatum()
         .WithTimestamp(DateTime.UtcNow.AddMinutes(-10))
-        .WithUnit("Kilobytes")
+        .WithUnit(new Amazon.CloudWatch.StandardUnit("Kilobytes"))
         .WithValue(29.4));
 
 The above will do the same except for the message "A tick!" which if you have for instance a FileAppender cannot be output with the latter.
@@ -165,8 +175,6 @@ The following behave the same way.
 # <a id="dimensions"></a>Dimensions
 
 CloudWatch supports up to 10 dimensions given as name/value pair. CloudWatchAppender has no limit but don't try exceeding 10.
-
-**Warning** Again, make sure you understand that overusing dimensions can quickly become expensive.
 
 In your config file under the appender element you can add dimensions simply by listing a bunch of elements like this:
 
@@ -268,6 +276,23 @@ TODO
 
 # <a id="tokens"></a> Tokens recognized by CloudWatchAppender
 
+## Metrics
+
+* Value
+* Unit
+* Dimension
+* Dimensions
+* NameSpace
+* MetricName
+* Timestamp
+
+## Statistics
+
+* Maximum
+* Minimum
+* SampleCount
+* Sum
+
 ## Units
 
 * Seconds
@@ -298,23 +323,6 @@ TODO
 * Second
 * None
 
-## Metrics
-
-* Value
-* Unit
-* Dimension
-* Dimensions
-* NameSpace
-* MetricName
-* Timestamp
-
-## Statistics
-
-* Maximum
-* Minimum
-* SampleCount
-* Sum
-
 # Some more reading
 
 Check out the following blog posts that seeded the project.
@@ -323,7 +331,15 @@ Check out the following blog posts that seeded the project.
 
 [Improving the CloudWatch Appender](http://blog.simpletask.se/improving-cloudwatch-appender)
 
+[Improving the CloudWatch Appender](http://blog.simpletask.se/improving-cloudwatch-appender)
+
 # Releases
+
+## 4.1 <font size="2">(beta) 2014-04-23 </font>
+
+* Implemented BufferingAggregatingCloudWatchAppender.
+* More stable handling of asynchronousy.
+* Debug outputs and error messages routed to log4net's internal scheme.
 
 ## 4.0 <font size="2">(beta) 2014-04-14 </font>
 

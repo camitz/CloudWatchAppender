@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using log4net;
 using log4net.Config;
 
@@ -27,7 +28,7 @@ namespace BufferedTicks
             {
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
 
-                log.InfoFormat("A tick! Namespace: {1} MetricName: {2} Dimension: TestDim: {3} Value: {0} Kilobyte",
+                log.InfoFormat("A tick! Namespace: {1} MetricName: {2} Dimension: TestDim: {3} Value: {0} Kilobytes",
                     random.NextDouble() * (1e5 - 1e2) + 1e2,
                     nss[random.Next(2)], names[random.Next(2)], dims[random.Next(2)]);
 
@@ -38,6 +39,8 @@ namespace BufferedTicks
                 //    .WithTimestamp(DateTimeOffset.Now.AddMinutes(-10))
                 //    .WithUnit("Kilobytes")
                 //    .WithValue(29.4));
+
+                Thread.Sleep(10);
             }
 
             stopWatch.Stop();

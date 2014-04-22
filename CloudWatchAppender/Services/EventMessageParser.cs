@@ -6,11 +6,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Model;
+using log4net.Util;
 using MetricDatum = CloudWatchAppender.Model.MetricDatum;
 
 namespace CloudWatchAppender.Services
 {
-    public class EventMessageParser 
+    public class EventMessageParser
     {
         private readonly string _renderedMessage;
         private readonly bool _defaultsOverridePattern;
@@ -229,10 +230,11 @@ namespace CloudWatchAppender.Services
 
                         if (tokens.MoveNext())
                             if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
-                                if (
-                                    MetricDatum.SupportedUnits.Any(
+                                if (MetricDatum.SupportedUnits.Any(
                                         x => x.Equals(unit, StringComparison.InvariantCultureIgnoreCase)))
                                     v.Unit = unit;
+                                else
+                                    LogLog.Warn(typeof(EventMessageParser), string.Format("Unit {0} not supported. Defaulting to count.", unit));
 
                         _values.Add(v);
                     }
@@ -355,12 +357,12 @@ namespace CloudWatchAppender.Services
             _defaultsOverridePattern = useOverrides;
         }
 
-       
 
-     
+
+
         public IEnumerable<PutMetricDataRequest> GetMetricDataRequests()
         {
-            return _data.Select(x=>x.Request);
+            return _data.Select(x => x.Request);
         }
     }
 }

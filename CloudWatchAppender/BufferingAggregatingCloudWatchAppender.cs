@@ -10,6 +10,7 @@ using CloudWatchAppender.Services;
 using log4net.Appender;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
+using log4net.Util;
 
 namespace CloudWatchAppender
 {
@@ -114,7 +115,7 @@ namespace CloudWatchAppender
                         if (t.Count() > dimensionGrouping.Count())
                             foreach (var source in dimensionGrouping.Except(t))
                             {
-                                System.Diagnostics.Debug.WriteLine(string.Format("Dropping a datum, expected unit {0}, was {4}. ({1};{2};{3})",
+                                LogLog.Debug(_declaringType, string.Format("Dropping a datum, expected unit {0}, was {4}. ({1};{2};{3})",
                                     unit, namespaceGrouping.Key, metricNameGrouping.Key, dimensionGrouping.Key, source.Unit));
                             }
 
@@ -169,5 +170,7 @@ namespace CloudWatchAppender
         {
             ClientWrapper.WaitForPendingRequests();
         }
+
+        private readonly static Type _declaringType = typeof(BufferingAggregatingCloudWatchAppender);
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using Amazon.CloudWatch.Model;
 using log4net.Core;
 using log4net.Layout;
+using log4net.Util;
 
 namespace CloudWatchAppender.Services
 {
@@ -51,7 +52,7 @@ namespace CloudWatchAppender.Services
             if (renderedString.Contains("%"))
                 renderedString = patternParser.Parse(renderedString);
 
-            System.Diagnostics.Debug.WriteLine(string.Format("RenderedString: {0}", renderedString));
+            LogLog.Debug(_declaringType, string.Format("RenderedString: {0}", renderedString));
 
             if (!_hasParsedProperties)
             {
@@ -100,5 +101,7 @@ namespace CloudWatchAppender.Services
                 ? null
                 : (DateTimeOffset?) DateTimeOffset.Parse(patternParser.Parse(_timestamp));
         }
+
+        private readonly static Type _declaringType = typeof(EventProcessor);
     }
 }

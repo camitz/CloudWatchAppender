@@ -6,6 +6,7 @@ using CloudWatchAppender.Services;
 using log4net.Appender;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
+using log4net.Util;
 
 namespace CloudWatchAppender
 {
@@ -102,11 +103,11 @@ namespace CloudWatchAppender
             if (Layout == null)
                 Layout = new PatternLayout("%message");
 
-            System.Diagnostics.Debug.WriteLine("Appending");
+            LogLog.Debug(_declaringType, "Appending");
 
             if (!_eventRateLimiter.Request(loggingEvent.TimeStamp))
             {
-                System.Diagnostics.Debug.WriteLine("Appending denied due to event saturation.");
+                LogLog.Debug(_declaringType, "Appending denied due to event limiter saturated.");
                 return;
             }
 
@@ -119,5 +120,6 @@ namespace CloudWatchAppender
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private ClientWrapper _client;
         private EventProcessor _eventProcessor;
+        private readonly static Type _declaringType = typeof(CloudWatchAppender);
     }
 }

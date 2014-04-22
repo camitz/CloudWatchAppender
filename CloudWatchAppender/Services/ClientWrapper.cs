@@ -9,6 +9,7 @@ using Amazon;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.Runtime;
+using log4net.Util;
 
 namespace CloudWatchAppender.Services
 {
@@ -120,15 +121,15 @@ namespace CloudWatchAppender.Services
                                                                                 var tmpCulture = Thread.CurrentThread.CurrentCulture;
                                                                                 Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
 
-                                                                                System.Diagnostics.Debug.WriteLine("Sending");
+                                                                                LogLog.Debug(_declaringType, "Sending");
                                                                                 var response = PutMetricData(metricDataRequest);
-                                                                                System.Diagnostics.Debug.WriteLine("RequestID: " + response.ResponseMetadata.RequestId);
+                                                                                LogLog.Debug(_declaringType, "RequestID: " + response.ResponseMetadata.RequestId);
 
                                                                                 Thread.CurrentThread.CurrentCulture = tmpCulture;
                                                                             }
                                                                             catch (Exception e)
                                                                             {
-                                                                                System.Diagnostics.Debug.WriteLine(e);
+                                                                                LogLog.Debug(_declaringType, e.ToString());
                                                                             }
                                                                         }, ct);
 
@@ -137,14 +138,14 @@ namespace CloudWatchAppender.Services
                                                   if (!task.Wait(30000))
                                                   {
                                                       tokenSource.Cancel();
-                                                      System.Diagnostics.Debug.WriteLine(
+                                                      LogLog.Error(_declaringType, 
                                                           "CloudWatchAppender timed out while submitting to CloudWatch. Exception (if any): {0}",
                                                           task.Exception);
                                                   }
                                               }
                                               catch (Exception e)
                                               {
-                                                  System.Diagnostics.Debug.WriteLine(
+                                                  LogLog.Error(_declaringType, 
                                                       "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e);
                                               }
                                           });
@@ -156,15 +157,15 @@ namespace CloudWatchAppender.Services
                                    {
                                        Task task2;
                                        _tasks.TryRemove(task1.Id, out task2);
-                                       System.Diagnostics.Debug.WriteLine("Cloudwatch complete");
+                                       LogLog.Debug(_declaringType, "Cloudwatch complete");
                                        if (task1.Exception != null)
-                                           System.Diagnostics.Debug.WriteLine(string.Format("CloudWatchAppender encountered an error while submitting to CloudWatch. {0}", task1.Exception));
+                                           LogLog.Error(_declaringType, string.Format("CloudWatchAppender encountered an error while submitting to CloudWatch. {0}", task1.Exception));
                                    });
 
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(
+                LogLog.Error(_declaringType, 
                     string.Format(
                         "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e));
             }
@@ -193,5 +194,6 @@ namespace CloudWatchAppender.Services
                 Task.WaitAll(_tasks.Values.ToArray());
         }
 
+        private readonly static Type _declaringType = typeof(ClientWrapper);
     }
 }

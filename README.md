@@ -337,6 +337,10 @@ Check out the following blog posts that seeded the project.
 
 # Releases
 
+## 4.1.1 <font size="2">(beta) 2014-04-23 </font>
+
+* Trying to parse unit caused (unbuffered) CloudWatchAppender to fail. This is not supported anymore. If I broke you code let me know.
+
 ## 4.1 <font size="2">(beta) 2014-04-23 </font>
 
 * Implemented BufferingAggregatingCloudWatchAppender.

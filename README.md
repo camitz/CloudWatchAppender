@@ -322,7 +322,7 @@ TODO
 * Megabits/Second
 * Gigabits/Second
 * Terabits/Second
-* Second
+* Count/Second
 * None
 
 # Some more reading

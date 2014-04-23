@@ -295,6 +295,8 @@ TODO
 
 ## Units
 
+*This list is based on the SDK type StandardUnit and may not be up to date. StandardUnit is used internally across the code base of CloudWatchAppender to store unit values and to perform string conversion. Whatever StandardUnit supports, CloudWatchAppender does too.*
+
 * Seconds
 * Microseconds
 * Milliseconds
@@ -331,7 +333,7 @@ Check out the following blog posts that seeded the project.
 
 [Improving the CloudWatch Appender](http://blog.simpletask.se/improving-cloudwatch-appender)
 
-[Improving the CloudWatch Appender](http://blog.simpletask.se/improving-cloudwatch-appender)
+[Introducing the Buffering and Aggregeting CloudWatch Appender](http://blog.simpletask.se/post/buffering-aggregating-cloudwatch-appender)
 
 # Releases
 

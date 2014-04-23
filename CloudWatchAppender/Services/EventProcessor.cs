@@ -16,7 +16,6 @@ namespace CloudWatchAppender.Services
         private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
         private Dictionary<string, Dimension> _parsedDimensions;
         private bool _hasParsedProperties;
-        private StandardUnit _parsedUnit;
         private string _parsedNamespace;
         private string _defaultMetricName;
         private DateTimeOffset? _dateTimeOffset;
@@ -60,12 +59,12 @@ namespace CloudWatchAppender.Services
                 ParseProperties(patternParser);
                 _hasParsedProperties = true;
             }
-            
+
             _eventMessageParser = new EventMessageParser(renderedString, _configOverrides)
                          {
                              DefaultMetricName = _defaultMetricName,
                              DefaultNameSpace = _parsedNamespace,
-                             DefaultUnit = _parsedUnit,
+                             DefaultUnit = _unit,
                              DefaultDimensions = _parsedDimensions,
                              DefaultTimestamp = _dateTimeOffset
                          };
@@ -83,12 +82,8 @@ namespace CloudWatchAppender.Services
             _parsedDimensions = !_dimensions.Any()
                 ? null
                 : _dimensions
-                    .Select(x => new Dimension {Name = x.Key, Value = patternParser.Parse(x.Value.Value)}).
+                    .Select(x => new Dimension { Name = x.Key, Value = patternParser.Parse(x.Value.Value) }).
                     ToDictionary(x => x.Name, y => y);
-
-            _parsedUnit = String.IsNullOrEmpty(_unit)
-                ? null
-                : patternParser.Parse(_unit);
 
             _parsedNamespace = string.IsNullOrEmpty(_namespace)
                 ? null
@@ -100,7 +95,7 @@ namespace CloudWatchAppender.Services
 
             _dateTimeOffset = string.IsNullOrEmpty(_timestamp)
                 ? null
-                : (DateTimeOffset?) DateTimeOffset.Parse(patternParser.Parse(_timestamp));
+                : (DateTimeOffset?)DateTimeOffset.Parse(patternParser.Parse(_timestamp));
         }
 
         private readonly static Type _declaringType = typeof(EventProcessor);

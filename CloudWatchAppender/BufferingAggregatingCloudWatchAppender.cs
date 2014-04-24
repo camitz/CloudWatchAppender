@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
@@ -11,8 +12,10 @@ using CloudWatchAppender.Services;
 using log4net.Appender;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using log4net.Util;
 using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
+
+[assembly: InternalsVisibleTo("CloudWatchAppender.Tests")]
+
 
 namespace CloudWatchAppender
 {
@@ -100,7 +103,7 @@ namespace CloudWatchAppender
                 _client.SendItOff(putMetricDataRequest);
         }
 
-        private static List<PutMetricDataRequest> Assemble(IEnumerable<PutMetricDataRequest> rs)
+        internal static List<PutMetricDataRequest> Assemble(IEnumerable<PutMetricDataRequest> rs)
         {
             var requests = new List<PutMetricDataRequest>();
 
@@ -111,7 +114,6 @@ namespace CloudWatchAppender
                 foreach (var metricNameGrouping in namespaceGrouping.SelectMany(x => x.MetricData).GroupBy(x => x.MetricName))
                 {
                     var units = metricNameGrouping.Select(x => x.Unit).Distinct();
-
                     var unit = FindLeastUnit(units);
 
                     foreach (var dimensionGrouping in metricNameGrouping
@@ -119,9 +121,6 @@ namespace CloudWatchAppender
                             .OrderBy(d => d.Name)
                             .Select(d => string.Format("{0}/{1}", d.Name, d.Value)))))
                     {
-                        unit = dimensionGrouping.First().Unit;
-
-                       
 
                         metricData.Add(new MetricDatum
                                                {

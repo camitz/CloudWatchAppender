@@ -105,12 +105,7 @@ namespace CloudWatchAppender
 
             foreach (var namespaceGrouping in rs.GroupBy(r => r.Namespace))
             {
-                var request = new PutMetricDataRequest
-                              {
-                                  Namespace = namespaceGrouping.Key
-                              };
-
-                requests.Add(request);
+                var metricData = new List<Amazon.CloudWatch.Model.MetricDatum>();
 
                 foreach (var metricNameGrouping in namespaceGrouping.SelectMany(x => x.MetricData).GroupBy(x => x.MetricName))
                 {
@@ -133,7 +128,7 @@ namespace CloudWatchAppender
                         var t2 = t.Where(x => x.StatisticValues == null);
                         var t3 = t.Where(x => x.StatisticValues != null);
 
-                        request.MetricData.Add(new Amazon.CloudWatch.Model.MetricDatum
+                        metricData.Add(new Amazon.CloudWatch.Model.MetricDatum
                                                {
                                                    MetricName = metricNameGrouping.Key,
                                                    Dimensions = t2.First().Dimensions,
@@ -151,6 +146,21 @@ namespace CloudWatchAppender
 
                     }
                 }
+
+                var bin = metricData.Take(20);
+                var i = 0;
+                do
+                {
+                    var putMetricDataRequest = new PutMetricDataRequest
+                                               {
+                                                   Namespace = namespaceGrouping.Key
+                                               };
+
+                    putMetricDataRequest.MetricData.AddRange(bin);
+                    requests.Add(putMetricDataRequest);
+                    bin = metricData.Skip(i += 20).Take(20);
+
+                } while (bin.Any());
             }
 
             return requests;

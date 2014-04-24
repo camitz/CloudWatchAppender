@@ -79,6 +79,7 @@
     <Compile Include="PatternParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringAppender.cs" />
+    <Compile Include="UnitConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

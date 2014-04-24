@@ -125,10 +125,14 @@
     <Compile Include="Services\EventRateLimiter.cs" />
     <Compile Include="Services\InstanceMetaDataReader.cs" />
     <Compile Include="Services\PatternParser.cs" />
+    <Compile Include="Services\UnitConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UnitConverter\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

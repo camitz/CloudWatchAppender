@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using Amazon.CloudWatch.Model;
 using log4net;
 using log4net.Config;
 
@@ -18,6 +19,7 @@ namespace BufferedTicks
             var dims = new[] { "TestDimenValue1", "TestDimenValue2" };
             var names = new[] { "TestName1", "TestName2" };
             var nss = new[] { "TestNameSpace1", "TestNameSpace2" };
+            var units = new[] { "Kilobytes", "Megabytes", "Gigabytes" };
             var random = new Random();
 
 
@@ -28,17 +30,24 @@ namespace BufferedTicks
             {
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
 
-                log.InfoFormat("A tick! Namespace: {1} MetricName: {2} Dimension: TestDim: {3} Value: {0} Kilobytes",
-                    random.NextDouble() * (1e5 - 1e2) + 1e2,
-                    nss[random.Next(1)], names[random.Next(1)], dims[random.Next(1)]);
+                if (random.Next(2) == 0&&false)
+                    log.InfoFormat("A tick! Namespace: {1} MetricName: {2} Dimension: TestDim: {3} Value: {0} {4}",
+                        random.NextDouble() * (1e5 - 1e2) + 1e2,
+                        nss[random.Next(2)], names[random.Next(2)], dims[random.Next(2)], units[random.Next(3)]);
+                else
 
-                //log.Info(String.Format("A tick! Timestamp: {0}", DateTimeOffset.Now.AddMinutes(-10).ToString()));
-                //log.Info(null);
-                //log.Info("A tick! %logger %metadata{instanceid}");
-                //log.Info(new CloudWatchAppender.MetricDatum("A tick!")
-                //    .WithTimestamp(DateTimeOffset.Now.AddMinutes(-10))
-                //    .WithUnit("Kilobytes")
-                //    .WithValue(29.4));
+                    log.Info(new CloudWatchAppender.Model.MetricDatum("A tick!")
+                        .WithNameSpace(nss[random.Next(2)])
+                        .WithDimensions(new[] { new Dimension { Name = "TestDim", Value = dims[random.Next(2)] } })
+                        .WithMetricName(names[random.Next(2)])
+                        .WithUnit(units[random.Next(3)])
+                        .WithStatisticValues(new StatisticSet
+                                             {
+                                                 Minimum = random.NextDouble() * (3e3 - 1e2) + 1e2,
+                                                 Maximum = random.NextDouble() * (1.1e5 - .9e4) + .9e4,
+                                                 Sum = random.NextDouble() * 100 * ((6e4 - 4e4) + 4e4),
+                                                 SampleCount = 100
+                                             }));
 
                 Thread.Sleep(10);
             }

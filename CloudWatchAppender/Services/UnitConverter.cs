@@ -28,12 +28,15 @@ namespace CloudWatchAppender.Services
             return this;
         }
 
-        public double To(StandardUnit standardUnit)
+        public double To(StandardUnit to)
         {
-            return PerformConvert(standardUnit);
+            if (to == _from)
+                return _value;
+
+            return PerformConvert(to);
         }
 
-        private double PerformConvert(StandardUnit standardUnit)
+        private double PerformConvert(StandardUnit to)
         {
             if (_converterGraph == null)
                 GenerateGraph();
@@ -49,7 +52,7 @@ namespace CloudWatchAppender.Services
             while (queue.Any())
             {
                 var n = queue.Dequeue();
-                if (_converterGraph[standardUnit] == n)
+                if (_converterGraph[to] == n)
                 {
                     if (!fromNode.Links.Select(l => l.Value.OtherNode).Contains(n))
                         fromNode.LinkTo(n, multipliers[n]);

@@ -12,6 +12,7 @@ using log4net.Appender;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
+using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
 
 namespace CloudWatchAppender
 {
@@ -105,42 +106,30 @@ namespace CloudWatchAppender
 
             foreach (var namespaceGrouping in rs.GroupBy(r => r.Namespace))
             {
-                var metricData = new List<Amazon.CloudWatch.Model.MetricDatum>();
+                var metricData = new List<MetricDatum>();
 
                 foreach (var metricNameGrouping in namespaceGrouping.SelectMany(x => x.MetricData).GroupBy(x => x.MetricName))
                 {
+                    var units = metricNameGrouping.Select(x => x.Unit).Distinct();
+
+                    var unit = FindLeastUnit(units);
+
                     foreach (var dimensionGrouping in metricNameGrouping
                         .GroupBy(x => string.Join(";", x.Dimensions
                             .OrderBy(d => d.Name)
                             .Select(d => string.Format("{0}/{1}", d.Name, d.Value)))))
                     {
-                        var unit = dimensionGrouping.First().Unit;
+                        unit = dimensionGrouping.First().Unit;
 
-                        var t = dimensionGrouping.Where(x => x.Unit == unit);
+                       
 
-                        if (t.Count() > dimensionGrouping.Count())
-                            foreach (var source in dimensionGrouping.Except(t))
-                            {
-                                LogLog.Debug(_declaringType, string.Format("Dropping a datum, expected unit {0}, was {4}. ({1};{2};{3})",
-                                    unit, namespaceGrouping.Key, metricNameGrouping.Key, dimensionGrouping.Key, source.Unit));
-                            }
-
-                        var t2 = t.Where(x => x.StatisticValues == null);
-                        var t3 = t.Where(x => x.StatisticValues != null);
-
-                        metricData.Add(new Amazon.CloudWatch.Model.MetricDatum
+                        metricData.Add(new MetricDatum
                                                {
                                                    MetricName = metricNameGrouping.Key,
-                                                   Dimensions = t2.First().Dimensions,
+                                                   Dimensions = dimensionGrouping.First().Dimensions,
                                                    Timestamp = DateTime.UtcNow,
                                                    Unit = unit,
-                                                   StatisticValues = new StatisticSet
-                                                                     {
-                                                                         Maximum = t2.Select(x => x.Value).Union(t3.Select(x => x.StatisticValues.Maximum)).Max(),
-                                                                         Minimum = t2.Select(x => x.Value).Union(t3.Select(x => x.StatisticValues.Minimum)).Min(),
-                                                                         Sum = t2.Select(x => x.Value).Union(t3.Select(x => x.StatisticValues.Sum)).Sum(),
-                                                                         SampleCount = t2.Count() + (t3.Select(x => x.StatisticValues.SampleCount)).Sum()
-                                                                     }
+                                                   StatisticValues = Aggregate(dimensionGrouping.AsEnumerable(), unit)
                                                });
 
 
@@ -164,6 +153,37 @@ namespace CloudWatchAppender
             }
 
             return requests;
+        }
+
+        private static StatisticSet Aggregate(IEnumerable<MetricDatum> data, StandardUnit unit)
+        {
+            return new StatisticSet
+                   {
+                       Maximum = MakeStatistic(data, unit, d => d.Maximum).Max(),
+                       Minimum = MakeStatistic(data, unit, d => d.Minimum).Min(),
+                       Sum = MakeStatistic(data, unit, d => d.Sum).Sum(),
+                       SampleCount = data.Select(d1 => d1.StatisticValues == null ? 1 : d1.StatisticValues.SampleCount).Sum()
+                   };
+        }
+
+        private static IEnumerable<double> MakeStatistic(IEnumerable<MetricDatum> data, StandardUnit unit, Func<StatisticSet, double> func)
+        {
+            return data.Select(d => d.StatisticValues == null
+                ? UnitConverter.Convert(d.Value).From(d.Unit).To(unit)
+                : UnitConverter.Convert(func(d.StatisticValues)).From(d.Unit).To(unit));
+        }
+
+
+        private static StandardUnit FindLeastUnit(IEnumerable<StandardUnit> units)
+        {
+            var unit = units.First();
+            if (units.Count() > 1)
+                foreach (var standardUnit in units)
+                {
+                    if (UnitConverter.Convert(1).From(unit).To(standardUnit) > 1)
+                        unit = standardUnit;
+                }
+            return unit;
         }
 
 

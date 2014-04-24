@@ -17,7 +17,7 @@ namespace CloudWatchAppender.Services
         private Dictionary<string, Dimension> _parsedDimensions;
         private bool _hasParsedProperties;
         private string _parsedNamespace;
-        private string _defaultMetricName;
+        private string _parsedMetricName;
         private DateTimeOffset? _dateTimeOffset;
         private EventMessageParser _eventMessageParser;
         private ILayout _layout;
@@ -62,7 +62,7 @@ namespace CloudWatchAppender.Services
 
             _eventMessageParser = new EventMessageParser(renderedString, _configOverrides)
                          {
-                             DefaultMetricName = _defaultMetricName,
+                             DefaultMetricName = _parsedMetricName,
                              DefaultNameSpace = _parsedNamespace,
                              DefaultUnit = _unit,
                              DefaultDimensions = _parsedDimensions,
@@ -89,7 +89,7 @@ namespace CloudWatchAppender.Services
                 ? null
                 : patternParser.Parse(_namespace);
 
-            _defaultMetricName = string.IsNullOrEmpty(_metricName)
+            _parsedMetricName = string.IsNullOrEmpty(_metricName)
                 ? null
                 : patternParser.Parse(_metricName);
 

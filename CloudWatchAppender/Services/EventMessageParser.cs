@@ -54,7 +54,11 @@ namespace CloudWatchAppender.Services
             {
                 try
                 {
-                    FillName(p);
+                    if (!FillName(p))
+                    {
+                        NewDatum();
+                        FillName(p);
+                    }
                 }
                 catch (MetricDatumFilledException)
                 {
@@ -64,11 +68,6 @@ namespace CloudWatchAppender.Services
             }
 
             SetDefaults();
-
-            foreach (var datum in _data)
-            {
-                Debug.WriteLine("Datum: {0}", datum);
-            }
         }
 
         private void SetDefaults()
@@ -89,10 +88,10 @@ namespace CloudWatchAppender.Services
                 //if (!datum.Timestamp.HasValue)
                 //    datum.Timestamp = DateTimeOffset.UtcNow;
 
-                if (!datum.ValueMode && !datum.StatisticsMode)
-                    datum.ValueMode = true;
+                if (!datum.Mode.HasValue)
+                    datum.Mode = DatumMode.ValueMode;
 
-                if (datum.ValueMode)
+                if (datum.Mode == DatumMode.ValueMode)
                 {
                     if (datum.Value == 0.0)
                         datum.Value = DefaultValue ?? 1;
@@ -232,7 +231,7 @@ namespace CloudWatchAppender.Services
                         if (tokens.MoveNext())
                             if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
                             {
-                                v.Unit = unit;                                    
+                                v.Unit = unit;
                             }
 
                         _values.Add(v);
@@ -266,52 +265,80 @@ namespace CloudWatchAppender.Services
         }
 
 
-        private void FillName(AppenderValue value)
+        private bool FillName(AppenderValue value)
         {
             switch (value.Name.ToLowerInvariant())
             {
                 case "value":
+                    if (_currentDatum.Value != 0.0)
+                        return false;
+
                     _currentDatum.Value = _defaultsOverridePattern ? DefaultValue ?? value.dValue.Value : value.dValue.Value;
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
                     break;
 
                 case "unit":
+                    if (_currentDatum.Unit != null)
+                        return false;
+
                     if (_defaultsOverridePattern) _currentDatum.Unit = DefaultUnit ?? value.sValue;
                     else _currentDatum.Unit = value.sValue;
                     break;
 
                 case "metricname":
+                    if (!string.IsNullOrEmpty(_currentDatum.MetricName))
+                        return false;
+
                     _currentDatum.MetricName = _defaultsOverridePattern ? DefaultMetricName ?? value.sValue : value.sValue;
                     break;
 
                 case "namespace":
+                    if (!string.IsNullOrEmpty(_currentDatum.NameSpace))
+                        return false;
+
                     _currentDatum.NameSpace = _defaultsOverridePattern ? DefaultNameSpace ?? value.sValue : value.sValue;
                     break;
 
                 case "maximum":
+                    if (_currentDatum.Mode == DatumMode.StatisticsMode && _currentDatum.Maximum != 0.0)
+                        return false;
+
                     _currentDatum.Maximum = _defaultsOverridePattern ? DefaultMaximum ?? value.dValue.Value : value.dValue.Value;
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
                     break;
 
                 case "minimum":
+                    if (_currentDatum.Mode == DatumMode.StatisticsMode && _currentDatum.Minimum != 0.0)
+                        return false;
                     _currentDatum.Minimum = _defaultsOverridePattern ? DefaultMinimum ?? value.dValue.Value : value.dValue.Value;
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
                     break;
 
                 case "samplecount":
+                    if (_currentDatum.Mode == DatumMode.StatisticsMode && _currentDatum.SampleCount != 0.0)
+                        return false;
+
                     _currentDatum.SampleCount = _defaultsOverridePattern ? DefaultSampleCount ?? value.dValue.Value : value.dValue.Value;
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
                     break;
 
                 case "sum":
+                    if (_currentDatum.Mode == DatumMode.StatisticsMode && _currentDatum.Sum != 0.0)
+                        return false;
+
                     _currentDatum.Sum = _defaultsOverridePattern ? DefaultSum ?? value.dValue.Value : value.dValue.Value;
                     _currentDatum.Unit = _defaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
                     break;
 
                 case "timestamp":
+                    if (_currentDatum.Timestamp.HasValue)
+                        return false;
+
                     _currentDatum.Timestamp = _defaultsOverridePattern ? DefaultTimestamp ?? value.Time.Value : value.Time.Value;
                     break;
             }
+
+            return true;
         }
 
         private void NewDatum()

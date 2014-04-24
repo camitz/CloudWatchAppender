@@ -20,7 +20,7 @@ namespace CloudWatchAppender.Model
         {
             if (!String.IsNullOrEmpty(metricDatum.Message))
                 writer.Write(metricDatum.Message + " ");
-            
+
             RenderAWSMetricDatum(metricDatum.AWSDatum, writer);
         }
 
@@ -31,7 +31,8 @@ namespace CloudWatchAppender.Model
             if (!String.IsNullOrEmpty(metricDatum.Unit))
                 writer.Write("Unit: {0}, ", metricDatum.Unit);
 
-            writer.Write("Value: {0}, ", metricDatum.Value.ToString(CultureInfo.InvariantCulture));
+            if (metricDatum.StatisticValues == null)
+                writer.Write("Value: {0}, ", metricDatum.Value.ToString(CultureInfo.InvariantCulture));
 
             if (metricDatum.Dimensions.Any())
             {

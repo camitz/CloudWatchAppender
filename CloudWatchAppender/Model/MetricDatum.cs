@@ -13,14 +13,7 @@ namespace CloudWatchAppender.Model
         Amazon.CloudWatch.Model.MetricDatum _datum = new Amazon.CloudWatch.Model.MetricDatum();
         PutMetricDataRequest _request = new PutMetricDataRequest();
 
-        private double? _value;
-        private double? _sum;
-        private double? _max;
-        private double? _min;
-        private double? _sampleCount;
-
-        private bool _statisticsMode;
-        private bool _valueMode;
+        private DatumMode? _mode;
 
         private DateTimeOffset? _timestamp;
 
@@ -32,14 +25,10 @@ namespace CloudWatchAppender.Model
             }
             set
             {
-                if (_value.HasValue)
-                    throw new MetricDatumFilledException("Value has been set already.");
-
-                if (StatisticsMode)
+                if (Mode==DatumMode.StatisticsMode)
                     throw new MetricDatumFilledException("Value cannot be set since we're in statistics mode.");
 
-                _valueMode = true;
-                _value = value;
+                _mode = DatumMode.ValueMode;
                 _datum.Value = value;
             }
         }
@@ -91,15 +80,10 @@ namespace CloudWatchAppender.Model
             get { return _datum.StatisticValues.Maximum; }
             set
             {
-                if (_max.HasValue)
-                    throw new MetricDatumFilledException("Value has been set already.");
-
-                if (ValueMode)
+                if (Mode == DatumMode.ValueMode)
                     throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
 
-                _max = value;
-
-                _statisticsMode = true;
+                _mode = DatumMode.StatisticsMode;
                 if (_datum.StatisticValues == null)
                     _datum.StatisticValues = new StatisticSet();
 
@@ -112,15 +96,10 @@ namespace CloudWatchAppender.Model
             get { return _datum.StatisticValues.Minimum; }
             set
             {
-                if (_min.HasValue)
-                    throw new MetricDatumFilledException("Value has been set already.");
-
-                if (ValueMode)
+                if (Mode == DatumMode.ValueMode)
                     throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
 
-                _min = value;
-
-                _statisticsMode = true;
+                _mode = DatumMode.StatisticsMode;
                 if (_datum.StatisticValues == null)
                     _datum.StatisticValues = new StatisticSet();
 
@@ -133,15 +112,10 @@ namespace CloudWatchAppender.Model
             get { return _datum.StatisticValues.Sum; }
             set
             {
-                if (_sum.HasValue)
-                    throw new MetricDatumFilledException("Value has been set already.");
-
-                if (ValueMode)
+                if (Mode == DatumMode.ValueMode)
                     throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
 
-                _sum = value;
-
-                _statisticsMode = true;
+                _mode = DatumMode.StatisticsMode;
                 if (_datum.StatisticValues == null)
                     _datum.StatisticValues = new StatisticSet();
 
@@ -154,15 +128,10 @@ namespace CloudWatchAppender.Model
             get { return _datum.StatisticValues.SampleCount; }
             set
             {
-                if (_sampleCount.HasValue)
-                    throw new MetricDatumFilledException("Value has been set already.");
-
-                if (ValueMode)
+                if (Mode == DatumMode.ValueMode)
                     throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
 
-                _sampleCount = value;
-
-                _statisticsMode = true;
+                _mode = DatumMode.StatisticsMode;
                 if (_datum.StatisticValues == null)
                     _datum.StatisticValues = new StatisticSet();
 
@@ -221,16 +190,7 @@ namespace CloudWatchAppender.Model
             }
         }
 
-        public bool StatisticsMode
-        {
-            get { return _statisticsMode; }
-        }
 
-        public bool ValueMode
-        {
-            get { return _valueMode; }
-            set { _valueMode = value; }
-        }
 
         public static readonly ISet<string> SupportedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                                                     {
@@ -253,6 +213,12 @@ namespace CloudWatchAppender.Model
 
         public string Message { get; set; }
 
+        public DatumMode? Mode
+        {
+            get { return _mode; }
+            set { _mode = value; }
+        }
+
         public MetricDatum(string s)
         {
             Message = s;
@@ -260,6 +226,12 @@ namespace CloudWatchAppender.Model
 
         public MetricDatum()
         {
+        }
+
+        public MetricDatum WithNameSpace(string value)
+        {
+            NameSpace = value;
+            return this;
         }
 
         public MetricDatum WithMetricName(string value)
@@ -311,6 +283,12 @@ namespace CloudWatchAppender.Model
 
             return "MetricDatum, NameSpace: " + NameSpace + ", " + s;
         }
+    }
+
+    public enum DatumMode
+    {
+        StatisticsMode,
+        ValueMode
     }
 
     public class MetricDatumFilledException : InvalidOperationException

@@ -25,6 +25,9 @@ namespace CloudWatchAppender.Tests
 
             Assert.That(UnitConverter.Convert(1000).From(StandardUnit.Terabytes).To(StandardUnit.Terabits), Is.EqualTo(8000));
             Assert.That(UnitConverter.Convert(1000).From(StandardUnit.TerabytesSecond).To(StandardUnit.TerabitsSecond), Is.EqualTo(8000));
+
+            Assert.That(UnitConverter.Convert(1000).From(StandardUnit.Kilobytes).To(StandardUnit.Kilobytes), Is.EqualTo(1000));
+            Assert.That(UnitConverter.Convert(1000).From(StandardUnit.Count).To(StandardUnit.Count), Is.EqualTo(1000));
         }
     }
 }

@@ -190,6 +190,22 @@ namespace CloudWatchAppender.Model
             }
         }
 
+        public StatisticSet StatisticValues
+        {
+            get { return AWSDatum.StatisticValues; }
+            set
+            {
+                if (Mode == DatumMode.ValueMode)
+                    throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
+
+                _mode = DatumMode.StatisticsMode;
+                if (_datum.StatisticValues == null)
+                    _datum.StatisticValues = new StatisticSet();
+
+                _datum.StatisticValues = value;
+            }
+        }
+
 
 
         public static readonly ISet<string> SupportedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -228,48 +244,56 @@ namespace CloudWatchAppender.Model
         {
         }
 
+        [Obsolete("Deprecated")]
         public MetricDatum WithNameSpace(string value)
         {
             NameSpace = value;
             return this;
         }
 
+        [Obsolete("Deprecated")]
         public MetricDatum WithMetricName(string value)
         {
             _datum.MetricName = value;
             return this;
         }
 
+        [Obsolete("Deprecated")]
         public MetricDatum WithUnit(StandardUnit value)
         {
             _datum.Unit = value;
             return this;
         }
 
+        [Obsolete("Deprecated")]
         public MetricDatum WithValue(double value)
         {
             _datum.Value = value;
             return this;
         }
 
+        [Obsolete("Deprecated")]
         public MetricDatum WithTimestamp(DateTime value)
         {
             _datum.Timestamp = value;
             return this;
         }
 
+        [Obsolete("Deprecated")]
         public MetricDatum WithTimestamp(DateTimeOffset value)
         {
             _datum.Timestamp = value.UtcDateTime;
             return this;
         }
 
+        [Obsolete("Deprecated")]
         public MetricDatum WithDimensions(IEnumerable<Dimension> value)
         {
             _datum.Dimensions = value.ToList();
             return this;
         }
 
+        [Obsolete("Deprecated")]
         public MetricDatum WithStatisticValues(StatisticSet statisticSet)
         {
             _datum.StatisticValues = statisticSet;

@@ -30,24 +30,25 @@ namespace BufferedTicks
             {
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
 
-                if (random.Next(2) == 0&&false)
+                if (random.Next(2) == 0)
                     log.InfoFormat("A tick! Namespace: {1} MetricName: {2} Dimension: TestDim: {3} Value: {0} {4}",
                         random.NextDouble() * (1e5 - 1e2) + 1e2,
                         nss[random.Next(2)], names[random.Next(2)], dims[random.Next(2)], units[random.Next(3)]);
                 else
-
                     log.Info(new CloudWatchAppender.Model.MetricDatum("A tick!")
-                        .WithNameSpace(nss[random.Next(2)])
-                        .WithDimensions(new[] { new Dimension { Name = "TestDim", Value = dims[random.Next(2)] } })
-                        .WithMetricName(names[random.Next(2)])
-                        .WithUnit(units[random.Next(3)])
-                        .WithStatisticValues(new StatisticSet
+                    {
+                        NameSpace = nss[random.Next(2)],
+                        Dimensions = { new Dimension { Name = "TestDim", Value = dims[random.Next(2)] } },
+                        MetricName = names[random.Next(2)],
+                        Unit = units[random.Next(3)],
+                        StatisticValues = new StatisticSet
                                              {
                                                  Minimum = random.NextDouble() * (3e3 - 1e2) + 1e2,
                                                  Maximum = random.NextDouble() * (1.1e5 - .9e4) + .9e4,
-                                                 Sum = random.NextDouble() * 100 * ((6e4 - 4e4) + 4e4),
+                                                 Sum = (random.NextDouble() * (6e4 - 4e4) + 4e4) * 100,
                                                  SampleCount = 100
-                                             }));
+                                             }
+                    });
 
                 Thread.Sleep(10);
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Services;
@@ -72,7 +73,14 @@ namespace CloudWatchAppender
             logger.Level = Level.Off;
 
             hierarchy.AddRenderer(typeof(Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
-            _client = new ClientWrapper(EndPoint, AccessKey, Secret);
+            try
+            {
+                _client = new ClientWrapper(EndPoint, AccessKey, Secret);
+            }
+            catch (CloudWatchAppenderException)
+            {
+            }
+
             _eventProcessor = new EventProcessor(ConfigOverrides, StandardUnit, Namespace, MetricName, Timestamp, Value);
 
             if (Layout == null)

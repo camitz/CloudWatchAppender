@@ -362,6 +362,10 @@ Check out the following blog posts that seeded the project.
 
 # Releases
 
+## 4.2.1 <font size="2">(alpha) </font>
+
+* Premature amazon client created causednull ref.
+
 ## 4.2 <font size="2">(alpha) </font>
 
 * UnitConverter implemented.

@@ -362,10 +362,11 @@ Check out the following blog posts that seeded the project.
 
 # Releases
 
-## 4.2 <font size="2">(beta) </font>
+## 4.2 <font size="2">(alpha) </font>
 
 * UnitConverter implemented.
 * Bug and stability fixes
+* Refactoring MetricDatum + some deprecations.
 
 ## 4.1.2 <font size="2">(beta) </font>
 

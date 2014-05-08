@@ -9,6 +9,7 @@ using Amazon;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.Runtime;
+using CloudWatchAppender.Appenders;
 using log4net.Util;
 
 namespace CloudWatchAppender.Services
@@ -88,13 +89,16 @@ namespace CloudWatchAppender.Services
                     _client = AWSClientFactory.CreateAmazonCloudWatchClient(_accessKey, _secret);
 
             //Debug
-            var metricDatum = new Amazon.CloudWatch.Model.MetricDatum
+            var metricDatum = new MetricDatum
                               {
                                   MetricName = "CloudWatchAppender",
                                   Value = 1,
                                   Unit = "Count"
                               };
             //_client.PutMetricData(new PutMetricDataRequest().WithNamespace("CloudWatchAppender").WithMetricData(metricDatum));
+
+            if (_client == null)
+                throw new CloudWatchAppenderException("Couldn't create Amazon client.");
         }
 
         public PutMetricDataResponse PutMetricData(PutMetricDataRequest metricDataRequest)

@@ -105,25 +105,43 @@ A list of [tokens](#tokens) supported by the event parser can be found below.
 
 ### The MetricDatum object
 
-log4net permits not just strings as the parameter to the log event method. Any old object will do and normally this it the ToString() method is used to convet it to a string. First, however, log4net will look to see if an ObjectRenderer has been registered. CloudWatchAppender automatically registers the MetricDatumRenderer, allowing you to provide a MetricDatum.
+log4net permits not just strings as the parameter to the log event method. Any old object will do and normally the ToString() method is used to convert it to a string. First, however, log4net will look to see if an ObjectRenderer has been registered. CloudWatchAppender automatically registers the MetricDatumRenderer, allowing you to provide a MetricDatum to your log message.
 
-The MetricDatum comes in two flavours, the AWS CloudWatch one and the wrapper we have designed. You can use either but our one offers a few more features. Noteably it takes a string to the constructor with which you can provide info that you want output to appenders other than CloudWatchAppender that you might have registered.
+The MetricDatum comes in two flavours, the AWS CloudWatch one and the wrapper we have designed. You can use either but our one offers a few more features. Noteably it takes a string to the constructor with which you can provide a message that you want output to appenders other than CloudWatchAppender that you might have registered, a FileAppender maybe. Our version also holds the NameSpace.
 
 Example:
 
-    log.Info(new CloudWatchAppender.MetricDatum("A tick!")
-        .WithTimestamp(DateTimeOffset.Now.AddMinutes(-10))
-        .WithUnit("Kilobytes")
-        .WithValue(29.4));
-
+    log.Info(new CloudWatchAppender.Model.MetricDatum("A message!")
+    {
+        NameSpace = "MyApp/Processor",
+        Dimensions = { new Dimension { Name = "InstanceID", Value = "%metadata{instanceid}" } },
+        MetricName = ProcessingTime,
+        Unit = StandardUnit.Milliseconds,
+        StatisticValues = new StatisticSet
+                             {
+                                 Minimum = 2.1,
+                                 Maximum = 25.2,
+                                 Sum = 350.3,
+                                 SampleCount = 100
+                             }
+    });
 or
 
-    log.Info(new Amazon.CloudWatch.Model.MetricDatum()
-        .WithTimestamp(DateTime.UtcNow.AddMinutes(-10))
-        .WithUnit(new Amazon.CloudWatch.StandardUnit("Kilobytes"))
-        .WithValue(29.4));
+ log.Info(new Amazon.CloudWatch.Model.MetricDatum
+    {
+        Dimensions = { new Dimension { Name = "InstanceID", Value = "%metadata{instanceid}" } },
+        MetricName = ProcessingTime,
+        Unit = StandardUnit.Milliseconds,
+        StatisticValues = new StatisticSet
+                             {
+                                 Minimum = 2,
+                                 Maximum = 25,
+                                 Sum = 350,
+                                 SampleCount = 100
+                             }
+    });
 
-The above will do the same except for the message "A tick!" which if you have for instance a FileAppender cannot be output with the latter.
+The above will do the same except for the message "A tick!" which, if you have for instance a FileAppender, cannot be output with the latter; and the NameSpace which you would provide some other way: in config, presumably.
 
 ## <a id="configoverrides"></a>ConfigOverrides
 
@@ -153,13 +171,13 @@ The above uses the log4net PatterConverted for a DateTime-formatted current UTC 
 
 Both above will be assumed to be UTC, so the second one, at least, may not have expected result. Use utcdate to avoid confusion.
 
-It is recommended to think UTC. That's what CloudWatch does. DateTime.UtcNow will get you the current UTC timestamp. In fact, CloudWatch refuses to display anything in what it deems to be the future, which can be confusing, particularly if you're on the plus side of UTC. You can read about my [experiences](http://blog.simpletask.se/awscloudwatch-log4net-appender) prior to figuring that one out on my blog.
+It is recommended to think UTC. That's what CloudWatch does. DateTime.UtcNow will get you the current UTC timestamp. In fact, CloudWatch refuses to display anything in what it deems to be the future, which can be confusing, particularly if you're on the plus side of UTC. You can read about my [experiences](http://blog.simpletask.se/awscloudwatch-log4net-appender) prior to figuring that one out, on my blog.
 
 # Statistics
 
 As well as singles values with unit, CloudWatchAppender supports statistics. This is useful when sending single point values becomes too burdensome. Instead, you aggregate your data to be sent every minute or so. The CloudWatchAppender doesn't go the aggregation for you, you'll have to take care of that yourself. Todo? ;).
 
-Statistics are posted by specifying Minimum, Maximum, Sum and SampleCount. (The average is calculated by CloudWatch as Sum/SampleCount.) These entities are all recognized by CloudWatchAppender and used as above, either in the event log message or in the config file.
+Statistics are posted by specifying Minimum, Maximum, Sum and SampleCount. The average is calculated by CloudWatch on the server side as Sum/SampleCount. These entities are all recognized by CloudWatchAppender and used as above, either in the event log message or in the config file.
 
 The following behave the same way.
 
@@ -169,8 +187,15 @@ The following behave the same way.
     <minimum value="400"/>
     <samplecount value="250"/>
 
+and
+
     log.Info("unit: milliseconds, sum: 3000, minimum: 3, minimum: 400, samplecount: 250");
-    
+
+# Unit conversion
+
+As of version 4.2 you can mix and match units. This is a feature Amazon doesn't provide, it just drops data where the unit doesn't match previously accepted data. But BufferingAggregatingCloudWatchAppender does. As long as the units are physically convertible, as Terabytes and Bits are, for example, the appender will choose the most precise one and convert everyting else in the same request.
+
+As of version 4.3 it will keep track of the unit used between requests, as long as the appender is alive. This means you can mix and match units between regular CloudWatchAppender events as well.
 
 # <a id="dimensions"></a>Dimensions
 
@@ -322,7 +347,7 @@ TODO
 * Megabits/Second
 * Gigabits/Second
 * Terabits/Second
-* Second
+* Count/Second
 * None
 
 # Some more reading
@@ -336,6 +361,29 @@ Check out the following blog posts that seeded the project.
 [Introducing the Buffering and Aggregeting CloudWatch Appender](http://blog.simpletask.se/post/buffering-aggregating-cloudwatch-appender)
 
 # Releases
+
+## 4.2.1 <font size="2">(alpha) </font>
+
+* Premature amazon client created caused null ref. Didn't affect buffering appender.
+
+
+## 4.2 <font size="2">(alpha) </font>
+
+* UnitConverter implemented.
+* Bug and stability fixes
+* Refactoring MetricDatum + some deprecations.
+
+## 4.1.2 <font size="2">(beta) </font>
+
+* Same fix as 4.2.1.
+
+## 4.1.2 <font size="2">(beta) </font>
+
+* AWS has a limit of maximum 20 metric data objects per request. Wasn't imposed previously.
+
+## 4.1.1 <font size="2">(beta) 2014-04-23 </font>
+
+* Trying to parse unit caused (unbuffered) CloudWatchAppender to fail. This is not supported anymore. If I broke you code let me know.
 
 ## 4.1 <font size="2">(beta) 2014-04-23 </font>
 

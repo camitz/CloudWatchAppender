@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Services;
@@ -74,6 +75,15 @@ namespace CloudWatchAppender
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;
+
+            try
+            {
+                _client = new ClientWrapper(EndPoint, AccessKey, Secret);
+            }
+            catch (CloudWatchAppenderException)
+            {
+            }
+
 
             hierarchy.AddRenderer(typeof(Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
 

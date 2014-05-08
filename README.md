@@ -364,7 +364,7 @@ Check out the following blog posts that seeded the project.
 
 ## 4.2.1 <font size="2">(alpha) </font>
 
-* Premature amazon client created causednull ref.
+* Premature amazon client created caused null ref. Didn't affect buffering appender.
 
 ## 4.2 <font size="2">(alpha) </font>
 

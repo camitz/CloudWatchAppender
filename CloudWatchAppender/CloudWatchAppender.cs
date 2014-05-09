@@ -82,7 +82,7 @@ namespace CloudWatchAppender
             {
             }
 
-            _eventProcessor = new EventProcessor(ConfigOverrides, StandardUnit, Namespace, MetricName, Timestamp, Value);
+//            _eventProcessor = new EventProcessor(ConfigOverrides, StandardUnit, Namespace, MetricName, Timestamp, Value); //temporary bugfix 4.1.3
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");

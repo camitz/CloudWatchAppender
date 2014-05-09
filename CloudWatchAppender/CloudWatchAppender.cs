@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Appenders;
@@ -43,9 +44,10 @@ namespace CloudWatchAppender
             set { _configOverrides = value; }
         }
 
+        private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
         private void AddDimension(Dimension value)
         {
-            _eventProcessor.Dimensions[value.Name] = value;
+            _dimensions[value.Name] = value;
         }
 
         public int RateLimit
@@ -118,7 +120,12 @@ namespace CloudWatchAppender
                 _client = new ClientWrapper(EndPoint, AccessKey, Secret);
 
             if (_eventProcessor == null)
-                _eventProcessor = new EventProcessor(ConfigOverrides, StandardUnit, Namespace, MetricName, Timestamp, Value);
+            {
+                _eventProcessor = new EventProcessor(ConfigOverrides, StandardUnit, Namespace, MetricName, Timestamp, Value)
+                                  {
+                                      Dimensions = _dimensions
+                                  };
+            }
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");

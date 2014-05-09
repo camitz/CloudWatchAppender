@@ -31,7 +31,7 @@ namespace BufferedTicks
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
 
                 if (random.Next(2) == 0)
-                    log.InfoFormat("A tick! Namespace: {1} MetricName: {2} Dimension: TestDim: {3} Value: {0} {4}",
+                    log.InfoFormat("A tick! Namespace: {1} MetricCOMMENTName: {2} Dimension: TestDim: {3} Value: {0} {4}",
                         random.NextDouble() * (1e5 - 1e2) + 1e2,
                         nss[random.Next(2)], names[random.Next(2)], dims[random.Next(2)], units[random.Next(3)]);
                 else
@@ -39,7 +39,7 @@ namespace BufferedTicks
                     {
                         NameSpace = nss[random.Next(2)],
                         Dimensions = { new Dimension { Name = "TestDim", Value = dims[random.Next(2)] } },
-                        MetricName = names[random.Next(2)],
+                        //MetricName = names[random.Next(2)],
                         Unit = units[random.Next(3)],
                         StatisticValues = new StatisticSet
                                              {

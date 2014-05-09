@@ -362,15 +362,18 @@ Check out the following blog posts that seeded the project.
 
 # Releases
 
-## 4.2.1 <font size="2">(alpha) </font>
-
-* Premature amazon client created caused null ref. Didn't affect buffering appender.
-
-## 4.2 <font size="2">(alpha) </font>
+## 4.2.0-alpha2
 
 * UnitConverter implemented.
 * Bug and stability fixes
 * Refactoring MetricDatum + some deprecations.
+* Premature amazon client created caused null ref. Didn't affect buffering appender.
+* Similar bug prevented config overriding.
+
+## 4.1.3 <font size="2">(beta) </font>
+
+* Premature amazon client created caused null ref. Didn't affect buffering appender.
+* Similar bug prevented config overriding.
 
 ## 4.1.2 <font size="2">(beta) </font>
 

@@ -28,7 +28,7 @@ namespace CloudWatchAppender.Services
         private readonly string _timestamp;
         private readonly string _value;
 
-        public EventProcessor(bool configOverrides, StandardUnit unit, string @namespace, string metricName, string timestamp, string value)
+        public EventProcessor(bool configOverrides, StandardUnit unit, string @namespace, string metricName, string timestamp, string value, Dictionary<string, Dimension> dimensions)
         {
             _configOverrides = configOverrides;
             _unit = unit;
@@ -36,13 +36,9 @@ namespace CloudWatchAppender.Services
             _metricName = metricName;
             _timestamp = timestamp;
             _value = value;
+            _dimensions = dimensions;
         }
 
-        public Dictionary<string, Dimension> Dimensions
-        {
-            set { _dimensions = value; }
-            get { return _dimensions; }
-        }
 
 
         public IEnumerable<PutMetricDataRequest> ProcessEvent(LoggingEvent loggingEvent, string renderedString)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Appenders;
@@ -12,46 +13,138 @@ using log4net.Util;
 
 namespace CloudWatchAppender
 {
-    public class CloudWatchAppender : AppenderSkeleton
+    public interface ICloudWatchAppender
     {
-        public string AccessKey { get; set; }
-        public string Secret { get; set; }
-        public string EndPoint { get; set; }
+        string AccessKey { set; }
+        string Secret { set; }
+        string EndPoint { set; }
+        string Unit { set; }
+        StandardUnit StandardUnit { set; }
+        string Value { set; }
+        string MetricName { set; }
+        string Namespace { get; set; }
+        string Timestamp { set; }
+        Dimension Dimension { set; }
+        bool ConfigOverrides { set; }
+        string InstanceMetaDataReaderClass { get; set; }
+    }
+
+    public class CloudWatchAppender : AppenderSkeleton, ICloudWatchAppender
+    {
+        private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
+        private ClientWrapper _client;
+        private EventProcessor _eventProcessor;
+        private readonly static Type _declaringType = typeof(CloudWatchAppender);
+        private StandardUnit _standardUnit;
+        private string _accessKey;
+        private string _secret;
+        private string _endPoint;
+        private string _value;
+        private string _metricName;
+        private string _ns;
+        private string _timestamp;
+        private bool _configOverrides = true;
+        private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
+
+        public string AccessKey
+        {
+            set { 
+                _accessKey = value;
+                _client = null;
+            }
+        }
+
+        public string Secret
+        {
+            set
+            {
+                _secret = value;
+                _client = null;
+            }
+        }
+
+        public string EndPoint
+        {
+            set
+            {
+                _endPoint = value;
+                _client = null;
+            }
+        }
 
         public string Unit
         {
-            set { _standardUnit = value; }
+            set
+            {
+                _standardUnit = value;
+                _eventProcessor = null;
+            }
         }
 
         public StandardUnit StandardUnit
         {
-            get { return _standardUnit; }
-            set { _standardUnit = value; }
+            set
+            {
+                _standardUnit = value;
+                _eventProcessor = null;
+            }
         }
-        
-        public string Value { get; set; }
-        public string MetricName { get; set; }
-        public string Namespace { get; set; }
-        public string Timestamp { get; set; }
 
-        public Dimension Dimension { set { AddDimension(value); } }
+        public string Value
+        {
+            set
+            {
+                _value = value;
+                _eventProcessor = null;
+            }
+        }
 
-        private bool _configOverrides = true;
+        public string MetricName
+        {
+            set
+            {
+                _metricName = value;
+                _eventProcessor = null;
+            }
+        }
+
+        public string Namespace
+        {
+            get { return _ns; }
+            set
+            {
+                _ns = value;
+                _eventProcessor = null;
+            }
+        }
+
+        public string Timestamp
+        {
+            set
+            {
+                _timestamp = value;
+                _eventProcessor = null;
+            }
+        }
+
+        public Dimension Dimension
+        {
+            set
+            {
+                _dimensions[value.Name] = value;
+                _eventProcessor = null;
+            }
+        }
+
         public bool ConfigOverrides
         {
-            get { return _configOverrides; }
-            set { _configOverrides = value; }
+            set
+            {
+                _configOverrides = value;
+                _eventProcessor = null;
+            }
         }
 
-        private void AddDimension(Dimension value)
-        {
-            _eventProcessor.Dimensions[value.Name] = value;
-        }
-
-        public int RateLimit
-        {
-            set { _eventRateLimiter = new EventRateLimiter(value); }
-        }
 
         private string _instanceMetaDataReaderClass;
         public string InstanceMetaDataReaderClass
@@ -65,6 +158,10 @@ namespace CloudWatchAppender
             }
         }
 
+        public int RateLimit
+        {
+            set { _eventRateLimiter = new EventRateLimiter(value); }
+        }
 
         public CloudWatchAppender()
         {
@@ -75,13 +172,13 @@ namespace CloudWatchAppender
             hierarchy.AddRenderer(typeof(Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
             try
             {
-                _client = new ClientWrapper(EndPoint, AccessKey, Secret);
+                _client = new ClientWrapper(_endPoint, _accessKey, _secret);
             }
             catch (CloudWatchAppenderException)
             {
             }
 
-            _eventProcessor = new EventProcessor(ConfigOverrides, StandardUnit, Namespace, MetricName, Timestamp, Value);
+            _eventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
@@ -93,13 +190,6 @@ namespace CloudWatchAppender
         {
             get { return ClientWrapper.HasPendingRequests; }
         }
-
-        public ClientWrapper Client
-        {
-            set { _client = value; }
-            get { return _client; }
-        }
-
 
         public static void WaitForPendingRequests(TimeSpan timeout)
         {
@@ -114,10 +204,10 @@ namespace CloudWatchAppender
         protected override void Append(LoggingEvent loggingEvent)
         {
             if (_client == null)
-                _client = new ClientWrapper(EndPoint, AccessKey, Secret);
+                _client = new ClientWrapper(_endPoint,_accessKey,_secret);
 
             if (_eventProcessor == null)
-                _eventProcessor = new EventProcessor(ConfigOverrides, StandardUnit, Namespace, MetricName, Timestamp, Value);
+                _eventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
@@ -136,10 +226,5 @@ namespace CloudWatchAppender
                 _client.SendItOff(putMetricDataRequest);
         }
 
-        private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
-        private ClientWrapper _client;
-        private EventProcessor _eventProcessor;
-        private readonly static Type _declaringType = typeof(CloudWatchAppender);
-        private StandardUnit _standardUnit;
     }
 }

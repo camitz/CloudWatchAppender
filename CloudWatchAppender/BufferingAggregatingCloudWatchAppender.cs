@@ -20,42 +20,120 @@ using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
 
 namespace CloudWatchAppender
 {
-    public class BufferingAggregatingCloudWatchAppender : BufferingAppenderSkeleton
+    public class BufferingAggregatingCloudWatchAppender : BufferingAppenderSkeleton, ICloudWatchAppender
     {
-        public string AccessKey { get; set; }
-        public string Secret { get; set; }
-        public string EndPoint { get; set; }
+        private ClientWrapper _client;
+        private EventProcessor _eventProcessor;
+        private readonly static Type _declaringType = typeof(BufferingAggregatingCloudWatchAppender);
+        private StandardUnit _standardUnit;
+        private string _accessKey;
+        private string _secret;
+        private string _endPoint;
+        private string _value;
+        private string _metricName;
+        private string _ns;
+        private string _timestamp;
+        private bool _configOverrides = true;
+        private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
+
+        public string AccessKey
+        {
+            set
+            {
+                _accessKey = value;
+                _client = null;
+            }
+        }
+
+        public string Secret
+        {
+            set
+            {
+                _secret = value;
+                _client = null;
+            }
+        }
+
+        public string EndPoint
+        {
+            set
+            {
+                _endPoint = value;
+                _client = null;
+            }
+        }
 
         public string Unit
         {
-            set { _standardUnit = value; }
+            set
+            {
+                _standardUnit = value;
+                _eventProcessor = null;
+            }
         }
 
         public StandardUnit StandardUnit
         {
-            get { return _standardUnit; }
-            set { _standardUnit = value; }
+            set
+            {
+                _standardUnit = value;
+                _eventProcessor = null;
+            }
         }
 
-        public string Value { get; set; }
-        public string MetricName { get; set; }
-        public string Namespace { get; set; }
-        public string Timestamp { get; set; }
+        public string Value
+        {
+            set
+            {
+                _value = value;
+                _eventProcessor = null;
+            }
+        }
 
-        public Dimension Dimension { set { AddDimension(value); } }
+        public string MetricName
+        {
+            set
+            {
+                _metricName = value;
+                _eventProcessor = null;
+            }
+        }
 
-        private bool _configOverrides = true;
+        public string Namespace
+        {
+            get { return _ns; }
+            set
+            {
+                _ns = value;
+                _eventProcessor = null;
+            }
+        }
+
+        public string Timestamp
+        {
+            set
+            {
+                _timestamp = value;
+                _eventProcessor = null;
+            }
+        }
+
+        public Dimension Dimension
+        {
+            set
+            {
+                _dimensions[value.Name] = value;
+                _eventProcessor = null;
+            }
+        }
+
         public bool ConfigOverrides
         {
-            get { return _configOverrides; }
-            set { _configOverrides = value; }
-        }
-
-        private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
-
-        private void AddDimension(Dimension value)
-        {
-            _dimensions[value.Name] = value;
+            set
+            {
+                _configOverrides = value;
+                _eventProcessor = null;
+            }
         }
 
 
@@ -80,26 +158,40 @@ namespace CloudWatchAppender
             var logger = hierarchy.GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;
 
+            hierarchy.AddRenderer(typeof(MetricDatum), new MetricDatumRenderer());
+
             try
             {
-                _client = new ClientWrapper(EndPoint, AccessKey, Secret);
+                _client = new ClientWrapper(_endPoint, _accessKey, _secret);
             }
             catch (CloudWatchAppenderException)
             {
             }
 
-            hierarchy.AddRenderer(typeof(MetricDatum), new MetricDatumRenderer());
-
+            _eventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
         }
 
+        public static bool HasPendingRequests
+        {
+            get { return ClientWrapper.HasPendingRequests; }
+        }
 
+        public static void WaitForPendingRequests(TimeSpan timeout)
+        {
+            ClientWrapper.WaitForPendingRequests(timeout);
+        }
+
+        public static void WaitForPendingRequests()
+        {
+            ClientWrapper.WaitForPendingRequests();
+        }
         protected override void SendBuffer(LoggingEvent[] events)
         {
             if (_client == null)
-                _client = new ClientWrapper(EndPoint, AccessKey, Secret);
+                _client = new ClientWrapper(_endPoint, _accessKey, _secret);
 
             if (_eventProcessor == null)
-                _eventProcessor = new EventProcessor(ConfigOverrides, StandardUnit, Namespace, MetricName, Timestamp, Value);
+                _eventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
@@ -112,7 +204,7 @@ namespace CloudWatchAppender
                 _client.SendItOff(putMetricDataRequest);
         }
 
-        internal static List<PutMetricDataRequest> Assemble(IEnumerable<PutMetricDataRequest> rs)
+        internal static IEnumerable<PutMetricDataRequest> Assemble(IEnumerable<PutMetricDataRequest> rs)
         {
             var requests = new List<PutMetricDataRequest>();
 
@@ -195,32 +287,10 @@ namespace CloudWatchAppender
         }
 
 
-        private Dictionary<string, Dimension> _parsedDimensions;
-        private bool _parsedProperties;
-        private StandardUnit _parsedUnit;
-        private string _parsedNamespace;
-        private string _defaultMetricName;
-        private DateTimeOffset? _dateTimeOffset;
-        private ClientWrapper _client;
-        private EventProcessor _eventProcessor;
-        private StandardUnit _standardUnit;
+ 
 
 
-        public static bool HasPendingRequests
-        {
-            get { return ClientWrapper.HasPendingRequests; }
-        }
+  
 
-        public static void WaitForPendingRequests(TimeSpan timeout)
-        {
-            ClientWrapper.WaitForPendingRequests(timeout);
-        }
-
-        public static void WaitForPendingRequests()
-        {
-            ClientWrapper.WaitForPendingRequests();
-        }
-
-        private readonly static Type _declaringType = typeof(BufferingAggregatingCloudWatchAppender);
     }
 }

@@ -222,17 +222,15 @@ namespace CloudWatchAppender
                             .OrderBy(d => d.Name)
                             .Select(d => string.Format("{0}/{1}", d.Name, d.Value)))))
                     {
-
+                        var timestamp = dimensionGrouping.Max(x => x.Timestamp);
                         metricData.Add(new MetricDatum
                                                {
                                                    MetricName = metricNameGrouping.Key,
                                                    Dimensions = dimensionGrouping.First().Dimensions,
-                                                   Timestamp = DateTime.UtcNow,
+                                                   Timestamp = timestamp > DateTime.MinValue ? timestamp : DateTime.UtcNow,
                                                    Unit = unit,
                                                    StatisticValues = Aggregate(dimensionGrouping.AsEnumerable(), unit)
                                                });
-
-
                     }
                 }
 
@@ -287,10 +285,10 @@ namespace CloudWatchAppender
         }
 
 
- 
 
 
-  
+
+
 
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
@@ -15,16 +14,13 @@ using log4net.Core;
 using log4net.Repository.Hierarchy;
 using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
 
-[assembly: InternalsVisibleTo("CloudWatchAppender.Tests")]
-
-
 namespace CloudWatchAppender
 {
-    public class BufferingAggregatingCloudWatchAppender : BufferingAppenderSkeleton, ICloudWatchAppender
+    public class BufferingCloudWatchLogAppender : BufferingAppenderSkeleton, ICloudWatchAppender
     {
         private CloudWatchClientWrapper _cloudWatchClient;
         private EventProcessor _eventProcessor;
-        private readonly static Type _declaringType = typeof(BufferingAggregatingCloudWatchAppender);
+        private readonly static Type _declaringType = typeof(BufferingCloudWatchLogAppender);
         private StandardUnit _standardUnit;
         private string _accessKey;
         private string _secret;
@@ -152,7 +148,7 @@ namespace CloudWatchAppender
 
         private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
 
-        public BufferingAggregatingCloudWatchAppender()
+        public BufferingCloudWatchLogAppender()
         {
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
@@ -224,13 +220,13 @@ namespace CloudWatchAppender
                     {
                         var timestamp = dimensionGrouping.Max(x => x.Timestamp);
                         metricData.Add(new MetricDatum
-                                               {
-                                                   MetricName = metricNameGrouping.Key,
-                                                   Dimensions = dimensionGrouping.First().Dimensions,
-                                                   Timestamp = timestamp > DateTime.MinValue ? timestamp : DateTime.UtcNow,
-                                                   Unit = unit,
-                                                   StatisticValues = Aggregate(dimensionGrouping.AsEnumerable(), unit)
-                                               });
+                                       {
+                                           MetricName = metricNameGrouping.Key,
+                                           Dimensions = dimensionGrouping.First().Dimensions,
+                                           Timestamp = timestamp > DateTime.MinValue ? timestamp : DateTime.UtcNow,
+                                           Unit = unit,
+                                           StatisticValues = Aggregate(dimensionGrouping.AsEnumerable(), unit)
+                                       });
                     }
                 }
 

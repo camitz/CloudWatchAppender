@@ -150,8 +150,6 @@ namespace CloudWatchAppender
         }
 
 
-        private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
-
         public BufferingAggregatingCloudWatchAppender()
         {
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
@@ -171,20 +169,6 @@ namespace CloudWatchAppender
             _eventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
         }
 
-        public static bool HasPendingRequests
-        {
-            get { return CloudWatchClientWrapper.HasPendingRequests; }
-        }
-
-        public static void WaitForPendingRequests(TimeSpan timeout)
-        {
-            CloudWatchClientWrapper.WaitForPendingRequests(timeout);
-        }
-
-        public static void WaitForPendingRequests()
-        {
-            CloudWatchClientWrapper.WaitForPendingRequests();
-        }
         protected override void SendBuffer(LoggingEvent[] events)
         {
             if (_cloudWatchClient == null)

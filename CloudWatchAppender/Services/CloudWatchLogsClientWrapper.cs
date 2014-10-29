@@ -1,18 +1,17 @@
-using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
-using Amazon;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Amazon.Runtime;
+using log4net.Util;
 
 namespace CloudWatchAppender.Services
 {
     public class CloudWatchLogsClientWrapper : CloudWatchClientWrapperBase<AmazonCloudWatchLogsClient>
     {
-        private readonly Dictionary<string, string> _validatedGroupNames = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _validatedStreamNames = new Dictionary<string, string>();
-        private string _nextSequenceToken;
+        private readonly ConcurrentDictionary<string, string> _validatedGroupNames = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, string> _validatedStreamNames = new ConcurrentDictionary<string, string>();
+        private volatile string _nextSequenceToken;
         public CloudWatchLogsClientWrapper(string endPoint, string accessKey, string secret)
             : base(endPoint, accessKey, secret)
         {
@@ -20,7 +19,6 @@ namespace CloudWatchAppender.Services
 
         internal void QueuePutLogRequest(PutLogEventsRequest putLogEventsRequest)
         {
-
             QueueRequest(() => PutLogEvents(putLogEventsRequest));
         }
 
@@ -35,7 +33,7 @@ namespace CloudWatchAppender.Services
                 catch (ResourceAlreadyExistsException e)
                 {
                 }
-                _validatedGroupNames.Add(putLogEventsRequest.LogGroupName, putLogEventsRequest.LogGroupName);
+                _validatedGroupNames.TryAdd(putLogEventsRequest.LogGroupName, putLogEventsRequest.LogGroupName);
             }
 
             if (!_validatedStreamNames.ContainsKey(putLogEventsRequest.LogStreamName))
@@ -47,21 +45,34 @@ namespace CloudWatchAppender.Services
                 catch (ResourceAlreadyExistsException e)
                 {
                 }
-                _validatedStreamNames.Add(putLogEventsRequest.LogStreamName, putLogEventsRequest.LogStreamName);
+                _validatedStreamNames.TryAdd(putLogEventsRequest.LogStreamName, putLogEventsRequest.LogStreamName);
             }
 
-            try
+
+            AmazonWebServiceResponse ret = null;
+
+            var nextSequenceToken = _nextSequenceToken;
+            for (int i = 0; i < 10 && ret == null; i++)
             {
-                return PutWithSequenceToken(putLogEventsRequest, _nextSequenceToken);
+                try
+                {
+                    ret = PutWithSequenceToken(putLogEventsRequest, nextSequenceToken);
+                }
+                catch (DataAlreadyAcceptedException e)
+                {
+                    nextSequenceToken = Regex.Matches(e.Message, @"[0-9]{20,}")[0].Value;
+                }
+                catch (InvalidSequenceTokenException e)
+                {
+                    nextSequenceToken = Regex.Matches(e.Message, @"[0-9]{20,}")[0].Value;
+                }
+                catch (OperationAbortedException e)
+                {
+                    LogLog.Debug(typeof(CloudWatchLogsClientWrapper), "Task lost due to conflicting operation");
+                }
             }
-            catch (DataAlreadyAcceptedException e)
-            {
-                return PutWithSequenceToken(putLogEventsRequest, Regex.Matches(e.Message, @"[0-9]{20,}")[0].Value);
-            }
-            catch (InvalidSequenceTokenException e)
-            {
-                return PutWithSequenceToken(putLogEventsRequest, Regex.Matches(e.Message, @"[0-9]{20,}")[0].Value);
-            }
+
+            return ret;
         }
 
         private AmazonWebServiceResponse PutWithSequenceToken(PutLogEventsRequest putLogEventsRequest, string sequenceToken)

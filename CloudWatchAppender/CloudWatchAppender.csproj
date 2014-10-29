@@ -73,7 +73,7 @@
     <Compile Include="BufferingAggregatingCloudWatchAppender.cs" />
     <Compile Include="CloudWatchAppenderException.cs" />
     <Compile Include="CloudWatchAppender.cs" />
-    <Compile Include="BufferingCloudWatchLogAppender.cs" />
+    <Compile Include="BufferingCloudWatchLogsAppender.cs" />
     <Compile Include="CloudWatchLogsAppender.cs" />
     <Compile Include="Fakes\FakeInstanceMetaDataReader.cs" />
     <Compile Include="Layout\PatternLayout.cs" />
@@ -92,6 +92,7 @@
     <Compile Include="Services\EventRateLimiter.cs" />
     <Compile Include="Services\InstanceMetaDataReader.cs" />
     <Compile Include="Services\PatternParser.cs" />
+    <Compile Include="Services\ServiceTasks.cs" />
     <Compile Include="Services\UnitConverter.cs" />
   </ItemGroup>
   <ItemGroup>

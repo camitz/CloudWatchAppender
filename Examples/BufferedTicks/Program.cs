@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using Amazon.CloudWatch.Model;
+using CloudWatchAppender.Services;
 using log4net;
 using log4net.Config;
 
@@ -57,7 +58,7 @@ namespace BufferedTicks
             Console.WriteLine("All {0} ticks in {1} ms.\nWaiting for requests to complete.", nTicks, stopWatch.ElapsedMilliseconds);
 
             stopWatch.Start();
-            CloudWatchAppender.BufferingAggregatingCloudWatchAppender.WaitForPendingRequests();
+            ServiceTasks.WaitForPendingRequests();
 
             stopWatch.Stop();
             Console.WriteLine("Requests completed in {0} ms.", stopWatch.ElapsedMilliseconds);

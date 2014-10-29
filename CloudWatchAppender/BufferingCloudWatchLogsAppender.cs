@@ -16,11 +16,11 @@ using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
 
 namespace CloudWatchAppender
 {
-    public class BufferingCloudWatchLogAppender : BufferingAppenderSkeleton, ICloudWatchAppender
+    public class BufferingCloudWatchLogsAppender : BufferingAppenderSkeleton, ICloudWatchAppender
     {
         private CloudWatchClientWrapper _cloudWatchClient;
         private EventProcessor _eventProcessor;
-        private readonly static Type _declaringType = typeof(BufferingCloudWatchLogAppender);
+        private readonly static Type _declaringType = typeof(BufferingCloudWatchLogsAppender);
         private StandardUnit _standardUnit;
         private string _accessKey;
         private string _secret;
@@ -146,9 +146,7 @@ namespace CloudWatchAppender
         }
 
 
-        private static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
-
-        public BufferingCloudWatchLogAppender()
+        public BufferingCloudWatchLogsAppender()
         {
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
@@ -167,20 +165,6 @@ namespace CloudWatchAppender
             _eventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
         }
 
-        public static bool HasPendingRequests
-        {
-            get { return CloudWatchClientWrapper.HasPendingRequests; }
-        }
-
-        public static void WaitForPendingRequests(TimeSpan timeout)
-        {
-            CloudWatchClientWrapper.WaitForPendingRequests(timeout);
-        }
-
-        public static void WaitForPendingRequests()
-        {
-            CloudWatchClientWrapper.WaitForPendingRequests();
-        }
         protected override void SendBuffer(LoggingEvent[] events)
         {
             if (_cloudWatchClient == null)

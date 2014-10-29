@@ -83,7 +83,7 @@ The *rateLimit* limits the number of requests sent to CloudWatch to 20 per secon
 
 The same result as above can be accomplished by using the version of ["PatternLayout"](#patternlayout) provided by CloudWatchAppender and using the format rules outlined below to format the input string to the appender.
 
-      <layout type="CloudWatchAppender.PatternLayout, CloudWatchAppender">
+      <layout type="CloudWatchAppender.Layout.PatternLayout, CloudWatchAppender">
            <conversionPattern value="%message Value: 20 Milliseconds, MetricName: ProcessingTime, NameSpace: MyApp/Processor, Dimension0: InstanceID: %metadata{instanceid}"/>
       </layout>
 

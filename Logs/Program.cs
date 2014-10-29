@@ -6,10 +6,10 @@ using log4net.Config;
 
 namespace Logs
 {
-    internal class ContinuousTicks
+    internal class Logs
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ContinuousTicks));
-        private const int nTicks = 50;
+        private static readonly ILog log = LogManager.GetLogger(typeof(Logs));
+        private const int nTicks = 100;
 
         private static void Main(string[] args)
         {
@@ -20,17 +20,9 @@ namespace Logs
             stopWatch.Start();
             for (int i = 0; i < nTicks; i++)
             {
-                //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
-                //log.Info("A tick! Value: 29.4 Kilobytes");
-                //log.Info(String.Format("A tick! Timestamp: {0}", DateTimeOffset.Now.AddMinutes(-10).ToString()));
-                log.Info(null);
-                //log.Info("A tick! %logger %metadata{instanceid}");
-                //log.Info(new CloudWatchAppender.MetricDatum("A tick!")
-                //    .WithTimestamp(DateTimeOffset.Now.AddMinutes(-10))
-                //    .WithUnit("Kilobytes")
-                //    .WithValue(29.4));
+                log.Info("A log event");
             }
-            
+
             stopWatch.Stop();
             Console.WriteLine(String.Format("All {0} ticks in {1} ms.\nWaiting for requests to complete.", nTicks, stopWatch.ElapsedMilliseconds));
 

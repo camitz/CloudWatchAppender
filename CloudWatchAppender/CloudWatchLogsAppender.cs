@@ -192,21 +192,6 @@ namespace CloudWatchAppender
         }
 
 
-        public static bool HasPendingRequests
-        {
-            get { return CloudWatchClientWrapper.HasPendingRequests; }
-        }
-
-        public static void WaitForPendingRequests(TimeSpan timeout)
-        {
-            CloudWatchClientWrapper.WaitForPendingRequests(timeout);
-        }
-
-        public static void WaitForPendingRequests()
-        {
-            CloudWatchClientWrapper.WaitForPendingRequests();
-        }
-
         protected override void Append(LoggingEvent loggingEvent)
         {
             if (_cloudWatchClient == null)
@@ -223,14 +208,11 @@ namespace CloudWatchAppender
                 return;
             }
 
-            var t = new InputLogEvent
-                    {
-                        Timestamp = loggingEvent.TimeStamp.ToUniversalTime(),
-                        Message = loggingEvent.RenderedMessage
-                    };
-
-            var t2 = new PutLogEventsRequest(_groupName, "trunk", new[] { t }.ToList());
-            _cloudWatchClient.QueuePutLogRequest(t2);
+            _cloudWatchClient.QueuePutLogRequest(new PutLogEventsRequest(_groupName, "trunk", new[] { new InputLogEvent
+                                                                                                      {
+                                                                                                          Timestamp = loggingEvent.TimeStamp.ToUniversalTime(),
+                                                                                                          Message = RenderLoggingEvent(loggingEvent)
+                                                                                                      } }.ToList()));
         }
 
     }

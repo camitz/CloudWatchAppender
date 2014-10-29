@@ -17,10 +17,9 @@ namespace CloudWatchAppender.Services
 {
     public abstract class CloudWatchClientWrapperBase<T> where T : AmazonServiceClient
     {
-        protected string _endPoint;
-        protected string _accessKey;
-        protected string _secret;
-        protected static ConcurrentDictionary<int, Task> _tasks = new ConcurrentDictionary<int, Task>();
+        private string _endPoint;
+        private string _accessKey;
+        private string _secret;
 
         protected T Client { get; private set; }
 
@@ -101,70 +100,6 @@ namespace CloudWatchAppender.Services
 
         }
 
-        public ConcurrentDictionary<int, Task> Tasks
-        {
-            get { return _tasks; }
-        }
-
-        public static bool HasPendingRequests
-        {
-            get { return _tasks.Values.Any(t => !t.IsCompleted); }
-        }
-
-        public static void WaitForPendingRequests(TimeSpan timeout)
-        {
-            var startedTime = DateTime.UtcNow;
-            var timeConsumed = TimeSpan.Zero;
-            while (HasPendingRequests && timeConsumed < timeout)
-            {
-                Task.WaitAll(_tasks.Values.ToArray(), timeout - timeConsumed);
-                timeConsumed = DateTime.UtcNow - startedTime;
-            }
-        }
-
-        public static void WaitForPendingRequests()
-        {
-            while (HasPendingRequests)
-                Task.WaitAll(_tasks.Values.ToArray());
-        }
-
-        protected ClientConfig AmazonCloudWatchConfig(out RegionEndpoint regionEndpoint)
-        {
-            ClientConfig cloudWatchConfig = null;
-            if (this is CloudWatchClientWrapper)
-                cloudWatchConfig = new AmazonCloudWatchConfig();
-            else
-                cloudWatchConfig = new AmazonCloudWatchLogsConfig();
-
-            regionEndpoint = null;
-
-            if (string.IsNullOrEmpty(_endPoint) && ConfigurationManager.AppSettings["AWSServiceEndpoint"] != null)
-                _endPoint = ConfigurationManager.AppSettings["AWSServiceEndpoint"];
-
-            if (string.IsNullOrEmpty(_accessKey) && ConfigurationManager.AppSettings["AWSAccessKey"] != null)
-                _accessKey = ConfigurationManager.AppSettings["AWSAccessKey"];
-
-            if (string.IsNullOrEmpty(_secret) && ConfigurationManager.AppSettings["AWSSecretKey"] != null)
-                _secret = ConfigurationManager.AppSettings["AWSSecretKey"];
-
-            //_client = AWSClientFactory.CreateAmazonCloudWatchClient(_accessKey, _secret);
-
-            if (!string.IsNullOrEmpty(_endPoint))
-            {
-                if (_endPoint.StartsWith("http"))
-                {
-                    cloudWatchConfig.ServiceURL = _endPoint;
-                }
-                else
-                {
-                    regionEndpoint = cloudWatchConfig.RegionEndpoint = RegionEndpoint.GetBySystemName(_endPoint);
-                }
-            }
-
-
-
-            return cloudWatchConfig;
-        }
 
         protected void QueueRequest(Func<AmazonWebServiceResponse> func)
         {
@@ -218,7 +153,7 @@ namespace CloudWatchAppender.Services
                                  superTask.ContinueWith(t =>
                                                         {
                                                             Task task2;
-                                                            _tasks.TryRemove(superTask.Id, out task2);
+                                                            ServiceTasks.Tasks.TryRemove(superTask.Id, out task2);
                                                             LogLog.Debug(GetType(), "Cloudwatch complete");
                                                             if (superTask.Exception != null)
                                                                 LogLog.Error(GetType(),
@@ -228,7 +163,9 @@ namespace CloudWatchAppender.Services
                                                         });
                              });
 
-                _tasks.TryAdd(superTask.Id, superTask);
+                if (ServiceTasks.Tasks==null)
+                    ServiceTasks.Tasks = new ConcurrentDictionary<int, Task>();
+                ServiceTasks.Tasks.TryAdd(superTask.Id, superTask);
                 superTask.Start();
             }
             catch (Exception e)

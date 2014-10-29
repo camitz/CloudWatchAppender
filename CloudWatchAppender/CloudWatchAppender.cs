@@ -194,21 +194,6 @@ namespace CloudWatchAppender
         }
 
 
-        public static bool HasPendingRequests
-        {
-            get { return CloudWatchClientWrapper.HasPendingRequests; }
-        }
-
-        public static void WaitForPendingRequests(TimeSpan timeout)
-        {
-            CloudWatchClientWrapper.WaitForPendingRequests(timeout);
-        }
-
-        public static void WaitForPendingRequests()
-        {
-            CloudWatchClientWrapper.WaitForPendingRequests();
-        }
-
         protected override void Append(LoggingEvent loggingEvent)
         {
             if (_cloudWatchClient == null)

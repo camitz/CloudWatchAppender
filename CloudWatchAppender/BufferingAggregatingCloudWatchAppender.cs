@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using Amazon.Runtime;
 using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
@@ -20,15 +19,12 @@ using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
 
 namespace CloudWatchAppender
 {
-    public class BufferingAggregatingCloudWatchAppender : BufferingAppenderSkeleton, ICloudWatchAppender
+
+    public class BufferingAggregatingCloudWatchAppender : BufferingAggregatingCloudWatchAppenderBase, ICloudWatchAppender
     {
-        private CloudWatchClientWrapper _cloudWatchClient;
-        private EventProcessor _eventProcessor;
+        private CloudWatchClientWrapper _client;
         private readonly static Type _declaringType = typeof(BufferingAggregatingCloudWatchAppender);
         private StandardUnit _standardUnit;
-        private string _accessKey;
-        private string _secret;
-        private string _endPoint;
         private string _value;
         private string _metricName;
         private string _ns;
@@ -36,39 +32,26 @@ namespace CloudWatchAppender
         private bool _configOverrides = true;
         private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
 
-        public string AccessKey
+
+        private AmazonCloudWatchConfig _clientConfig;
+
+        protected override void ResetClient()
         {
-            set
-            {
-                _accessKey = value;
-                _cloudWatchClient = null;
-            }
+            _client = null;
         }
 
-        public string Secret
+        protected override ClientConfig ClientConfig
         {
-            set
-            {
-                _secret = value;
-                _cloudWatchClient = null;
-            }
+            get { return _clientConfig ?? (_clientConfig = new AmazonCloudWatchConfig()); }
         }
 
-        public string EndPoint
-        {
-            set
-            {
-                _endPoint = value;
-                _cloudWatchClient = null;
-            }
-        }
 
         public string Unit
         {
             set
             {
                 _standardUnit = value;
-                _eventProcessor = null;
+                EventProcessor = null;
             }
         }
 
@@ -77,7 +60,7 @@ namespace CloudWatchAppender
             set
             {
                 _standardUnit = value;
-                _eventProcessor = null;
+                EventProcessor = null;
             }
         }
 
@@ -86,7 +69,7 @@ namespace CloudWatchAppender
             set
             {
                 _value = value;
-                _eventProcessor = null;
+                EventProcessor = null;
             }
         }
 
@@ -95,7 +78,7 @@ namespace CloudWatchAppender
             set
             {
                 _metricName = value;
-                _eventProcessor = null;
+                EventProcessor = null;
             }
         }
 
@@ -105,49 +88,20 @@ namespace CloudWatchAppender
             set
             {
                 _ns = value;
-                _eventProcessor = null;
+                EventProcessor = null;
             }
         }
 
-        public string Timestamp
-        {
-            set
-            {
-                _timestamp = value;
-                _eventProcessor = null;
-            }
-        }
 
         public Dimension Dimension
         {
             set
             {
                 _dimensions[value.Name] = value;
-                _eventProcessor = null;
+                EventProcessor = null;
             }
         }
 
-        public bool ConfigOverrides
-        {
-            set
-            {
-                _configOverrides = value;
-                _eventProcessor = null;
-            }
-        }
-
-
-        private string _instanceMetaDataReaderClass;
-        public string InstanceMetaDataReaderClass
-        {
-            get { return _instanceMetaDataReaderClass; }
-            set
-            {
-                _instanceMetaDataReaderClass = value;
-                InstanceMetaDataReader.Instance =
-                    Activator.CreateInstance(Type.GetType(value)) as IInstanceMetaDataReader;
-            }
-        }
 
 
         public BufferingAggregatingCloudWatchAppender()
@@ -160,32 +114,32 @@ namespace CloudWatchAppender
 
             try
             {
-                _cloudWatchClient = new CloudWatchClientWrapper(_endPoint, _accessKey, _secret);
+                _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret,_clientConfig);
             }
             catch (CloudWatchAppenderException)
             {
             }
 
-            _eventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
+            EventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
         }
 
         protected override void SendBuffer(LoggingEvent[] events)
         {
-            if (_cloudWatchClient == null)
-                _cloudWatchClient = new CloudWatchClientWrapper(_endPoint, _accessKey, _secret);
+            if (_client == null)
+                _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret, _clientConfig);
 
-            if (_eventProcessor == null)
-                _eventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
+            if (EventProcessor == null)
+                EventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
 
-            var rs = events.SelectMany(e => _eventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
+            var rs = events.SelectMany(e => EventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
 
             var requests = Assemble(rs);
 
             foreach (var putMetricDataRequest in requests)
-                _cloudWatchClient.QueuePutMetricData(putMetricDataRequest);
+                _client.QueuePutMetricData(putMetricDataRequest);
         }
 
         internal static IEnumerable<PutMetricDataRequest> Assemble(IEnumerable<PutMetricDataRequest> rs)

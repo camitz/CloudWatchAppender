@@ -12,8 +12,8 @@ namespace CloudWatchAppender.Services
         private readonly ConcurrentDictionary<string, string> _validatedGroupNames = new ConcurrentDictionary<string, string>();
         private readonly ConcurrentDictionary<string, string> _validatedStreamNames = new ConcurrentDictionary<string, string>();
         private volatile string _nextSequenceToken;
-        public CloudWatchLogsClientWrapper(string endPoint, string accessKey, string secret)
-            : base(endPoint, accessKey, secret)
+        public CloudWatchLogsClientWrapper(string endPoint, string accessKey, string secret, ClientConfig clientConfig)
+            : base(endPoint, accessKey, secret, clientConfig)
         {
         }
 

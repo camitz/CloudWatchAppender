@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using Amazon.Runtime;
 
 namespace CloudWatchAppender.Services
 {
     public class CloudWatchClientWrapper : CloudWatchClientWrapperBase<AmazonCloudWatchClient>
     {
 
-        public CloudWatchClientWrapper(string endPoint, string accessKey, string secret)
-            : base(endPoint, accessKey, secret)
+        public CloudWatchClientWrapper(string endPoint, string accessKey, string secret, ClientConfig clientConfig)
+            : base(endPoint, accessKey, secret, clientConfig)
         {
         }
 

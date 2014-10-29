@@ -23,26 +23,27 @@ namespace CloudWatchAppender.Services
 
         protected T Client { get; private set; }
 
-        protected CloudWatchClientWrapperBase(string endPoint, string accessKey, string secret)
+        protected CloudWatchClientWrapperBase(string endPoint, string accessKey, string secret, ClientConfig clientConfig)
         {
             _endPoint = endPoint;
             _accessKey = accessKey;
             _secret = secret;
 
-            SetupClient();
+            SetupClient(clientConfig);
         }
 
-        private void SetupClient()
+        private void SetupClient(ClientConfig clientConfig)
         {
             if (Client != null)
                 return;
 
             RegionEndpoint regionEndpoint;
-            ClientConfig cloudWatchConfig;
-            if (typeof(T) == typeof(AmazonCloudWatchLogsClient))
-                cloudWatchConfig = new AmazonCloudWatchLogsConfig();
-            else
-                cloudWatchConfig = new AmazonCloudWatchConfig();
+
+            if (clientConfig == null)
+                if (typeof(T) == typeof(AmazonCloudWatchLogsClient))
+                    clientConfig = new AmazonCloudWatchLogsConfig();
+                else
+                    clientConfig = new AmazonCloudWatchConfig();
 
 
             if (string.IsNullOrEmpty(_endPoint) && ConfigurationManager.AppSettings["AWSServiceEndpoint"] != null)
@@ -60,11 +61,11 @@ namespace CloudWatchAppender.Services
             {
                 if (_endPoint.StartsWith("http"))
                 {
-                    cloudWatchConfig.ServiceURL = _endPoint;
+                    clientConfig.ServiceURL = _endPoint;
                 }
                 else
                 {
-                    cloudWatchConfig.RegionEndpoint = RegionEndpoint.GetBySystemName(_endPoint);
+                    clientConfig.RegionEndpoint = RegionEndpoint.GetBySystemName(_endPoint);
                 }
             }
 
@@ -75,8 +76,8 @@ namespace CloudWatchAppender.Services
                     {
                         if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AWSRegion"]))
                             Client = AWSClientFactoryWrapper<T>.CreateServiceClient();
-                        else if (cloudWatchConfig.RegionEndpoint != null)
-                            Client = AWSClientFactoryWrapper<T>.CreateServiceClient(cloudWatchConfig);
+                        else if (clientConfig.RegionEndpoint != null)
+                            Client = AWSClientFactoryWrapper<T>.CreateServiceClient(clientConfig);
                     }
                 }
                 catch (AmazonServiceException e)
@@ -90,8 +91,8 @@ namespace CloudWatchAppender.Services
 
 
             if (Client == null && !string.IsNullOrEmpty(_accessKey))
-                if (cloudWatchConfig != null)
-                    Client = AWSClientFactoryWrapper<T>.CreateServiceClient(_accessKey, _secret, cloudWatchConfig);
+                if (clientConfig != null)
+                    Client = AWSClientFactoryWrapper<T>.CreateServiceClient(_accessKey, _secret, clientConfig);
                 else
                     Client = AWSClientFactoryWrapper<T>.CreateServiceClient(_accessKey, _secret);
 
@@ -163,7 +164,7 @@ namespace CloudWatchAppender.Services
                                                         });
                              });
 
-                if (ServiceTasks.Tasks==null)
+                if (ServiceTasks.Tasks == null)
                     ServiceTasks.Tasks = new ConcurrentDictionary<int, Task>();
                 ServiceTasks.Tasks.TryAdd(superTask.Id, superTask);
                 superTask.Start();

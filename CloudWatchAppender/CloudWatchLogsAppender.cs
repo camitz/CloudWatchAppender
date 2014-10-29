@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Amazon.CloudWatch;
-using Amazon.CloudWatch.Model;
+using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
+using Amazon.Runtime;
 using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Services;
-using log4net.Appender;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
 
 namespace CloudWatchAppender
 {
-    public class CloudWatchLogsAppender : AppenderSkeleton, ICloudWatchLogsAppender
+    public class CloudWatchLogsAppender : CloudWatchAppenderBase, ICloudWatchLogsAppender
     {
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
-        private CloudWatchLogsClientWrapper _cloudWatchClient;
+        private CloudWatchLogsClientWrapper _client;
         private EventProcessor _eventProcessor;
         private readonly static Type _declaringType = typeof(CloudWatchLogsAppender);
         private StandardUnit _standardUnit;
@@ -36,13 +35,26 @@ namespace CloudWatchAppender
 
         private bool _configOverrides = true;
 
+        private AmazonCloudWatchLogsConfig _clientConfig;
+
+        protected override ClientConfig ClientConfig
+        {
+            get { return _clientConfig ?? (_clientConfig = new AmazonCloudWatchLogsConfig()); }
+        }
+
         public string AccessKey
         {
             set
             {
                 _accessKey = value;
-                _cloudWatchClient = null;
+                _client = null;
             }
+        }
+
+
+        protected override void ResetClient()
+        {
+            _client = null;
         }
 
         public string Secret
@@ -50,7 +62,7 @@ namespace CloudWatchAppender
             set
             {
                 _secret = value;
-                _cloudWatchClient = null;
+                _client = null;
             }
         }
 
@@ -59,7 +71,7 @@ namespace CloudWatchAppender
             set
             {
                 _endPoint = value;
-                _cloudWatchClient = null;
+                _client = null;
             }
         }
 
@@ -82,51 +94,6 @@ namespace CloudWatchAppender
             }
         }
 
-        public string Unit
-        {
-            set
-            {
-                _standardUnit = value;
-                _eventProcessor = null;
-            }
-        }
-
-        public StandardUnit StandardUnit
-        {
-            set
-            {
-                _standardUnit = value;
-                _eventProcessor = null;
-            }
-        }
-
-        public string Value
-        {
-            set
-            {
-                _value = value;
-                _eventProcessor = null;
-            }
-        }
-
-        public string MetricName
-        {
-            set
-            {
-                _metricName = value;
-                _eventProcessor = null;
-            }
-        }
-
-        public string Namespace
-        {
-            get { return _ns; }
-            set
-            {
-                _ns = value;
-                _eventProcessor = null;
-            }
-        }
 
         public string Timestamp
         {
@@ -178,7 +145,7 @@ namespace CloudWatchAppender
             hierarchy.AddRenderer(typeof(Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
             try
             {
-                _cloudWatchClient = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret);
+                _client = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret, _clientConfig);
             }
             catch (CloudWatchAppenderException)
             {
@@ -194,8 +161,8 @@ namespace CloudWatchAppender
 
         protected override void Append(LoggingEvent loggingEvent)
         {
-            if (_cloudWatchClient == null)
-                _cloudWatchClient = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret);
+            if (_client == null)
+                _client = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret, _clientConfig);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
@@ -208,12 +175,13 @@ namespace CloudWatchAppender
                 return;
             }
 
-            _cloudWatchClient.QueuePutLogRequest(new PutLogEventsRequest(_groupName, "trunk", new[] { new InputLogEvent
+            _client.QueuePutLogRequest(new PutLogEventsRequest(_groupName, "trunk", new[] { new InputLogEvent
                                                                                                       {
                                                                                                           Timestamp = loggingEvent.TimeStamp.ToUniversalTime(),
                                                                                                           Message = RenderLoggingEvent(loggingEvent)
                                                                                                       } }.ToList()));
         }
+
 
     }
 }

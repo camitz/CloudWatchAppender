@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E38702
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedTicks", "..\Examples\BufferedTicks\BufferedTicks.csproj", "{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logs", "..\Logs\Logs.csproj", "{E710959F-F8D3-4A1A-B47B-8D1115EAE34A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logs", "..\Examples\Logs\Logs.csproj", "{E710959F-F8D3-4A1A-B47B-8D1115EAE34A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

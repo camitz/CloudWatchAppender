@@ -17,9 +17,9 @@ namespace CloudWatchAppender.Services
         {
         }
 
-        internal void QueuePutLogRequest(PutLogEventsRequest putLogEventsRequest)
+        internal void AddLogRequest(PutLogEventsRequest putLogEventsRequest)
         {
-            QueueRequest(() => PutLogEvents(putLogEventsRequest));
+            AddRequest(() => PutLogEvents(putLogEventsRequest));
         }
 
         private AmazonWebServiceResponse PutLogEvents(PutLogEventsRequest putLogEventsRequest)

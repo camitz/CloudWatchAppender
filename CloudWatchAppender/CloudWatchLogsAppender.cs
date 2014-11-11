@@ -175,7 +175,7 @@ namespace CloudWatchAppender
                 return;
             }
 
-            _client.QueuePutLogRequest(new PutLogEventsRequest(_groupName, "trunk", new[] { new InputLogEvent
+            _client.AddLogRequest(new PutLogEventsRequest(_groupName, "trunk", new[] { new InputLogEvent
                                                                                                       {
                                                                                                           Timestamp = loggingEvent.TimeStamp.ToUniversalTime(),
                                                                                                           Message = RenderLoggingEvent(loggingEvent)

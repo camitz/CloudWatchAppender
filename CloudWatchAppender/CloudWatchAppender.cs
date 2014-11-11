@@ -49,11 +49,11 @@ namespace CloudWatchAppender
             }
         }
 
-        public StandardUnit StandardUnit
+        public AWSTypes.StandardUnit StandardUnit
         {
             set
             {
-                _standardUnit = value;
+                _standardUnit = value.Value;
                 EventProcessor = null;
             }
         }

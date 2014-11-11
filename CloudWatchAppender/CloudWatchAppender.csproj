@@ -70,6 +70,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AWSTypes\StandardUnit.cs" />
     <Compile Include="BufferingAggregatingCloudWatchAppender.cs" />
     <Compile Include="CloudWatchAppenderBase.cs" />
     <Compile Include="CloudWatchAppenderException.cs" />

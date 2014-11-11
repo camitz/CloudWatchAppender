@@ -9,7 +9,7 @@ using log4net.Appender;
 
 namespace CloudWatchAppender
 {
-    public abstract class CloudWatchAppenderBase : AppenderSkeleton,IAWSAppender
+    public abstract class CloudWatchAppenderBase : AppenderSkeleton, IAWSAppender
     {
         public string AccessKey
         {
@@ -119,7 +119,7 @@ namespace CloudWatchAppender
 
         public EventRateLimiter EventRateLimiter
         {
-            get { return _eventRateLimiter ?? (_eventRateLimiter=new EventRateLimiter()); }
+            get { return _eventRateLimiter ?? (_eventRateLimiter = new EventRateLimiter()); }
             set { _eventRateLimiter = value; }
         }
 
@@ -132,7 +132,7 @@ namespace CloudWatchAppender
         #endregion
     }
 
-    public abstract class BufferingAggregatingCloudWatchAppenderBase : BufferingAppenderSkeleton,IAWSAppender
+    public abstract class BufferingAggregatingCloudWatchAppenderBase : BufferingAppenderSkeleton, IAWSAppender
     {
 
 
@@ -287,7 +287,7 @@ namespace CloudWatchAppender
     {
         Dimension Dimension { set; }
         string Unit { set; }
-        StandardUnit StandardUnit { set; }
+        AWSTypes.StandardUnit StandardUnit { set; }
         string Value { set; }
         string MetricName { set; }
         string Namespace { get; set; }

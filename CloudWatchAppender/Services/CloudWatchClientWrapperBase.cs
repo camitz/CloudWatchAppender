@@ -102,7 +102,7 @@ namespace CloudWatchAppender.Services
         }
 
 
-        protected void QueueRequest(Func<AmazonWebServiceResponse> func)
+        protected void AddRequest(Func<AmazonWebServiceResponse> func)
         {
             var tokenSource = new CancellationTokenSource();
             CancellationToken ct = tokenSource.Token;

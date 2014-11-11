@@ -19,7 +19,7 @@ namespace CloudWatchAppender.Services
 
         internal void QueuePutMetricData(PutMetricDataRequest metricDataRequest)
         {
-            QueueRequest(() => PutMetricData(metricDataRequest));
+            AddRequest(() => PutMetricData(metricDataRequest));
         }
 
 

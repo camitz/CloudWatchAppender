@@ -127,7 +127,7 @@ Example:
     });
 or
 
- log.Info(new Amazon.CloudWatch.Model.MetricDatum
+    log.Info(new Amazon.CloudWatch.Model.MetricDatum
     {
         Dimensions = { new Dimension { Name = "InstanceID", Value = "%metadata{instanceid}" } },
         MetricName = ProcessingTime,

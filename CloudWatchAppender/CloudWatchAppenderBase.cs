@@ -5,12 +5,19 @@ using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.Runtime;
 using CloudWatchAppender.Services;
+using CloudWatchAppender.TypeConverters;
 using log4net.Appender;
 
 namespace CloudWatchAppender
 {
     public abstract class CloudWatchAppenderBase : AppenderSkeleton, IAWSAppender
     {
+        protected CloudWatchAppenderBase()
+        {
+            log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(RegionEndpoint), typeof(RegionConverter));
+            log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(StandardUnit), typeof(StandardUnitConverter));
+        }
+
         public string AccessKey
         {
             set
@@ -100,10 +107,10 @@ namespace CloudWatchAppender
         public bool UseNagleAlgorithm { get { return ClientConfig.UseNagleAlgorithm; } set { ClientConfig.UseNagleAlgorithm = value; } }
         public TimeSpan? ReadWriteTimeout { get { return ClientConfig.ReadWriteTimeout; } set { ClientConfig.ReadWriteTimeout = value; } }
         //public abstract string ServiceVersion { get; }
-        public SigningAlgorithm SignatureMethod { get { return ClientConfig.SignatureMethod; } set { ClientConfig.SignatureMethod = value; } }
+        public SigningAlgorithm SignatureMethod { set { ClientConfig.SignatureMethod = value; } }
         public string SignatureVersion { get { return ClientConfig.SignatureVersion; } set { ClientConfig.SignatureVersion = value; } }
         public string UserAgent { get { return ClientConfig.UserAgent; } set { ClientConfig.UserAgent = value; } }
-        public RegionEndpoint RegionEndpoint { get { return ClientConfig.RegionEndpoint; } set { ClientConfig.RegionEndpoint = value; } }
+        public RegionEndpoint RegionEndpoint {  set { ClientConfig.RegionEndpoint = value; } }
         public string ServiceURL { get { return ClientConfig.ServiceURL; } set { ClientConfig.ServiceURL = value; } }
         public bool UseHttp { get { return ClientConfig.UseHttp; } set { ClientConfig.UseHttp = value; } }
         public string AuthenticationRegion { get { return ClientConfig.AuthenticationRegion; } set { ClientConfig.AuthenticationRegion = value; } }
@@ -134,7 +141,11 @@ namespace CloudWatchAppender
 
     public abstract class BufferingAggregatingCloudWatchAppenderBase : BufferingAppenderSkeleton, IAWSAppender
     {
-
+        protected BufferingAggregatingCloudWatchAppenderBase()
+        {
+            log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(RegionEndpoint), typeof(RegionConverter));
+            log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(StandardUnit), typeof(StandardUnitConverter));
+        }
 
         public string AccessKey
         {
@@ -221,10 +232,11 @@ namespace CloudWatchAppender
         public bool UseNagleAlgorithm { get { return ClientConfig.UseNagleAlgorithm; } set { ClientConfig.UseNagleAlgorithm = value; } }
         public TimeSpan? ReadWriteTimeout { get { return ClientConfig.ReadWriteTimeout; } set { ClientConfig.ReadWriteTimeout = value; } }
         //public abstract string ServiceVersion { get; }
-        public SigningAlgorithm SignatureMethod { get { return ClientConfig.SignatureMethod; } set { ClientConfig.SignatureMethod = value; } }
+        public SigningAlgorithm SignatureMethod { set { ClientConfig.SignatureMethod = value; } }
+
         public string SignatureVersion { get { return ClientConfig.SignatureVersion; } set { ClientConfig.SignatureVersion = value; } }
         public string UserAgent { get { return ClientConfig.UserAgent; } set { ClientConfig.UserAgent = value; } }
-        public RegionEndpoint RegionEndpoint { get { return ClientConfig.RegionEndpoint; } set { ClientConfig.RegionEndpoint = value; } }
+        public RegionEndpoint RegionEndpoint { set { ClientConfig.RegionEndpoint = value; } }
         public string ServiceURL { get { return ClientConfig.ServiceURL; } set { ClientConfig.ServiceURL = value; } }
         public bool UseHttp { get { return ClientConfig.UseHttp; } set { ClientConfig.UseHttp = value; } }
         public string AuthenticationRegion { get { return ClientConfig.AuthenticationRegion; } set { ClientConfig.AuthenticationRegion = value; } }
@@ -264,10 +276,10 @@ namespace CloudWatchAppender
         bool UseNagleAlgorithm { get; set; }
         TimeSpan? ReadWriteTimeout { get; set; }
         //abstract string ServiceVersion { get; }
-        SigningAlgorithm SignatureMethod { get; set; }
+        SigningAlgorithm SignatureMethod {  set; }
         string SignatureVersion { get; set; }
         string UserAgent { get; set; }
-        RegionEndpoint RegionEndpoint { get; set; }
+        RegionEndpoint RegionEndpoint { set; }
         string ServiceURL { get; set; }
         bool UseHttp { get; set; }
         string AuthenticationRegion { get; set; }
@@ -287,7 +299,7 @@ namespace CloudWatchAppender
     {
         Dimension Dimension { set; }
         string Unit { set; }
-        AWSTypes.StandardUnit StandardUnit { set; }
+        StandardUnit StandardUnit { set; }
         string Value { set; }
         string MetricName { set; }
         string Namespace { get; set; }
@@ -298,3 +310,4 @@ namespace CloudWatchAppender
     }
 
 }
+

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
@@ -9,6 +10,7 @@ using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Services;
+using CloudWatchAppender.TypeConverters;
 using log4net.Appender;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
@@ -55,11 +57,11 @@ namespace CloudWatchAppender
             }
         }
 
-        public AWSTypes.StandardUnit StandardUnit
+        public StandardUnit StandardUnit
         {
             set
             {
-                _standardUnit = value.Value;
+                _standardUnit = value;
                 EventProcessor = null;
             }
         }
@@ -102,10 +104,9 @@ namespace CloudWatchAppender
             }
         }
 
-
-
-        public BufferingAggregatingCloudWatchAppender()
+        public override void ActivateOptions()
         {
+            base.ActivateOptions();
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;
@@ -114,14 +115,18 @@ namespace CloudWatchAppender
 
             try
             {
-                _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret,_clientConfig);
+                _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret, _clientConfig);
             }
             catch (CloudWatchAppenderException)
             {
             }
 
             EventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
+
+            if (Layout == null)
+                Layout = new PatternLayout("%message");
         }
+
 
         protected override void SendBuffer(LoggingEvent[] events)
         {
@@ -131,8 +136,6 @@ namespace CloudWatchAppender
             if (EventProcessor == null)
                 EventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
 
-            if (Layout == null)
-                Layout = new PatternLayout("%message");
 
             var rs = events.SelectMany(e => EventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
 

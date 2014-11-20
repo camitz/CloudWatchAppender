@@ -138,6 +138,8 @@ namespace CloudWatchAppender
             else
                 _groupName = "unspecified";
 
+            _streamName = "unspecified";
+
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;
@@ -163,7 +165,7 @@ namespace CloudWatchAppender
 
             if (Layout == null)
                 Layout = new PatternLayout("%message"); 
-            
+
         }
 
 
@@ -188,7 +190,7 @@ namespace CloudWatchAppender
                                    Message = RenderLoggingEvent(x)
                                });
 
-            _client.AddLogRequest(new PutLogEventsRequest(_groupName, "trunk", logEvents.ToList()));
+            _client.AddLogRequest(new PutLogEventsRequest(_groupName, _streamName, logEvents.ToList()));
         }
     }
 }

@@ -24,7 +24,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(StandardUnit.KilobytesSecond, r.MetricData[0].Unit);
                 Assert.AreEqual(3.0, r.MetricData[0].Value);
@@ -45,7 +45,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(StandardUnit.MegabytesSecond, r.MetricData[0].Unit);
                 Assert.AreEqual(4.0, r.MetricData[0].Value);
@@ -62,7 +62,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(StandardUnit.GigabitsSecond, r.MetricData[0].Unit);
                 Assert.AreEqual(1.3, r.MetricData[0].StatisticValues.Minimum);
@@ -90,7 +90,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(StandardUnit.GigabitsSecond, r.MetricData[0].Unit);
                 Assert.AreEqual(1.2, r.MetricData[0].StatisticValues.Minimum);
@@ -111,7 +111,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual("CloudWatchAppender", r.Namespace);
                 Assert.AreEqual(1, r.MetricData.Count);
@@ -132,7 +132,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual("NewName", r.MetricData[0].MetricName);
                 passes++;
@@ -152,7 +152,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual("DefaultMetricName", r.MetricData[0].MetricName);
                 Assert.AreEqual("DefaultNameSpace", r.Namespace);
@@ -169,7 +169,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual("NewNameSpace", r.Namespace);
                 passes++;
@@ -188,7 +188,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(DateTime.Parse("2012-09-06 10:55:55"), r.MetricData[0].Timestamp);
                 passes++;
@@ -204,7 +204,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(DateTime.Parse("2012-09-06 15:55:55"), r.MetricData[0].Timestamp);
                 passes++;
@@ -216,7 +216,7 @@ namespace CloudWatchAppender.Tests
             parser = new MetricDatumEventMessageParser("A tick! Timestamp: 2012-09-06 15:55:55");
             parser.Parse();
 
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
                 Assert.AreEqual(DateTime.Parse("2012-09-06 15:55:55"), r.MetricData[0].Timestamp);
         }
 
@@ -227,7 +227,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
                 Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[0].Name);
@@ -247,7 +247,7 @@ namespace CloudWatchAppender.Tests
             parser = new MetricDatumEventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
             parser.Parse();
 
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
         }
 
@@ -258,7 +258,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(0, r.MetricData[0].Dimensions.Count);
 
@@ -286,7 +286,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(3, r.MetricData[0].Dimensions.Count);
                 Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[0].Name);
@@ -308,7 +308,7 @@ namespace CloudWatchAppender.Tests
             parser = new MetricDatumEventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
             parser.Parse();
 
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
         }
 
@@ -327,7 +327,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
                 Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[0].Name);
@@ -352,7 +352,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
 
@@ -373,7 +373,7 @@ namespace CloudWatchAppender.Tests
             parser = new MetricDatumEventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
             parser.Parse();
 
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
         }
 
@@ -384,7 +384,7 @@ namespace CloudWatchAppender.Tests
             parser.Parse();
 
             var passes = 0;
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(1, r.MetricData[0].Dimensions.Count);
                 Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[0].Name);
@@ -405,7 +405,7 @@ namespace CloudWatchAppender.Tests
             var parser = new MetricDatumEventMessageParser("A tick! Dimensions: (InstanceID: qwerty Value: 4.5 Seconds");
             parser.Parse();
 
-            foreach (var r in parser.GetMetricDataRequests())
+            foreach (var r in parser.GetRequests())
             {
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
                 Assert.AreEqual("InstanceID", r.MetricData[0].Dimensions[0].Name);

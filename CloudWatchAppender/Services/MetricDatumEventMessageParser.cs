@@ -43,7 +43,7 @@ namespace CloudWatchAppender.Services
                         .ToList()
                         .GetEnumerator();
 
-                ParseTokens(tokens, _renderedMessage);
+                ParseTokens(ref tokens, _renderedMessage);
             }
 
             NewDatum();
@@ -109,8 +109,8 @@ namespace CloudWatchAppender.Services
 
         protected override bool IsSupportedName(string t0)
         {
-            return !MetricDatum.SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) &&
-                   !MetricDatum.SupportedStatistics.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase));
+            return MetricDatum.SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) ||
+                   MetricDatum.SupportedStatistics.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase));
         }
 
 
@@ -227,12 +227,12 @@ namespace CloudWatchAppender.Services
 
 
 
-        public IEnumerable<PutMetricDataRequest> GetMetricDataRequests()
+        public IEnumerable<PutMetricDataRequest> GetRequests()
         {
             return _data.Select(x => x.Request);
         }
 
-        protected override void LocalParse(List<Match>.Enumerator tokens, string sNum)
+        protected override void LocalParse(ref List<Match>.Enumerator tokens, string sNum)
         {
             if (!tokens.MoveNext())
                 return;

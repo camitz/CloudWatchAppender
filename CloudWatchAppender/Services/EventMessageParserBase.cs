@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch;
-using Amazon.CloudWatch.Model;
 
 namespace CloudWatchAppender.Services
 {
@@ -14,7 +13,7 @@ namespace CloudWatchAppender.Services
         protected abstract void NewDatum();
         protected abstract bool FillName(AppenderValue value);
 
-        protected void ParseTokens(List<Match>.Enumerator tokens, string renderedMessage)
+        protected void ParseTokens(ref List<Match>.Enumerator tokens, string renderedMessage)
         {
             string t0, unit, value, name, sNum = string.Empty;
 
@@ -23,7 +22,7 @@ namespace CloudWatchAppender.Services
             {
                 if (!string.IsNullOrEmpty(t0 = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
                 {
-                    if (IsSupportedName(t0))
+                    if (!IsSupportedName(t0))
                     {
                         tokens.MoveNext();
                         continue;
@@ -31,7 +30,7 @@ namespace CloudWatchAppender.Services
 
                     if (ShouldLocalParse(t0))
                     {
-                        LocalParse(tokens, sNum);
+                        LocalParse(ref tokens, sNum);
                     }
                     else if (t0.StartsWith("Timestamp", StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -120,7 +119,7 @@ namespace CloudWatchAppender.Services
             return success;
         }
 
-        protected virtual void LocalParse(List<Match>.Enumerator tokens, string sNum) { }
+        protected virtual void LocalParse(ref List<Match>.Enumerator tokens, string sNum) { }
     }
 
     public struct AppenderValue

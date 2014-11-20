@@ -69,7 +69,7 @@ namespace CloudWatchAppender.Services
 
             _metricDatumEventMessageParser.Parse();
 
-            //return _metricDatumEventMessageParser.GetMetricDataRequests();
+            //return _metricDatumEventMessageParser.GetRequests();
             return null;
         }
 

@@ -9,6 +9,8 @@ namespace CloudWatchAppender.Services
 {
     public class CloudWatchLogsClientWrapper : CloudWatchClientWrapperBase<AmazonCloudWatchLogsClient>
     {
+        private static readonly object _lockObject = new object();
+
         private readonly ConcurrentDictionary<string, string> _validatedGroupNames = new ConcurrentDictionary<string, string>();
         private readonly ConcurrentDictionary<string, string> _validatedStreamNames = new ConcurrentDictionary<string, string>();
         private volatile string _nextSequenceToken;
@@ -51,24 +53,27 @@ namespace CloudWatchAppender.Services
 
             AmazonWebServiceResponse ret = null;
 
-            var nextSequenceToken = _nextSequenceToken;
-            for (int i = 0; i < 10 && ret == null; i++)
+            lock (_lockObject)
             {
-                try
+                var nextSequenceToken = _nextSequenceToken;
+                for (var i = 0; i < 10 && ret == null; i++)
                 {
-                    ret = PutWithSequenceToken(putLogEventsRequest, nextSequenceToken);
-                }
-                catch (DataAlreadyAcceptedException e)
-                {
-                    nextSequenceToken = Regex.Matches(e.Message, @"[0-9]{20,}")[0].Value;
-                }
-                catch (InvalidSequenceTokenException e)
-                {
-                    nextSequenceToken = Regex.Matches(e.Message, @"[0-9]{20,}")[0].Value;
-                }
-                catch (OperationAbortedException e)
-                {
-                    LogLog.Debug(typeof(CloudWatchLogsClientWrapper), "Task lost due to conflicting operation");
+                    try
+                    {
+                        ret = PutWithSequenceToken(putLogEventsRequest, nextSequenceToken);
+                    }
+                    catch (DataAlreadyAcceptedException e)
+                    {
+                        nextSequenceToken = Regex.Matches(e.Message, @"[0-9]{20,}")[0].Value;
+                    }
+                    catch (InvalidSequenceTokenException e)
+                    {
+                        nextSequenceToken = Regex.Matches(e.Message, @"[0-9]{20,}")[0].Value;
+                    }
+                    catch (OperationAbortedException e)
+                    {
+                        LogLog.Debug(typeof (CloudWatchLogsClientWrapper), "Task lost due to conflicting operation");
+                    }
                 }
             }
 

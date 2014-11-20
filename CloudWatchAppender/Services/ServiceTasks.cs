@@ -12,7 +12,7 @@ namespace CloudWatchAppender.Services
 
         public static bool HasPendingRequests
         {
-            get { return Tasks.Values.Any(t => !t.IsCompleted); }
+            get { return Tasks!=null && Tasks.Values.Any(t => !t.IsCompleted); }
         }
 
         public static void WaitForPendingRequests(TimeSpan timeout)

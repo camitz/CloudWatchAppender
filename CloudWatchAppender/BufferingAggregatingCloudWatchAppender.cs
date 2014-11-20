@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
@@ -10,8 +9,6 @@ using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Services;
-using CloudWatchAppender.TypeConverters;
-using log4net.Appender;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
@@ -22,7 +19,7 @@ using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
 namespace CloudWatchAppender
 {
 
-    public class BufferingAggregatingCloudWatchAppender : BufferingAggregatingCloudWatchAppenderBase, ICloudWatchAppender
+    public class BufferingAggregatingCloudWatchAppender : BufferingCloudWatchAppenderBase, ICloudWatchAppender
     {
         private CloudWatchClientWrapper _client;
         private readonly static Type _declaringType = typeof(BufferingAggregatingCloudWatchAppender);

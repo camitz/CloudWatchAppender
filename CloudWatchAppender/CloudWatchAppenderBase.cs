@@ -139,9 +139,9 @@ namespace CloudWatchAppender
         #endregion
     }
 
-    public abstract class BufferingAggregatingCloudWatchAppenderBase : BufferingAppenderSkeleton, IAWSAppender
+    public abstract class BufferingCloudWatchAppenderBase : BufferingAppenderSkeleton, IAWSAppender
     {
-        protected BufferingAggregatingCloudWatchAppenderBase()
+        protected BufferingCloudWatchAppenderBase()
         {
             log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(RegionEndpoint), typeof(RegionConverter));
             log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(StandardUnit), typeof(StandardUnitConverter));

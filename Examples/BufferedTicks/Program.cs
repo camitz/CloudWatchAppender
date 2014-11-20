@@ -4,7 +4,9 @@ using System.Threading;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Services;
 using log4net;
+using log4net.Appender;
 using log4net.Config;
+using log4net.Repository;
 
 namespace BufferedTicks
 {
@@ -54,6 +56,16 @@ namespace BufferedTicks
                 Thread.Sleep(10);
             }
 
+            ILoggerRepository rep = LogManager.GetRepository();
+            foreach (IAppender appender in rep.GetAppenders())
+            {
+                var buffered = appender as BufferingAppenderSkeleton;
+                if (buffered != null)
+                {
+                    buffered.Flush();
+                }
+            } 
+            
             stopWatch.Stop();
             Console.WriteLine("All {0} ticks in {1} ms.\nWaiting for requests to complete.", nTicks, stopWatch.ElapsedMilliseconds);
 

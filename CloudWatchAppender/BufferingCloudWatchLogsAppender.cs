@@ -15,12 +15,12 @@ using log4net.Util;
 
 namespace CloudWatchAppender
 {
-    public class CloudWatchLogsAppender : CloudWatchAppenderBase, ICloudWatchLogsAppender
+    public class BufferingCloudWatchLogsAppender : BufferingCloudWatchAppenderBase, ICloudWatchLogsAppender
     {
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private CloudWatchLogsClientWrapper _client;
         private EventProcessor _eventProcessor;
-        private readonly static Type _declaringType = typeof(CloudWatchLogsAppender);
+        private readonly static Type _declaringType = typeof(BufferingCloudWatchLogsAppender);
         private StandardUnit _standardUnit;
         private string _accessKey;
         private string _secret;
@@ -131,7 +131,7 @@ namespace CloudWatchAppender
             set { _eventRateLimiter = new EventRateLimiter(value); }
         }
 
-        public CloudWatchLogsAppender()
+        public BufferingCloudWatchLogsAppender()
         {
             if (Assembly.GetEntryAssembly() != null)
                 _groupName = Assembly.GetEntryAssembly().GetName().Name;
@@ -169,27 +169,26 @@ namespace CloudWatchAppender
 
         protected override void Append(LoggingEvent loggingEvent)
         {
-            if (_client == null)
-                _client = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret, _clientConfig);
-
-            if (Layout == null)
-                Layout = new PatternLayout("%message");
-
-            LogLog.Debug(_declaringType, "Appending");
-
             if (!_eventRateLimiter.Request(loggingEvent.TimeStamp))
             {
                 LogLog.Debug(_declaringType, "Appending denied due to event limiter saturated.");
-                return;
+            }
+            else
+            {
+                base.Append(loggingEvent);
             }
 
-            _client.AddLogRequest(new PutLogEventsRequest(_groupName, "trunk", new[] { new InputLogEvent
-                                                                                                      {
-                                                                                                          Timestamp = loggingEvent.TimeStamp.ToUniversalTime(),
-                                                                                                          Message = RenderLoggingEvent(loggingEvent)
-                                                                                                      } }.ToList()));
         }
 
+        protected override void SendBuffer(LoggingEvent[] events)
+        {
+            var logEvents = events.Select(x => new InputLogEvent
+                               {
+                                   Timestamp = x.TimeStamp.ToUniversalTime(),
+                                   Message = RenderLoggingEvent(x)
+                               });
 
+            _client.AddLogRequest(new PutLogEventsRequest(_groupName, "trunk", logEvents.ToList()));
+        }
     }
 }

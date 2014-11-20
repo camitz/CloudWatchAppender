@@ -32,6 +32,7 @@ namespace CloudWatchAppender.Services
             SetupClient(clientConfig);
         }
 
+
         private void SetupClient(ClientConfig clientConfig)
         {
             if (Client != null)
@@ -46,7 +47,7 @@ namespace CloudWatchAppender.Services
                     clientConfig = new AmazonCloudWatchConfig();
 
 
-            if (string.IsNullOrEmpty(_endPoint) && ConfigurationManager.AppSettings["AWSServiceEndpoint"] != null)
+            if (string.IsNullOrEmpty(_endPoint) && clientConfig.RegionEndpoint == null && ConfigurationManager.AppSettings["AWSServiceEndpoint"] != null)
                 _endPoint = ConfigurationManager.AppSettings["AWSServiceEndpoint"];
 
             if (string.IsNullOrEmpty(_accessKey) && ConfigurationManager.AppSettings["AWSAccessKey"] != null)

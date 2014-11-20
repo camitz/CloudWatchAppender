@@ -19,7 +19,7 @@ using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
 namespace CloudWatchAppender
 {
 
-    public class BufferingAggregatingCloudWatchAppender : BufferingCloudWatchAppenderBase, ICloudWatchAppender
+    public class BufferingAggregatingCloudWatchAppender : BufferingCloudWatchAppenderBase<PutMetricDataRequest>, ICloudWatchAppender
     {
         private CloudWatchClientWrapper _client;
         private readonly static Type _declaringType = typeof(BufferingAggregatingCloudWatchAppender);
@@ -50,7 +50,7 @@ namespace CloudWatchAppender
             set
             {
                 _standardUnit = value;
-                EventProcessor = null;
+                MetricDatumEventProcessor = null;
             }
         }
 
@@ -59,7 +59,7 @@ namespace CloudWatchAppender
             set
             {
                 _standardUnit = value;
-                EventProcessor = null;
+                MetricDatumEventProcessor = null;
             }
         }
 
@@ -68,7 +68,7 @@ namespace CloudWatchAppender
             set
             {
                 _value = value;
-                EventProcessor = null;
+                MetricDatumEventProcessor = null;
             }
         }
 
@@ -77,7 +77,7 @@ namespace CloudWatchAppender
             set
             {
                 _metricName = value;
-                EventProcessor = null;
+                MetricDatumEventProcessor = null;
             }
         }
 
@@ -87,7 +87,7 @@ namespace CloudWatchAppender
             set
             {
                 _ns = value;
-                EventProcessor = null;
+                MetricDatumEventProcessor = null;
             }
         }
 
@@ -97,7 +97,7 @@ namespace CloudWatchAppender
             set
             {
                 _dimensions[value.Name] = value;
-                EventProcessor = null;
+                MetricDatumEventProcessor = null;
             }
         }
 
@@ -118,10 +118,16 @@ namespace CloudWatchAppender
             {
             }
 
-            EventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
+            MetricDatumEventProcessor = new MetricDatumEventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
+        }
+
+        public MetricDatumEventProcessor MetricDatumEventProcessor
+        {
+            get { return EventProcessor as MetricDatumEventProcessor; }
+            set { EventProcessor = value; }
         }
 
 
@@ -130,11 +136,11 @@ namespace CloudWatchAppender
             if (_client == null)
                 _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret, _clientConfig);
 
-            if (EventProcessor == null)
-                EventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
+            if (MetricDatumEventProcessor == null)
+                MetricDatumEventProcessor = new MetricDatumEventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
 
 
-            var rs = events.SelectMany(e => EventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
+            var rs = events.SelectMany(e => MetricDatumEventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
 
             var requests = Assemble(rs);
 

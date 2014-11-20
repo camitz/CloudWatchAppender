@@ -15,11 +15,11 @@ using log4net.Util;
 
 namespace CloudWatchAppender
 {
-    public class CloudWatchLogsAppender : CloudWatchAppenderBase, ICloudWatchLogsAppender
+    public class CloudWatchLogsAppender : CloudWatchAppenderBase<PutLogEventsRequest>, ICloudWatchLogsAppender
     {
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private CloudWatchLogsClientWrapper _client;
-        private EventProcessor _eventProcessor;
+        private MetricDatumEventProcessor _metricDatumEventProcessor;
         private readonly static Type _declaringType = typeof(CloudWatchLogsAppender);
         private StandardUnit _standardUnit;
         private string _accessKey;
@@ -81,7 +81,7 @@ namespace CloudWatchAppender
             set
             {
                 _groupName = value;
-                _eventProcessor = null;
+                _metricDatumEventProcessor = null;
             }
         }
 
@@ -90,7 +90,7 @@ namespace CloudWatchAppender
             set
             {
                 _streamName = value;
-                _eventProcessor = null;
+                _metricDatumEventProcessor = null;
             }
         }
 
@@ -100,7 +100,7 @@ namespace CloudWatchAppender
             set
             {
                 _timestamp = value;
-                _eventProcessor = null;
+                _metricDatumEventProcessor = null;
             }
         }
 
@@ -109,7 +109,7 @@ namespace CloudWatchAppender
             set
             {
                 _configOverrides = value;
-                _eventProcessor = null;
+                _metricDatumEventProcessor = null;
             }
         }
 
@@ -145,7 +145,7 @@ namespace CloudWatchAppender
             logger.Level = Level.Off;
 
             hierarchy.AddRenderer(typeof(Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
-         
+
 
         }
 
@@ -161,13 +161,12 @@ namespace CloudWatchAppender
             {
             }
 
-            //_eventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
+            EventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp);
 
             if (Layout == null)
-                Layout = new PatternLayout("%message"); 
-            
-        }
+                Layout = new PatternLayout("%message");
 
+        }
 
         protected override void Append(LoggingEvent loggingEvent)
         {

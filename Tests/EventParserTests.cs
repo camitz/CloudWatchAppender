@@ -20,7 +20,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithSingleValueAndUnit()
         {
-            var parser = new EventMessageParser("A tick! Value: 3.0 Kilobytes/Second");
+            var parser = new MetricDatumEventMessageParser("A tick! Value: 3.0 Kilobytes/Second");
             parser.Parse();
 
             var passes = 0;
@@ -37,7 +37,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithSingleValueAndUnit_Overrides()
         {
-            var parser = new EventMessageParser("A tick! Value: 3.0 Kilobytes/Second")
+            var parser = new MetricDatumEventMessageParser("A tick! Value: 3.0 Kilobytes/Second")
                              {
                                  DefaultValue = 4.0,
                                  DefaultUnit = "Megabytes/Second"
@@ -58,7 +58,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithStatistics()
         {
-            var parser = new EventMessageParser("A tick! SampleCount: 3000, Minimum: 1.3 Gigabits/Second, Maximum: 127.9 Gigabits/Second, Sum: 15000.5 Gigabits/Second");
+            var parser = new MetricDatumEventMessageParser("A tick! SampleCount: 3000, Minimum: 1.3 Gigabits/Second, Maximum: 127.9 Gigabits/Second, Sum: 15000.5 Gigabits/Second");
             parser.Parse();
 
             var passes = 0;
@@ -79,7 +79,7 @@ namespace CloudWatchAppender.Tests
         public void StringWithStatistics_Overrides()
         {
             var parser =
-                new EventMessageParser(
+                new MetricDatumEventMessageParser(
                     "A tick! SampleCount: 3000, Minimum: 1.3 Gigabits/Second, Maximum: 127.9 Gigabits/Second, Sum: 15000.1 Gigabits/Second")
                     {
                         DefaultSampleCount = 4000,
@@ -107,7 +107,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithNothingRecognizableShouldProduceCount1()
         {
-            var parser = new EventMessageParser("A tick");
+            var parser = new MetricDatumEventMessageParser("A tick");
             parser.Parse();
 
             var passes = 0;
@@ -128,7 +128,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithMetricName()
         {
-            var parser = new EventMessageParser("A tick! MetricName: NewName");
+            var parser = new MetricDatumEventMessageParser("A tick! MetricName: NewName");
             parser.Parse();
 
             var passes = 0;
@@ -144,7 +144,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithMetricNameAndNameSpace_Overrides()
         {
-            var parser = new EventMessageParser("A tick! Name: NewName NameSpace: NewNameSpace")
+            var parser = new MetricDatumEventMessageParser("A tick! Name: NewName NameSpace: NewNameSpace")
                              {
                                  DefaultMetricName = "DefaultMetricName",
                                  DefaultNameSpace = "DefaultNameSpace"
@@ -165,7 +165,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithNameSpace()
         {
-            var parser = new EventMessageParser("A tick! NameSpace: NewNameSpace");
+            var parser = new MetricDatumEventMessageParser("A tick! NameSpace: NewNameSpace");
             parser.Parse();
 
             var passes = 0;
@@ -181,7 +181,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithTimestamp_Override()
         {
-            var parser = new EventMessageParser("A tick! Timestamp: 2012-09-06 17:55:55 +02:00")
+            var parser = new MetricDatumEventMessageParser("A tick! Timestamp: 2012-09-06 17:55:55 +02:00")
                              {
                                  DefaultTimestamp = DateTimeOffset.Parse("2012-09-06 12:55:55 +02:00")
                              };
@@ -200,7 +200,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithTimestamp()
         {
-            var parser = new EventMessageParser("A tick! Timestamp: 2012-09-06 17:55:55 +02:00");
+            var parser = new MetricDatumEventMessageParser("A tick! Timestamp: 2012-09-06 17:55:55 +02:00");
             parser.Parse();
 
             var passes = 0;
@@ -213,7 +213,7 @@ namespace CloudWatchAppender.Tests
             Assert.AreEqual(1, passes);
 
 
-            parser = new EventMessageParser("A tick! Timestamp: 2012-09-06 15:55:55");
+            parser = new MetricDatumEventMessageParser("A tick! Timestamp: 2012-09-06 15:55:55");
             parser.Parse();
 
             foreach (var r in parser.GetMetricDataRequests())
@@ -223,7 +223,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithDimensionsList()
         {
-            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: apple) Value: 4.5 Seconds");
+            var parser = new MetricDatumEventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: apple) Value: 4.5 Seconds");
             parser.Parse();
 
             var passes = 0;
@@ -244,7 +244,7 @@ namespace CloudWatchAppender.Tests
             Assert.AreEqual(1, passes);
 
             //Not plural, should work anyway
-            parser = new EventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
+            parser = new MetricDatumEventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
             parser.Parse();
 
             foreach (var r in parser.GetMetricDataRequests())
@@ -254,7 +254,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithDimensionsList_Empties()
         {
-            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: , Fruit: ) Value: 4.5 Seconds");
+            var parser = new MetricDatumEventMessageParser("A tick! Dimensions: (InstanceID: , Fruit: ) Value: 4.5 Seconds");
             parser.Parse();
 
             var passes = 0;
@@ -275,7 +275,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithDimensionsList_Overrides()
         {
-            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: apple) Value: 4.5 Seconds")
+            var parser = new MetricDatumEventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: apple) Value: 4.5 Seconds")
                              {
                                  DefaultDimensions = new Dictionary<string, Dimension>
                                                          {
@@ -305,7 +305,7 @@ namespace CloudWatchAppender.Tests
             Assert.AreEqual(1, passes);
 
             //Not plural, should work anyway
-            parser = new EventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
+            parser = new MetricDatumEventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
             parser.Parse();
 
             foreach (var r in parser.GetMetricDataRequests())
@@ -315,7 +315,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithDimensionsList_Overrides_Empties()
         {
-            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: , Nuts: walnuts) Value: 4.5 Seconds")
+            var parser = new MetricDatumEventMessageParser("A tick! Dimensions: (InstanceID: qwerty, Fruit: , Nuts: walnuts) Value: 4.5 Seconds")
                              {
                                  DefaultDimensions = new Dictionary<string, Dimension>
                                                          {
@@ -348,7 +348,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithDimensions()
         {
-            var parser = new EventMessageParser("A tick! Dimension: (InstanceID: qwerty), Dimension: Fruit: apple) Value: 4.5 Seconds");
+            var parser = new MetricDatumEventMessageParser("A tick! Dimension: (InstanceID: qwerty), Dimension: Fruit: apple) Value: 4.5 Seconds");
             parser.Parse();
 
             var passes = 0;
@@ -370,7 +370,7 @@ namespace CloudWatchAppender.Tests
             Assert.AreEqual(1, passes);
 
             //Not plural, should work anyway
-            parser = new EventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
+            parser = new MetricDatumEventMessageParser("A tick! Dimension: (InstanceID: qwerty, Fruit: apple)");
             parser.Parse();
 
             foreach (var r in parser.GetMetricDataRequests())
@@ -380,7 +380,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithSingleDimension()
         {
-            var parser = new EventMessageParser("A tick! Dimension: InstanceID: qwerty Value: 4.5 Seconds");
+            var parser = new MetricDatumEventMessageParser("A tick! Dimension: InstanceID: qwerty Value: 4.5 Seconds");
             parser.Parse();
 
             var passes = 0;
@@ -402,7 +402,7 @@ namespace CloudWatchAppender.Tests
         [Test]
         public void StringWithDimensionUnfinishedParenthsTriesToParseAsDimensionSkippingUnit()
         {            //Plural, with unended parenths, should work anyway
-            var parser = new EventMessageParser("A tick! Dimensions: (InstanceID: qwerty Value: 4.5 Seconds");
+            var parser = new MetricDatumEventMessageParser("A tick! Dimensions: (InstanceID: qwerty Value: 4.5 Seconds");
             parser.Parse();
 
             foreach (var r in parser.GetMetricDataRequests())

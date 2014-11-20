@@ -73,10 +73,6 @@ namespace CloudWatchAppender.Services
                         }
                     }
                 }
-                else
-                {
-                    var stop = 0;
-                }
             }
 
             throw new ConversionNotSupportedException();

@@ -70,6 +70,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BufferingCloudWatchAppenderBase.cs" />
     <Compile Include="BufferingCloudWatchLogsAppender.cs" />
     <Compile Include="BufferingAggregatingCloudWatchAppender.cs" />
     <Compile Include="CloudWatchAppenderBase.cs" />
@@ -88,8 +89,10 @@
     <Compile Include="Services\CloudWatchClientWrapper.cs" />
     <Compile Include="Services\CloudWatchClientWrapperBase.cs" />
     <Compile Include="Services\CloudWatchLogsClientWrapper.cs" />
-    <Compile Include="Services\EventMessageParser.cs" />
-    <Compile Include="Services\EventProcessor.cs" />
+    <Compile Include="Services\EventMessageParserBase.cs" />
+    <Compile Include="Services\MetricDatumEventMessageParser.cs" />
+    <Compile Include="Services\LogEventProcessor.cs" />
+    <Compile Include="Services\MetricDatumEventProcessor.cs" />
     <Compile Include="Services\EventRateLimiter.cs" />
     <Compile Include="Services\InstanceMetaDataReader.cs" />
     <Compile Include="Services\PatternParser.cs" />

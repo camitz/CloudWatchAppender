@@ -10,7 +10,12 @@ using log4net.Util;
 
 namespace CloudWatchAppender.Services
 {
-    public class EventProcessor
+    public interface IEventProcessor<out T>
+    {
+        IEnumerable<T> ProcessEvent(LoggingEvent loggingEvent, string renderedString);
+    }
+
+    public class MetricDatumEventProcessor : IEventProcessor<PutMetricDataRequest>
     {
         private CloudWatchAppender _cloudWatchAppender;
         private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
@@ -19,7 +24,7 @@ namespace CloudWatchAppender.Services
         private string _parsedNamespace;
         private string _parsedMetricName;
         private DateTimeOffset? _dateTimeOffset;
-        private EventMessageParser _eventMessageParser;
+        private MetricDatumEventMessageParser _metricDatumEventMessageParser;
         private ILayout _layout;
         private readonly bool _configOverrides;
         private readonly StandardUnit _unit;
@@ -28,7 +33,7 @@ namespace CloudWatchAppender.Services
         private readonly string _timestamp;
         private readonly string _value;
 
-        public EventProcessor(bool configOverrides, StandardUnit unit, string @namespace, string metricName, string timestamp, string value, Dictionary<string, Dimension> dimensions)
+        public MetricDatumEventProcessor(bool configOverrides, StandardUnit unit, string @namespace, string metricName, string timestamp, string value, Dictionary<string, Dimension> dimensions)
         {
             _configOverrides = configOverrides;
             _unit = unit;
@@ -56,7 +61,7 @@ namespace CloudWatchAppender.Services
                 _hasParsedProperties = true;
             }
 
-            _eventMessageParser = new EventMessageParser(renderedString, _configOverrides)
+            _metricDatumEventMessageParser = new MetricDatumEventMessageParser(renderedString, _configOverrides)
                          {
                              DefaultMetricName = _parsedMetricName,
                              DefaultNameSpace = _parsedNamespace,
@@ -66,11 +71,11 @@ namespace CloudWatchAppender.Services
                          };
 
             if (!string.IsNullOrEmpty(_value) && _configOverrides)
-                _eventMessageParser.DefaultValue = Double.Parse(_value, CultureInfo.InvariantCulture);
+                _metricDatumEventMessageParser.DefaultValue = Double.Parse(_value, CultureInfo.InvariantCulture);
 
-            _eventMessageParser.Parse();
+            _metricDatumEventMessageParser.Parse();
 
-            return _eventMessageParser.GetMetricDataRequests();
+            return _metricDatumEventMessageParser.GetMetricDataRequests();
         }
 
         private void ParseProperties(PatternParser patternParser)
@@ -94,6 +99,6 @@ namespace CloudWatchAppender.Services
                 : (DateTimeOffset?)DateTimeOffset.Parse(patternParser.Parse(_timestamp));
         }
 
-        private readonly static Type _declaringType = typeof(EventProcessor);
+        private readonly static Type _declaringType = typeof(MetricDatumEventProcessor);
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.Runtime;
-using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Services;
@@ -14,7 +13,7 @@ using log4net.Util;
 namespace CloudWatchAppender
 {
 
-    public class CloudWatchAppender : CloudWatchAppenderBase, ICloudWatchAppender
+    public class CloudWatchAppender : CloudWatchAppenderBase<PutMetricDataRequest>, ICloudWatchAppender
     {
         private CloudWatchClientWrapper _client;
         private readonly static Type _declaringType = typeof(CloudWatchAppender);
@@ -106,32 +105,28 @@ namespace CloudWatchAppender
             logger.Level = Level.Off;
 
             hierarchy.AddRenderer(typeof(Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
-            try
-            {
-                _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret, _clientConfig);
-            }
-            catch (CloudWatchAppenderException)
-            {
-            }
+        }
 
-            EventProcessor = new EventProcessor(ConfigOverrides, _standardUnit, _ns, _metricName, Timestamp, _value, _dimensions);
+        public override void ActivateOptions()
+        {
+            _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret, _clientConfig);
+
+            MetricDatumEventProcessor = new MetricDatumEventProcessor(ConfigOverrides, _standardUnit, _ns, _metricName, Timestamp, _value, _dimensions);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
 
+            base.ActivateOptions();
         }
 
+        public MetricDatumEventProcessor MetricDatumEventProcessor
+        {
+            get { return EventProcessor as MetricDatumEventProcessor; }
+            set { EventProcessor = value; }
+        }
 
         protected override void Append(LoggingEvent loggingEvent)
         {
-            if (_client == null)
-                _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret, _clientConfig);
-
-            if (EventProcessor == null)
-                EventProcessor = new EventProcessor(ConfigOverrides, _standardUnit, _ns, _metricName, Timestamp, _value, _dimensions);
-
-            if (Layout == null)
-                Layout = new PatternLayout("%message");
 
             LogLog.Debug(_declaringType, "Appending");
 
@@ -141,7 +136,7 @@ namespace CloudWatchAppender
                 return;
             }
 
-            var metricDataRequests =EventProcessor.ProcessEvent(loggingEvent, RenderLoggingEvent(loggingEvent));
+            var metricDataRequests = MetricDatumEventProcessor.ProcessEvent(loggingEvent, RenderLoggingEvent(loggingEvent));
 
             foreach (var putMetricDataRequest in metricDataRequests)
                 _client.QueuePutMetricData(putMetricDataRequest);

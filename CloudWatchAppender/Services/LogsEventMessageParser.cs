@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch.Model;
+using CloudWatchAppender.Model;
 
 namespace CloudWatchAppender.Services
 {
@@ -21,11 +22,11 @@ namespace CloudWatchAppender.Services
         protected override void SetDefaults()
         {
             if (string.IsNullOrEmpty(_currentDatum.StreamName))
-                _currentDatum.StreamName = DefaultGroupName ?? _assemblyName ?? "unspecified";
+                _currentDatum.StreamName = DefaultStreamName ?? _assemblyName ?? "unspecified";
 
 
             if (string.IsNullOrEmpty(_currentDatum.GroupName))
-                _currentDatum.GroupName = DefaultStreamName ?? "unspecified";
+                _currentDatum.GroupName = DefaultGroupName ?? "unspecified";
 
             if (string.IsNullOrEmpty(_currentDatum.Message))
                 _currentDatum.Message = DefaultMessage ?? "";
@@ -155,6 +156,10 @@ namespace CloudWatchAppender.Services
 
         public IEnumerable<LogDatum> GetParsedData()
         {
+            if (_currentDatum.GroupName.Contains("instance"))
+            {
+                
+            }
             return new[] { _currentDatum };
         }
 
@@ -168,11 +173,4 @@ namespace CloudWatchAppender.Services
 
     }
 
-    public class LogDatum
-    {
-        public string Message { get; set; }
-        public string StreamName { get; set; }
-        public string GroupName { get; set; }
-        public DateTime? Timestamp { get; set; }
-    }
 }

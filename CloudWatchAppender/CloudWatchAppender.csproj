@@ -37,6 +37,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK, Version=2.3.9.0, Culture=neutral, PublicKeyToken=9f476d3089b52be3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\AWSSDK.2.3.9.0\lib\net45\AWSSDK.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
@@ -75,6 +79,8 @@
     <Compile Include="CloudWatchLogsAppender.cs" />
     <Compile Include="Fakes\FakeInstanceMetaDataReader.cs" />
     <Compile Include="Layout\PatternLayout.cs" />
+    <Compile Include="Model\LogDatum.cs" />
+    <Compile Include="Model\LogDatumRenderer.cs" />
     <Compile Include="Model\MetricDatum.cs" />
     <Compile Include="Model\MetricDatumRenderer.cs" />
     <Compile Include="PatternConverter\InstanceIDPatternConverter.cs" />

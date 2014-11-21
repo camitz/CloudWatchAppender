@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CloudWatchAppender.Model;
 using log4net.Core;
 using log4net.Layout;
 using log4net.Util;

@@ -225,7 +225,9 @@ namespace CloudWatchAppender
                                      LogGroupName = grouping0.Key,
                                      LogStreamName = grouping1.Key,
                                      LogEvents =
-                                         grouping1.Select(
+                                         grouping1
+                                         .OrderBy(x=>x.Timestamp)
+                                         .Select(
                                              x => new InputLogEvent {Message = x.Message, Timestamp = x.Timestamp.Value})
                                          .ToList()
                                  });

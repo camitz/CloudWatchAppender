@@ -26,7 +26,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (Mode==DatumMode.StatisticsMode)
-                    throw new MetricDatumFilledException("Value cannot be set since we're in statistics mode.");
+                    throw new DatumFilledException("Value cannot be set since we're in statistics mode.");
 
                 _mode = DatumMode.ValueMode;
                 _datum.Value = value;
@@ -41,7 +41,7 @@ namespace CloudWatchAppender.Model
                 if (!string.IsNullOrEmpty(value))
                 {
                     if (!string.IsNullOrEmpty(_datum.Unit) && _datum.Unit != value)
-                        throw new MetricDatumFilledException("Unit has been set already.");
+                        throw new DatumFilledException("Unit has been set already.");
 
                     _datum.Unit = value;
 
@@ -57,7 +57,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (!string.IsNullOrEmpty(_datum.MetricName))
-                    throw new MetricDatumFilledException("MetricName has been set already.");
+                    throw new DatumFilledException("MetricName has been set already.");
 
                 _datum.MetricName = value;
             }
@@ -69,7 +69,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (!string.IsNullOrEmpty(_request.Namespace))
-                    throw new MetricDatumFilledException("NameSpace has been set already.");
+                    throw new DatumFilledException("NameSpace has been set already.");
 
                 _request.Namespace = value.Replace(".", "/");
             }
@@ -81,7 +81,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (Mode == DatumMode.ValueMode)
-                    throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
+                    throw new DatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _mode = DatumMode.StatisticsMode;
                 if (_datum.StatisticValues == null)
@@ -97,7 +97,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (Mode == DatumMode.ValueMode)
-                    throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
+                    throw new DatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _mode = DatumMode.StatisticsMode;
                 if (_datum.StatisticValues == null)
@@ -113,7 +113,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (Mode == DatumMode.ValueMode)
-                    throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
+                    throw new DatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _mode = DatumMode.StatisticsMode;
                 if (_datum.StatisticValues == null)
@@ -129,7 +129,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (Mode == DatumMode.ValueMode)
-                    throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
+                    throw new DatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _mode = DatumMode.StatisticsMode;
                 if (_datum.StatisticValues == null)
@@ -155,7 +155,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (_timestamp.HasValue)
-                    throw new MetricDatumFilledException("Value has been set already.");
+                    throw new DatumFilledException("Value has been set already.");
 
                 _timestamp = value;
 
@@ -184,7 +184,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (AWSDatum.Dimensions.Count != 0)
-                    throw new MetricDatumFilledException("Value has been set already.");
+                    throw new DatumFilledException("Value has been set already.");
 
                 AWSDatum.Dimensions = value;
             }
@@ -196,7 +196,7 @@ namespace CloudWatchAppender.Model
             set
             {
                 if (Mode == DatumMode.ValueMode)
-                    throw new MetricDatumFilledException("Statistics cannot be set since we're in value mode.");
+                    throw new DatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _mode = DatumMode.StatisticsMode;
                 if (_datum.StatisticValues == null)
@@ -315,9 +315,9 @@ namespace CloudWatchAppender.Model
         ValueMode
     }
 
-    public class MetricDatumFilledException : InvalidOperationException
+    public class DatumFilledException : InvalidOperationException
     {
-        public MetricDatumFilledException(string message)
+        public DatumFilledException(string message)
             : base(message)
         {
 

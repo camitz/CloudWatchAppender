@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch;
@@ -10,9 +9,8 @@ using MetricDatum = CloudWatchAppender.Model.MetricDatum;
 
 namespace CloudWatchAppender.Services
 {
-    public class MetricDatumEventMessageParser : EventMessageParserBase<MetricDatum>
+    public class MetricDatumEventMessageParser : EventMessageParserBase
     {
-        private readonly string _renderedMessage;
         private readonly bool _defaultsOverridePattern;
         private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
         private readonly List<MetricDatum> _data = new List<MetricDatum>();
@@ -30,42 +28,6 @@ namespace CloudWatchAppender.Services
         public double? DefaultSum { get; set; }
         public double? DefaultMaximum { get; set; }
         public double? DefaultMinimum { get; set; }
-
-        public void Parse()
-        {
-            if (!string.IsNullOrEmpty(_renderedMessage))
-            {
-
-                var tokens =
-                    Regex.Matches(_renderedMessage,
-                                  @"(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
-                        .Cast<Match>()
-                        .ToList()
-                        .GetEnumerator();
-
-                ParseTokens(ref tokens, _renderedMessage);
-            }
-
-            NewDatum();
-            foreach (var p in Values)
-            {
-                try
-                {
-                    if (!FillName(p))
-                    {
-                        NewDatum();
-                        FillName(p);
-                    }
-                }
-                catch (MetricDatumFilledException)
-                {
-                    NewDatum();
-                    FillName(p);
-                }
-            }
-
-            SetDefaults();
-        }
 
         protected override void SetDefaults()
         {
@@ -218,19 +180,14 @@ namespace CloudWatchAppender.Services
     
 
 
-        public MetricDatumEventMessageParser(string renderedMessage, bool useOverrides = true)
+        public MetricDatumEventMessageParser(string renderedMessage, bool useOverrides = true):base(renderedMessage,useOverrides)
         {
-            _renderedMessage = renderedMessage;
             _defaultsOverridePattern = useOverrides;
         }
 
 
 
 
-        public IEnumerable<PutMetricDataRequest> GetRequests()
-        {
-            return _data.Select(x => x.Request);
-        }
 
         protected override void LocalParse(ref List<Match>.Enumerator tokens, string sNum)
         {
@@ -290,6 +247,11 @@ namespace CloudWatchAppender.Services
 
                 _dimensions[name] = new Dimension {Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum};
             }
+        }
+
+        public IEnumerable<PutMetricDataRequest> GetParsedData()
+        {
+            return _data.Select(x => x.Request);
         }
     }
 }

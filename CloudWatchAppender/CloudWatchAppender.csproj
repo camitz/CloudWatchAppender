@@ -90,6 +90,7 @@
     <Compile Include="Services\CloudWatchClientWrapperBase.cs" />
     <Compile Include="Services\CloudWatchLogsClientWrapper.cs" />
     <Compile Include="Services\EventMessageParserBase.cs" />
+    <Compile Include="Services\LogsEventMessageParser.cs" />
     <Compile Include="Services\MetricDatumEventMessageParser.cs" />
     <Compile Include="Services\LogEventProcessor.cs" />
     <Compile Include="Services\MetricDatumEventProcessor.cs" />

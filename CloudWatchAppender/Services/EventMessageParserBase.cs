@@ -1,21 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch;
+using CloudWatchAppender.Model;
 
 namespace CloudWatchAppender.Services
 {
-    public abstract class EventMessageParserBase<Datum>
+    public abstract class EventMessageParserBase
     {
-        protected readonly List<AppenderValue> Values = new List<AppenderValue>();
+        protected readonly bool DefaultsOverridePattern;
+        private readonly string _renderedMessage;
+        private readonly List<AppenderValue> _values = new List<AppenderValue>();
+
+        protected EventMessageParserBase(string renderedMessage, bool useOverrides)
+        {
+            _renderedMessage = renderedMessage;
+            DefaultsOverridePattern = useOverrides;
+        }
+
         protected abstract void SetDefaults();
         protected abstract void NewDatum();
         protected abstract bool FillName(AppenderValue value);
 
         protected void ParseTokens(ref List<Match>.Enumerator tokens, string renderedMessage)
         {
-            string t0, unit, value, name, sNum = string.Empty;
+            string t0, unit, value, name, sNum = string.Empty, rest = "";
+            int? startRest = 0;
 
             tokens.MoveNext();
             while (tokens.Current != null)
@@ -28,6 +40,11 @@ namespace CloudWatchAppender.Services
                         continue;
                     }
 
+                    if (startRest.HasValue)
+                        rest += _renderedMessage.Substring(startRest.Value, tokens.Current.Index - startRest.Value);
+
+                    startRest = null;
+
                     if (ShouldLocalParse(t0))
                     {
                         LocalParse(ref tokens, sNum);
@@ -35,12 +52,18 @@ namespace CloudWatchAppender.Services
                     else if (t0.StartsWith("Timestamp", StringComparison.InvariantCultureIgnoreCase))
                     {
                         DateTimeOffset time;
-                        if (ExtractTime(renderedMessage.Substring(tokens.Current.Index + "Timestamp".Length), out time))
-                            Values.Add(new AppenderValue
-                            {
-                                Name = "Timestamp",
-                                Time = time
-                            });
+                        int length;
+                        if (ExtractTime(renderedMessage.Substring(tokens.Current.Index + "Timestamp".Length), out time, out length))
+                        {
+                            _values.Add(new AppenderValue
+                                        {
+                                            Name = "Timestamp",
+                                            Time = time
+                                        });
+
+                            tokens.MoveNext();
+                            while (tokens.MoveNext() && tokens.Current.Index <= tokens.Current.Index + length);
+                        }
 
                         tokens.MoveNext();
                     }
@@ -62,7 +85,8 @@ namespace CloudWatchAppender.Services
                         }
 
                         var d = 0.0;
-                        if (!Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d) &&
+                        if (
+                            !Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d) &&
                             string.IsNullOrEmpty(sValue))
                         {
                             tokens.MoveNext();
@@ -82,12 +106,20 @@ namespace CloudWatchAppender.Services
                                 v.Unit = unit;
                             }
 
-                        Values.Add(v);
+                        _values.Add(v);
                     }
                 }
                 else
+                {
+                    startRest = startRest ?? tokens.Current.Index;
                     tokens.MoveNext();
+                }
             }
+
+            if (startRest.HasValue)
+                rest += _renderedMessage.Substring(startRest.Value, _renderedMessage.Length - startRest.Value);
+
+            _values.Add(new AppenderValue { Name = "rest", sValue = rest.Trim() });
         }
 
         private static bool ShouldLocalParse(string t0)
@@ -97,15 +129,16 @@ namespace CloudWatchAppender.Services
 
         protected abstract bool IsSupportedName(string t0);
 
-        private bool ExtractTime(string s, out DateTimeOffset time)
+        private bool ExtractTime(string s, out DateTimeOffset time, out int length)
         {
             var success = false;
+            length = 0;
             DateTimeOffset lastTriedTime;
 
             time = DateTimeOffset.UtcNow;
 
             s = s.Trim();
-            s = s.Trim(new[] { ':' });
+            s = s.Trim(":".ToCharArray());
 
             for (int i = 1; i <= s.Length; i++)
             {
@@ -113,6 +146,7 @@ namespace CloudWatchAppender.Services
                 {
                     success = true;
                     time = lastTriedTime;
+                    length = i;
                 }
             }
 
@@ -120,6 +154,43 @@ namespace CloudWatchAppender.Services
         }
 
         protected virtual void LocalParse(ref List<Match>.Enumerator tokens, string sNum) { }
+
+
+        public void Parse()
+        {
+            if (!string.IsNullOrEmpty(_renderedMessage))
+            {
+
+                var tokens =
+                    Regex.Matches(_renderedMessage,
+                        @"(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|\((?<word>[\w /]+)\)|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
+                        .Cast<Match>()
+                        .ToList()
+                        .GetEnumerator();
+
+                ParseTokens(ref tokens, _renderedMessage);
+            }
+
+            NewDatum();
+            foreach (var p in _values)
+            {
+                try
+                {
+                    if (!FillName(p))
+                    {
+                        NewDatum();
+                        FillName(p);
+                    }
+                }
+                catch (DatumFilledException)
+                {
+                    NewDatum();
+                    FillName(p);
+                }
+            }
+
+            SetDefaults();
+        }
     }
 
     public struct AppenderValue

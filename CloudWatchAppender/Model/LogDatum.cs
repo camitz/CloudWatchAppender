@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace CloudWatchAppender.Model
 {
@@ -17,5 +18,13 @@ namespace CloudWatchAppender.Model
         public string StreamName { get; set; }
         public string GroupName { get; set; }
         public DateTime? Timestamp { get; set; }
+
+        public override string ToString()
+        {
+            var s = new StringWriter();
+            new LogDatumRenderer().RenderObject(null, this, s);
+
+            return s.ToString();
+        }
     }
 }

@@ -163,7 +163,7 @@ namespace CloudWatchAppender
             var logger = hierarchy.GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;
 
-            hierarchy.AddRenderer(typeof (Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
+            hierarchy.AddRenderer(typeof (LogDatum), new LogDatumRenderer());
 
 
         }

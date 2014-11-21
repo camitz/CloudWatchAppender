@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using log4net.ObjectRenderer;
 
 namespace CloudWatchAppender.Model
@@ -10,54 +9,23 @@ namespace CloudWatchAppender.Model
     {
         public void RenderObject(RendererMap rendererMap, object obj, TextWriter writer)
         {
-            if (obj is Amazon.CloudWatch.Model.MetricDatum)
-                RenderAWSMetricDatum((Amazon.CloudWatch.Model.MetricDatum)obj, writer);
-            else if (obj is MetricDatum)
-                RenderAppenderMetricDatum((MetricDatum)obj, writer);
+            if (obj is LogDatum)
+                RenderAppenderLogDatum((LogDatum)obj, writer);
         }
 
-        private void RenderAppenderMetricDatum(MetricDatum metricDatum, TextWriter writer)
+        private void RenderAppenderLogDatum(LogDatum logDatum, TextWriter writer)
         {
-            if (!String.IsNullOrEmpty(metricDatum.Message))
-                writer.Write(metricDatum.Message + " ");
+            if (!String.IsNullOrEmpty(logDatum.Message))
+                writer.Write(logDatum.Message + " ");
 
-            RenderAWSMetricDatum(metricDatum.AWSDatum, writer);
-        }
+            if (!String.IsNullOrEmpty(logDatum.GroupName))
+                writer.Write("Groupname: {0}, ", logDatum.GroupName);
 
-        private void RenderAWSMetricDatum(Amazon.CloudWatch.Model.MetricDatum metricDatum, TextWriter writer)
-        {
-            if (!String.IsNullOrEmpty(metricDatum.MetricName))
-                writer.Write("MetricName: {0}, ", metricDatum.MetricName);
-            if (!String.IsNullOrEmpty(metricDatum.Unit))
-                writer.Write("Unit: {0}, ", metricDatum.Unit);
+            if (!String.IsNullOrEmpty(logDatum.GroupName))
+                writer.Write("Streamname: {0}, ", logDatum.StreamName);
 
-            if (metricDatum.StatisticValues == null)
-                writer.Write("Value: {0}, ", metricDatum.Value.ToString(CultureInfo.InvariantCulture));
-
-            if (metricDatum.Dimensions.Any())
-            {
-                writer.Write("Dimensions: {0}, ", String.Join(", ",
-                    metricDatum.Dimensions.Select(
-                        x =>
-                            String.Format("{0}: {1}", x.Name, x.Value))));
-            }
-
-            if (metricDatum.Timestamp != default(DateTime))
-                writer.Write("Timestamp: {0}, ", metricDatum.Timestamp.ToString(CultureInfo.CurrentCulture));
-
-            if (metricDatum.StatisticValues != null)
-            {
-                if (metricDatum.StatisticValues.Maximum > 0)
-                    writer.Write("Maximum: {0}, ", metricDatum.StatisticValues.Maximum.ToString(CultureInfo.InvariantCulture));
-
-                writer.Write("Minimum: {0}, ", metricDatum.StatisticValues.Minimum.ToString(CultureInfo.InvariantCulture));
-
-                if (metricDatum.StatisticValues.SampleCount > 1)
-                    writer.Write("SampleCount: {0}, ", metricDatum.StatisticValues.SampleCount.ToString(CultureInfo.InvariantCulture));
-
-                if (metricDatum.StatisticValues.Sum > 0)
-                    writer.Write("Sum: {0}, ", metricDatum.StatisticValues.Sum.ToString(CultureInfo.InvariantCulture));
-            }
+            if (logDatum.Timestamp != default(DateTime))
+                writer.Write("Timestamp: {0}, ", logDatum.Timestamp.Value.ToString(CultureInfo.CurrentCulture));
         }
     }
 }

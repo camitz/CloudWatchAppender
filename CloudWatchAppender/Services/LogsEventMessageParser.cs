@@ -15,7 +15,7 @@ namespace CloudWatchAppender.Services
 
         public string DefaultGroupName { get; set; }
         public string DefaultMessage { get; set; }
-        public DateTimeOffset? DefaultTimestamp { get; set; }
+        public DateTime? DefaultTimestamp { get; set; }
         public string DefaultStreamName { get; set; }
 
         protected override void SetDefaults()
@@ -29,6 +29,9 @@ namespace CloudWatchAppender.Services
 
             if (string.IsNullOrEmpty(_currentDatum.Message))
                 _currentDatum.Message = DefaultMessage ?? "";
+
+            if (!_currentDatum.Timestamp.HasValue)
+                _currentDatum.Timestamp = DefaultTimestamp;
         }
 
 
@@ -67,7 +70,7 @@ namespace CloudWatchAppender.Services
                     if (_currentDatum.Timestamp.HasValue)
                         return false;
 
-                    _currentDatum.Timestamp = DefaultsOverridePattern ? DefaultTimestamp ?? value.Time.Value : value.Time.Value;
+                    _currentDatum.Timestamp = DefaultsOverridePattern ? DefaultTimestamp ?? value.Time.Value.DateTime : value.Time.Value.DateTime;
                     break;
             }
 
@@ -170,6 +173,6 @@ namespace CloudWatchAppender.Services
         public string Message { get; set; }
         public string StreamName { get; set; }
         public string GroupName { get; set; }
-        public DateTimeOffset? Timestamp { get; set; }
+        public DateTime? Timestamp { get; set; }
     }
 }

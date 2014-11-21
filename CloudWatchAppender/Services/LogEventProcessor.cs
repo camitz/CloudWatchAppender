@@ -1,46 +1,38 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using Amazon.CloudWatch;
-using Amazon.CloudWatch.Model;
-using Amazon.CloudWatchLogs.Model;
 using log4net.Core;
 using log4net.Layout;
 using log4net.Util;
 
 namespace CloudWatchAppender.Services
 {
-    public class LogEventProcessor : IEventProcessor<PutLogEventsRequest>
+    public class LogEventProcessor : IEventProcessor<LogDatum>
     {
         private CloudWatchAppender _cloudWatchAppender;
-        private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
-        private Dictionary<string, Dimension> _parsedDimensions;
         private bool _hasParsedProperties;
-        private string _parsedNamespace;
-        private string _parsedMetricName;
-        private DateTimeOffset? _dateTimeOffset;
-        private MetricDatumEventMessageParser _metricDatumEventMessageParser;
+        private string _parsedStreamName;
+        private string _parsedGroupName;
+        private string _parsedMessage;
+        private DateTime? _dateTimeOffset;
+        private LogsEventMessageParser _logsEventMessageParser;
         private ILayout _layout;
         private readonly bool _configOverrides;
         private readonly string _groupName;
         private readonly string _streamName;
-        private readonly StandardUnit _unit;
-        private readonly string _namespace;
-        private readonly string _metricName;
         private readonly string _timestamp;
-        private readonly string _value;
+        private readonly string _message;
 
-        public LogEventProcessor(bool configOverrides, string groupName, string streamName, string timestamp)
+        public LogEventProcessor(bool configOverrides, string groupName, string streamName, string timestamp, string message)
         {
             _configOverrides = configOverrides;
             _groupName = groupName;
             _streamName = streamName;
             _timestamp = timestamp;
+            _message = message;
         }
 
 
-        public IEnumerable<PutLogEventsRequest> ProcessEvent(LoggingEvent loggingEvent, string renderedString)
+        public IEnumerable<LogDatum> ProcessEvent(LoggingEvent loggingEvent, string renderedString)
         {
             var patternParser = new PatternParser(loggingEvent);
 
@@ -55,46 +47,38 @@ namespace CloudWatchAppender.Services
                 _hasParsedProperties = true;
             }
 
-            _metricDatumEventMessageParser = new MetricDatumEventMessageParser(renderedString, _configOverrides)
+            _logsEventMessageParser = new LogsEventMessageParser(renderedString, _configOverrides)
                                   {
-                                      DefaultMetricName = _parsedMetricName,
-                                      DefaultNameSpace = _parsedNamespace,
-                                      DefaultUnit = _unit,
-                                      DefaultDimensions = _parsedDimensions,
-                                      DefaultTimestamp = _dateTimeOffset
+                                      DefaultStreamName = _parsedStreamName,
+                                      DefaultGroupName = _parsedGroupName,
+                                      DefaultMessage = _parsedMessage,
+                                      DefaultTimestamp = _dateTimeOffset??loggingEvent.TimeStamp
                                   };
 
-            if (!string.IsNullOrEmpty(_value) && _configOverrides)
-                _metricDatumEventMessageParser.DefaultValue = Double.Parse(_value, CultureInfo.InvariantCulture);
+            _logsEventMessageParser.Parse();
 
-            _metricDatumEventMessageParser.Parse();
-
-            //return _metricDatumEventMessageParser.GetParsedData();
-            return null;
+            return _logsEventMessageParser.GetParsedData();
         }
 
         private void ParseProperties(PatternParser patternParser)
         {
-            _parsedDimensions = !_dimensions.Any()
+            _parsedStreamName = string.IsNullOrEmpty(_streamName)
                 ? null
-                : _dimensions
-                    .Select(x => new Dimension { Name = x.Key, Value = patternParser.Parse(x.Value.Value) }).
-                    ToDictionary(x => x.Name, y => y);
+                : patternParser.Parse(_streamName);
 
-            _parsedNamespace = string.IsNullOrEmpty(_namespace)
+            _parsedGroupName = string.IsNullOrEmpty(_groupName)
                 ? null
-                : patternParser.Parse(_namespace);
+                : patternParser.Parse(_groupName);
 
-            _parsedMetricName = string.IsNullOrEmpty(_metricName)
+            _parsedMessage = string.IsNullOrEmpty(_message)
                 ? null
-                : patternParser.Parse(_metricName);
+                : patternParser.Parse(_message);
 
             _dateTimeOffset = string.IsNullOrEmpty(_timestamp)
                 ? null
-                : (DateTimeOffset?)DateTimeOffset.Parse(patternParser.Parse(_timestamp));
+                : (DateTime?)DateTime.Parse(patternParser.Parse(_timestamp));
         }
 
         private readonly static Type _declaringType = typeof(LogEventProcessor);
-
     }
 }

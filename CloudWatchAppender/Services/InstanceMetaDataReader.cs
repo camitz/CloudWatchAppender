@@ -148,11 +148,14 @@ namespace CloudWatchAppender.Services
 
                     return task1
                             .ContinueWith(x =>
-                                              {
-                                                  Debug.WriteLine("Got {0}: {1}", key, _cachedValues[key]);
-                                                  _pendingTasks.Remove(key);
-                                                  return _cachedValues[key];
-                                              })
+                                          {
+                                              if (!_cachedValues.ContainsKey(key))
+                                                  return "error_" + key;
+
+                                              Debug.WriteLine("Got {0}: {1}", key, _cachedValues[key]);
+                                              _pendingTasks.Remove(key);
+                                              return _cachedValues[key];
+                                          })
                             .Result;
 
 

@@ -54,7 +54,7 @@ namespace CloudWatchAppender
             set
             {
                 _configOverrides = value;
-                MetricDatumEventProcessor = null;
+                EventProcessor = null;
             }
             get { return _configOverrides; }
         }
@@ -65,10 +65,8 @@ namespace CloudWatchAppender
         private string _secret;
         private string _endPoint;
         private bool _configOverrides;
-        private MetricDatumEventProcessor _metricDatumEventProcessor;
         private string _timestamp;
         private EventRateLimiter _eventRateLimiter;
-        private IEventProcessor<T> _eventProcessor;
 
         public string InstanceMetaDataReaderClass
         {
@@ -97,12 +95,7 @@ namespace CloudWatchAppender
             set { _eventRateLimiter = value; }
         }
 
-        public IEventProcessor<T> EventProcessor
-        {
-            get { return _eventProcessor; }
-            set { _eventProcessor = value; }
-        }
-
+        public abstract IEventProcessor<T> EventProcessor { get; set; }
 
         #region ClientConfig
 
@@ -133,11 +126,6 @@ namespace CloudWatchAppender
         public ICredentials ProxyCredentials { get { return ClientConfig.ProxyCredentials; } set { ClientConfig.ProxyCredentials = value; } }
         public TimeSpan? Timeout { get { return ClientConfig.Timeout; } set { ClientConfig.Timeout = value; } }
 
-        public MetricDatumEventProcessor MetricDatumEventProcessor
-        {
-            get { return _metricDatumEventProcessor; }
-            set { _metricDatumEventProcessor = value; }
-        }
 
         #endregion
     }

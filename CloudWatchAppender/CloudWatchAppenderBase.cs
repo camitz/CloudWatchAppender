@@ -130,11 +130,7 @@ namespace CloudWatchAppender
             set { _eventRateLimiter = value; }
         }
 
-        public IEventProcessor<T> EventProcessor
-        {
-            get { return _eventProcessor; }
-            set { _eventProcessor = value; }
-        }
+        public abstract IEventProcessor<T> EventProcessor { get; set; }
 
         #endregion
     }
@@ -187,6 +183,9 @@ namespace CloudWatchAppender
 
     public interface ICloudWatchLogsAppender : IAWSAppender
     {
+        string GroupName { set; }
+        string StreamName { set; }
+        string Message { set; }
     }
 
 }

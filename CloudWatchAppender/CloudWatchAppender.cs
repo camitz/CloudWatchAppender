@@ -30,13 +30,18 @@ namespace CloudWatchAppender
         }
 
         private AmazonCloudWatchConfig _clientConfig;
+        private IEventProcessor<PutMetricDataRequest> _eventProcessor1;
 
         protected override ClientConfig ClientConfig
         {
             get { return _clientConfig ?? (_clientConfig = new AmazonCloudWatchConfig()); }
         }
 
-
+        public override IEventProcessor<PutMetricDataRequest> EventProcessor
+        {
+            get { return _eventProcessor1; }
+            set { _eventProcessor1 = value; }
+        }
 
 
         public string Unit

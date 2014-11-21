@@ -137,7 +137,7 @@ namespace CloudWatchAppender.Tests
             var data = parser.GetParsedData();
 
             Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTimeOffset.Parse("2012-09-06 17:55:55 +02:00")));
+            Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 17:55:55")));
             Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
 
 
@@ -146,7 +146,7 @@ namespace CloudWatchAppender.Tests
             data = parser.GetParsedData();
 
             Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTimeOffset.Parse("2012-09-06 15:55:55 +00:00")));
+            Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 15:55:55")));
             Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
 
         }
@@ -155,14 +155,14 @@ namespace CloudWatchAppender.Tests
         {
             var parser = new LogsEventMessageParser("A tick! Timestamp: 2012-09-06 17:55:55 +02:00")
                          {
-                             DefaultTimestamp = DateTimeOffset.Parse("2012-09-06 12:55:55 +02:00")
+                             DefaultTimestamp = DateTime.Parse("2012-09-06 12:55:55 +02:00")
                          };
 
             parser.Parse();
             var data = parser.GetParsedData();
 
             Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTimeOffset.Parse("2012-09-06 12:55:55 +02:00")));
+            Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 12:55:55")));
             Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
         }
     }

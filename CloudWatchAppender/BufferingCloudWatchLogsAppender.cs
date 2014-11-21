@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Amazon.CloudWatch;
@@ -15,12 +16,12 @@ using log4net.Util;
 
 namespace CloudWatchAppender
 {
-    public class BufferingCloudWatchLogsAppender : BufferingCloudWatchAppenderBase<PutLogEventsRequest>, ICloudWatchLogsAppender
+    public class BufferingCloudWatchLogsAppender : BufferingCloudWatchAppenderBase<LogDatum>,
+        ICloudWatchLogsAppender
     {
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private CloudWatchLogsClientWrapper _client;
-        private MetricDatumEventProcessor _metricDatumEventProcessor;
-        private readonly static Type _declaringType = typeof(BufferingCloudWatchLogsAppender);
+        private static readonly Type _declaringType = typeof (BufferingCloudWatchLogsAppender);
         private StandardUnit _standardUnit;
         private string _accessKey;
         private string _secret;
@@ -32,10 +33,19 @@ namespace CloudWatchAppender
 
         private string _groupName;
         private string _streamName;
+        private string _message;
 
+        private IEventProcessor<LogDatum> _eventProcessor;
+        
         private bool _configOverrides = true;
 
         private AmazonCloudWatchLogsConfig _clientConfig;
+
+        public override IEventProcessor<LogDatum> EventProcessor
+        {
+            get { return _eventProcessor; }
+            set { _eventProcessor = value; }
+        }
 
         protected override ClientConfig ClientConfig
         {
@@ -81,7 +91,7 @@ namespace CloudWatchAppender
             set
             {
                 _groupName = value;
-                _metricDatumEventProcessor = null;
+                _eventProcessor = null;
             }
         }
 
@@ -90,17 +100,25 @@ namespace CloudWatchAppender
             set
             {
                 _streamName = value;
-                _metricDatumEventProcessor = null;
+                _eventProcessor = null;
             }
         }
 
+        public string Message
+        {
+            set
+            {
+                _message = value;
+                _eventProcessor = null;
+            }
+        }
 
         public string Timestamp
         {
             set
             {
                 _timestamp = value;
-                _metricDatumEventProcessor = null;
+                _eventProcessor = null;
             }
         }
 
@@ -109,12 +127,13 @@ namespace CloudWatchAppender
             set
             {
                 _configOverrides = value;
-                _metricDatumEventProcessor = null;
+                _eventProcessor = null;
             }
         }
 
 
         private string _instanceMetaDataReaderClass;
+
         public string InstanceMetaDataReaderClass
         {
             get { return _instanceMetaDataReaderClass; }
@@ -140,12 +159,12 @@ namespace CloudWatchAppender
 
             _streamName = "unspecified";
 
-            var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
+            var hierarchy = ((Hierarchy) log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;
 
-            hierarchy.AddRenderer(typeof(Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
-         
+            hierarchy.AddRenderer(typeof (Amazon.CloudWatch.Model.MetricDatum), new MetricDatumRenderer());
+
 
         }
 
@@ -161,10 +180,10 @@ namespace CloudWatchAppender
             {
             }
 
-            //_metricDatumEventProcessor = new EventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
+            _eventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp, _message);
 
             if (Layout == null)
-                Layout = new PatternLayout("%message"); 
+                Layout = new PatternLayout("%message");
 
         }
 
@@ -184,13 +203,40 @@ namespace CloudWatchAppender
 
         protected override void SendBuffer(LoggingEvent[] events)
         {
-            var logEvents = events.Select(x => new InputLogEvent
-                               {
-                                   Timestamp = x.TimeStamp.ToUniversalTime(),
-                                   Message = RenderLoggingEvent(x)
-                               });
+            var rs = events.SelectMany(e => _eventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
 
-            _client.AddLogRequest(new PutLogEventsRequest(_groupName, _streamName, logEvents.ToList()));
+            var requests = Assemble(rs);
+
+            foreach (var putMetricDataRequest in requests)
+                _client.AddLogRequest(putMetricDataRequest);
+        }
+
+        private static IEnumerable<PutLogEventsRequest> Assemble(IEnumerable<LogDatum> rs)
+        {
+            var requests = new List<PutLogEventsRequest>();
+            foreach (var grouping0 in rs.GroupBy(r => r.GroupName))
+            {
+
+                foreach (var grouping1 in grouping0.GroupBy(x => x.StreamName))
+                {
+
+                    requests.Add(new PutLogEventsRequest
+                                 {
+                                     LogGroupName = grouping0.Key,
+                                     LogStreamName = grouping1.Key,
+                                     LogEvents =
+                                         grouping1.Select(
+                                             x => new InputLogEvent {Message = x.Message, Timestamp = x.Timestamp.Value})
+                                         .ToList()
+                                 });
+                }
+            }
+
+            return requests;
         }
     }
 }
+
+            
+            
+

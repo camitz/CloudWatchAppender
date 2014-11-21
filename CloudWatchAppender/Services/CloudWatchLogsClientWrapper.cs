@@ -26,35 +26,35 @@ namespace CloudWatchAppender.Services
 
         private AmazonWebServiceResponse PutLogEvents(PutLogEventsRequest putLogEventsRequest)
         {
-            if (!_validatedGroupNames.ContainsKey(putLogEventsRequest.LogGroupName))
-            {
-                try
-                {
-                    Client.CreateLogGroup(new CreateLogGroupRequest { LogGroupName = putLogEventsRequest.LogGroupName });
-                }
-                catch (ResourceAlreadyExistsException e)
-                {
-                }
-                _validatedGroupNames.TryAdd(putLogEventsRequest.LogGroupName, putLogEventsRequest.LogGroupName);
-            }
-
-            if (!_validatedStreamNames.ContainsKey(putLogEventsRequest.LogStreamName))
-            {
-                try
-                {
-                    Client.CreateLogStream(new CreateLogStreamRequest { LogGroupName = putLogEventsRequest.LogGroupName, LogStreamName = putLogEventsRequest.LogStreamName });
-                }
-                catch (ResourceAlreadyExistsException e)
-                {
-                }
-                _validatedStreamNames.TryAdd(putLogEventsRequest.LogStreamName, putLogEventsRequest.LogStreamName);
-            }
-
-
-            AmazonWebServiceResponse ret = null;
-
             lock (_lockObject)
             {
+                if (!_validatedGroupNames.ContainsKey(putLogEventsRequest.LogGroupName))
+                {
+                    try
+                    {
+                        Client.CreateLogGroup(new CreateLogGroupRequest { LogGroupName = putLogEventsRequest.LogGroupName });
+                    }
+                    catch (ResourceAlreadyExistsException e)
+                    {
+                    }
+                    _validatedGroupNames.TryAdd(putLogEventsRequest.LogGroupName, putLogEventsRequest.LogGroupName);
+                }
+
+                if (!_validatedStreamNames.ContainsKey(putLogEventsRequest.LogStreamName))
+                {
+                    try
+                    {
+                        Client.CreateLogStream(new CreateLogStreamRequest { LogGroupName = putLogEventsRequest.LogGroupName, LogStreamName = putLogEventsRequest.LogStreamName });
+                    }
+                    catch (ResourceAlreadyExistsException e)
+                    {
+                    }
+                    _validatedStreamNames.TryAdd(putLogEventsRequest.LogStreamName, putLogEventsRequest.LogStreamName);
+                }
+
+
+                AmazonWebServiceResponse ret = null;
+
                 var nextSequenceToken = _nextSequenceToken;
                 for (var i = 0; i < 10 && ret == null; i++)
                 {
@@ -72,12 +72,12 @@ namespace CloudWatchAppender.Services
                     }
                     catch (OperationAbortedException e)
                     {
-                        LogLog.Debug(typeof (CloudWatchLogsClientWrapper), "Task lost due to conflicting operation");
+                        LogLog.Debug(typeof(CloudWatchLogsClientWrapper), "Task lost due to conflicting operation");
                     }
                 }
+                return ret;
             }
 
-            return ret;
         }
 
         private AmazonWebServiceResponse PutWithSequenceToken(PutLogEventsRequest putLogEventsRequest, string sequenceToken)

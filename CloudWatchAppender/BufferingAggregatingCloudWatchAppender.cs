@@ -33,10 +33,17 @@ namespace CloudWatchAppender
 
 
         private AmazonCloudWatchConfig _clientConfig;
+        private IEventProcessor<PutMetricDataRequest> _eventProcessor;
 
         protected override void ResetClient()
         {
             _client = null;
+        }
+
+        public override IEventProcessor<PutMetricDataRequest> EventProcessor
+        {
+            get { return _eventProcessor; }
+            set { _eventProcessor = value; }
         }
 
         protected override ClientConfig ClientConfig
@@ -50,7 +57,7 @@ namespace CloudWatchAppender
             set
             {
                 _standardUnit = value;
-                MetricDatumEventProcessor = null;
+                _eventProcessor = null;
             }
         }
 
@@ -59,7 +66,7 @@ namespace CloudWatchAppender
             set
             {
                 _standardUnit = value;
-                MetricDatumEventProcessor = null;
+                _eventProcessor = null;
             }
         }
 
@@ -68,7 +75,7 @@ namespace CloudWatchAppender
             set
             {
                 _value = value;
-                MetricDatumEventProcessor = null;
+                _eventProcessor = null;
             }
         }
 
@@ -77,7 +84,7 @@ namespace CloudWatchAppender
             set
             {
                 _metricName = value;
-                MetricDatumEventProcessor = null;
+                _eventProcessor = null;
             }
         }
 
@@ -87,7 +94,7 @@ namespace CloudWatchAppender
             set
             {
                 _ns = value;
-                MetricDatumEventProcessor = null;
+                _eventProcessor = null;
             }
         }
 
@@ -97,7 +104,7 @@ namespace CloudWatchAppender
             set
             {
                 _dimensions[value.Name] = value;
-                MetricDatumEventProcessor = null;
+                _eventProcessor = null;
             }
         }
 
@@ -118,29 +125,17 @@ namespace CloudWatchAppender
             {
             }
 
-            MetricDatumEventProcessor = new MetricDatumEventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
+            _eventProcessor = new MetricDatumEventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
         }
 
-        public MetricDatumEventProcessor MetricDatumEventProcessor
-        {
-            get { return EventProcessor as MetricDatumEventProcessor; }
-            set { EventProcessor = value; }
-        }
 
 
         protected override void SendBuffer(LoggingEvent[] events)
         {
-            if (_client == null)
-                _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret, _clientConfig);
-
-            if (MetricDatumEventProcessor == null)
-                MetricDatumEventProcessor = new MetricDatumEventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
-
-
-            var rs = events.SelectMany(e => MetricDatumEventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
+            var rs = events.SelectMany(e => _eventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
 
             var requests = Assemble(rs);
 

@@ -15,18 +15,18 @@ using log4net.Util;
 
 namespace CloudWatchAppender
 {
-    public class CloudWatchLogsAppender : CloudWatchAppenderBase<PutLogEventsRequest>, ICloudWatchLogsAppender
+    public class CloudWatchLogsAppender : CloudWatchAppenderBase<LogDatum>, ICloudWatchLogsAppender
     {
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private CloudWatchLogsClientWrapper _client;
-        private MetricDatumEventProcessor _metricDatumEventProcessor;
+        private LogEventProcessor _logEventProcessor;
         private readonly static Type _declaringType = typeof(CloudWatchLogsAppender);
         private StandardUnit _standardUnit;
         private string _accessKey;
         private string _secret;
         private string _endPoint;
         private string _value;
-        private string _metricName;
+        private string _message;
         private string _ns;
         private string _timestamp;
 
@@ -40,6 +40,12 @@ namespace CloudWatchAppender
         protected override ClientConfig ClientConfig
         {
             get { return _clientConfig ?? (_clientConfig = new AmazonCloudWatchLogsConfig()); }
+        }
+
+        public override IEventProcessor<LogDatum> EventProcessor
+        {
+            get { return _eventProcessor; }
+            set { _eventProcessor = value; }
         }
 
         public string AccessKey
@@ -81,7 +87,7 @@ namespace CloudWatchAppender
             set
             {
                 _groupName = value;
-                _metricDatumEventProcessor = null;
+                _logEventProcessor = null;
             }
         }
 
@@ -90,7 +96,16 @@ namespace CloudWatchAppender
             set
             {
                 _streamName = value;
-                _metricDatumEventProcessor = null;
+                _logEventProcessor = null;
+            }
+        }
+
+        public string Message
+        {
+            set
+            {
+                _message = value;
+                _logEventProcessor = null;
             }
         }
 
@@ -100,7 +115,7 @@ namespace CloudWatchAppender
             set
             {
                 _timestamp = value;
-                _metricDatumEventProcessor = null;
+                _logEventProcessor = null;
             }
         }
 
@@ -109,12 +124,14 @@ namespace CloudWatchAppender
             set
             {
                 _configOverrides = value;
-                _metricDatumEventProcessor = null;
+                _logEventProcessor = null;
             }
         }
 
 
         private string _instanceMetaDataReaderClass;
+        private IEventProcessor<LogDatum> _eventProcessor;
+
         public string InstanceMetaDataReaderClass
         {
             get { return _instanceMetaDataReaderClass; }
@@ -161,7 +178,7 @@ namespace CloudWatchAppender
             {
             }
 
-            EventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp);
+            _eventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp,_message);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
@@ -170,12 +187,6 @@ namespace CloudWatchAppender
 
         protected override void Append(LoggingEvent loggingEvent)
         {
-            if (_client == null)
-                _client = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret, _clientConfig);
-
-            if (Layout == null)
-                Layout = new PatternLayout("%message");
-
             LogLog.Debug(_declaringType, "Appending");
 
             if (!_eventRateLimiter.Request(loggingEvent.TimeStamp))
@@ -184,10 +195,12 @@ namespace CloudWatchAppender
                 return;
             }
 
-            _client.AddLogRequest(new PutLogEventsRequest(_groupName, _streamName, new[] { new InputLogEvent
+            var logDatum = _eventProcessor.ProcessEvent(loggingEvent, RenderLoggingEvent(loggingEvent)).Single();
+
+            _client.AddLogRequest(new PutLogEventsRequest(logDatum.GroupName, logDatum.StreamName, new[] { new InputLogEvent
                                                                                                       {
-                                                                                                          Timestamp = loggingEvent.TimeStamp.ToUniversalTime(),
-                                                                                                          Message = RenderLoggingEvent(loggingEvent)
+                                                                                                          Timestamp = logDatum.Timestamp.Value.ToUniversalTime(),
+                                                                                                          Message = logDatum.Message
                                                                                                       } }.ToList()));
         }
 

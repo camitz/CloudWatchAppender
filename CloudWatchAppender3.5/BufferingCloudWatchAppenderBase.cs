@@ -120,7 +120,7 @@ namespace CloudWatchAppender
         public int MaxErrorRetry { get { return ClientConfig.MaxErrorRetry; } set { ClientConfig.MaxErrorRetry = value; } }
         public bool LogResponse { get { return ClientConfig.LogResponse; } set { ClientConfig.LogResponse = value; } }
         public bool ReadEntireResponse { get { return ClientConfig.ReadEntireResponse; } set { ClientConfig.ReadEntireResponse = value; } }
-        public int BufferSize { get { return ClientConfig.BufferSize; } set { ClientConfig.BufferSize = value; } }
+        public int AWSBufferSize { get { return ClientConfig.BufferSize; } set { ClientConfig.BufferSize = value; } }
         public long ProgressUpdateInterval { get { return ClientConfig.ProgressUpdateInterval; } set { ClientConfig.ProgressUpdateInterval = value; } }
         public bool LogMetrics { get { return ClientConfig.LogMetrics; } set { ClientConfig.LogMetrics = value; } }
         public ICredentials ProxyCredentials { get { return ClientConfig.ProxyCredentials; } set { ClientConfig.ProxyCredentials = value; } }

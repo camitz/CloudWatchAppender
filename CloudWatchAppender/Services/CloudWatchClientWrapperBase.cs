@@ -73,21 +73,29 @@ namespace CloudWatchAppender.Services
             if (string.IsNullOrEmpty(_accessKey))
                 try
                 {
-                    if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AWSProfileName"]) || ProfileManager.GetAWSCredentials("default") != null)
+                    if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AWSProfileName"]) || ProfileManager.ListProfileNames().Contains("default"))
                     {
                         if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AWSRegion"]))
                             Client = AWSClientFactoryWrapper<T>.CreateServiceClient();
                         else if (clientConfig.RegionEndpoint != null)
                             Client = AWSClientFactoryWrapper<T>.CreateServiceClient(clientConfig);
                     }
+                    else
+                    {
+                        foreach (var availableRole in InstanceProfileAWSCredentials.GetAvailableRoles())
+                        {
+                            LogLog.Debug(typeof(CloudWatchClientWrapperBase<>), "Role: " + availableRole);
+                        }
+                        Client = AWSClientFactoryWrapper<T>.CreateServiceClient(clientConfig);
+                    }
                 }
                 catch (AmazonServiceException e)
                 {
-
+                    LogLog.Debug(typeof(CloudWatchClientWrapperBase<>), "Exception caught while creating client", e);
                 }
                 catch (Exception e)
                 {
-
+                    LogLog.Debug(typeof(CloudWatchClientWrapperBase<>), "Exception caught while creating client", e);
                 }
 
 

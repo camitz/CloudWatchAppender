@@ -5,7 +5,6 @@ using Amazon.CloudWatch;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Amazon.Runtime;
-using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Services;
@@ -170,15 +169,9 @@ namespace CloudWatchAppender
         {
             base.ActivateOptions();
 
-            try
-            {
-                _client = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret, _clientConfig);
-            }
-            catch (CloudWatchAppenderException)
-            {
-            }
+            _client = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret, _clientConfig);
 
-            _eventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp,_message);
+            _eventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp, _message);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");

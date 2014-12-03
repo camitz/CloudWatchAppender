@@ -74,8 +74,8 @@
     <Compile Include="BufferingCloudWatchLogsAppender.cs" />
     <Compile Include="BufferingAggregatingCloudWatchAppender.cs" />
     <Compile Include="CloudWatchAppenderBase.cs" />
-    <Compile Include="CloudWatchAppenderException.cs" />
     <Compile Include="CloudWatchAppender.cs" />
+    <Compile Include="CloudWatchAppenderException.cs" />
     <Compile Include="CloudWatchLogsAppender.cs" />
     <Compile Include="Fakes\FakeInstanceMetaDataReader.cs" />
     <Compile Include="Layout\PatternLayout.cs" />

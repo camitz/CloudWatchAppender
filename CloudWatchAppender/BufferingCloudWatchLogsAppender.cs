@@ -6,7 +6,6 @@ using Amazon.CloudWatch;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Amazon.Runtime;
-using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Services;
@@ -21,7 +20,7 @@ namespace CloudWatchAppender
     {
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private CloudWatchLogsClientWrapper _client;
-        private static readonly Type _declaringType = typeof (BufferingCloudWatchLogsAppender);
+        private static readonly Type _declaringType = typeof(BufferingCloudWatchLogsAppender);
         private StandardUnit _standardUnit;
         private string _accessKey;
         private string _secret;
@@ -36,7 +35,7 @@ namespace CloudWatchAppender
         private string _message;
 
         private IEventProcessor<LogDatum> _eventProcessor;
-        
+
         private bool _configOverrides = true;
 
         private AmazonCloudWatchLogsConfig _clientConfig;
@@ -159,11 +158,11 @@ namespace CloudWatchAppender
 
             _streamName = "unspecified";
 
-            var hierarchy = ((Hierarchy) log4net.LogManager.GetRepository());
+            var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;
 
-            hierarchy.AddRenderer(typeof (LogDatum), new LogDatumRenderer());
+            hierarchy.AddRenderer(typeof(LogDatum), new LogDatumRenderer());
 
 
         }
@@ -172,13 +171,7 @@ namespace CloudWatchAppender
         {
             base.ActivateOptions();
 
-            try
-            {
-                _client = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret, _clientConfig);
-            }
-            catch (CloudWatchAppenderException)
-            {
-            }
+            _client = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret, _clientConfig);
 
             _eventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp, _message);
 
@@ -226,9 +219,9 @@ namespace CloudWatchAppender
                                      LogStreamName = grouping1.Key,
                                      LogEvents =
                                          grouping1
-                                         .OrderBy(x=>x.Timestamp)
+                                         .OrderBy(x => x.Timestamp)
                                          .Select(
-                                             x => new InputLogEvent {Message = x.Message, Timestamp = x.Timestamp.Value})
+                                             x => new InputLogEvent { Message = x.Message, Timestamp = x.Timestamp.Value })
                                          .ToList()
                                  });
                 }
@@ -239,6 +232,6 @@ namespace CloudWatchAppender
     }
 }
 
-            
-            
+
+
 

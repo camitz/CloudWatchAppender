@@ -73,21 +73,29 @@ namespace CloudWatchAppender.Services
             if (string.IsNullOrEmpty(_accessKey))
                 try
                 {
-                    if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AWSProfileName"]) || ProfileManager.GetAWSCredentials("default") != null)
+                    if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AWSProfileName"]) || ProfileManager.ListProfileNames().Contains("default"))
                     {
                         if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AWSRegion"]))
                             Client = AWSClientFactoryWrapper<T>.CreateServiceClient();
                         else if (clientConfig.RegionEndpoint != null)
                             Client = AWSClientFactoryWrapper<T>.CreateServiceClient(clientConfig);
                     }
+                    else
+                    {
+                        foreach (var availableRole in InstanceProfileAWSCredentials.GetAvailableRoles())
+                        {
+                            LogLog.Debug(typeof(CloudWatchClientWrapperBase<>), "Role: " + availableRole);
+                        }
+                        Client = AWSClientFactoryWrapper<T>.CreateServiceClient(clientConfig);
+                    }
                 }
                 catch (AmazonServiceException e)
                 {
-
+                    LogLog.Debug(typeof(CloudWatchClientWrapperBase<>), "Exception caught while creating client", e);
                 }
                 catch (Exception e)
                 {
-
+                    LogLog.Debug(typeof(CloudWatchClientWrapperBase<>), "Exception caught while creating client", e);
                 }
 
 
@@ -113,57 +121,57 @@ namespace CloudWatchAppender.Services
                 Task superTask = null;
                 superTask =
                     new Task(() =>
-                             {
-                                 var nestedTask =
-                                     Task.Factory.StartNew(() =>
-                                                           {
-                                                               try
-                                                               {
-                                                                   var tmpCulture = Thread.CurrentThread.CurrentCulture;
-                                                                   Thread.CurrentThread.CurrentCulture = new CultureInfo(
-                                                                       "en-GB", false);
+                    {
+                        var nestedTask =
+                            Task.Factory.StartNew(() =>
+                            {
+                                try
+                                {
+                                    var tmpCulture = Thread.CurrentThread.CurrentCulture;
+                                    Thread.CurrentThread.CurrentCulture = new CultureInfo(
+                                        "en-GB", false);
 
-                                                                   LogLog.Debug(GetType(), "Sending");
-                                                                   var response = func();
-                                                                   LogLog.Debug(GetType(),
-                                                                       "RequestID: " + response.ResponseMetadata.RequestId);
+                                    LogLog.Debug(GetType(), "Sending");
+                                    var response = func();
+                                    LogLog.Debug(GetType(),
+                                        "RequestID: " + response.ResponseMetadata.RequestId);
 
-                                                                   Thread.CurrentThread.CurrentCulture = tmpCulture;
-                                                               }
-                                                               catch (Exception e)
-                                                               {
-                                                                   LogLog.Debug(GetType(), e.ToString());
-                                                               }
-                                                           }, ct);
+                                    Thread.CurrentThread.CurrentCulture = tmpCulture;
+                                }
+                                catch (Exception e)
+                                {
+                                    LogLog.Debug(GetType(), e.ToString());
+                                }
+                            }, ct);
 
-                                 try
-                                 {
-                                     if (!nestedTask.Wait(30000))
-                                     {
-                                         tokenSource.Cancel();
-                                         LogLog.Error(GetType(),
-                                             "CloudWatchAppender timed out while submitting to CloudWatch. Exception (if any): {0}",
-                                             nestedTask.Exception);
-                                     }
-                                 }
-                                 catch (Exception e)
-                                 {
-                                     LogLog.Error(GetType(),
-                                         "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e);
-                                 }
+                        try
+                        {
+                            if (!nestedTask.Wait(30000))
+                            {
+                                tokenSource.Cancel();
+                                LogLog.Error(GetType(),
+                                    "CloudWatchAppender timed out while submitting to CloudWatch. Exception (if any): {0}",
+                                    nestedTask.Exception);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            LogLog.Error(GetType(),
+                                "CloudWatchAppender encountered an error while submitting to cloudwatch. {0}", e);
+                        }
 
-                                 superTask.ContinueWith(t =>
-                                                        {
-                                                            Task task2;
-                                                            ServiceTasks.Tasks.TryRemove(superTask.Id, out task2);
-                                                            LogLog.Debug(GetType(), "Cloudwatch complete");
-                                                            if (superTask.Exception != null)
-                                                                LogLog.Error(GetType(),
-                                                                    string.Format(
-                                                                        "CloudWatchAppender encountered an error while submitting to CloudWatch. {0}",
-                                                                        superTask.Exception));
-                                                        });
-                             });
+                        superTask.ContinueWith(t =>
+                        {
+                            Task task2;
+                            ServiceTasks.Tasks.TryRemove(superTask.Id, out task2);
+                            LogLog.Debug(GetType(), "Cloudwatch complete");
+                            if (superTask.Exception != null)
+                                LogLog.Error(GetType(),
+                                    string.Format(
+                                        "CloudWatchAppender encountered an error while submitting to CloudWatch. {0}",
+                                        superTask.Exception));
+                        });
+                    });
 
                 if (ServiceTasks.Tasks == null)
                     ServiceTasks.Tasks = new ConcurrentDictionary<int, Task>();

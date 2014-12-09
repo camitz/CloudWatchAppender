@@ -146,6 +146,10 @@ The *rateLimit* limits the number of requests sent to CloudWatch to 20 per secon
 
 TODO
 
+## AWS client config
+
+TODO
+
 ## Using PatternLayout
 
 The same result as above can be accomplished by using the version of ["PatternLayout"](#patternlayout) provided by CloudWatchAppender and using the format rules outlined below to format the input string to the appender.

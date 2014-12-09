@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Amazon;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Services;
 using log4net;
@@ -23,7 +24,6 @@ namespace BufferedLogs
             var streams = new[] { "Stream1", "Stream2" };
             var groups = new[] { "GRoup1", "GRaoup2" };
             var random = new Random();
-
 
             var stopWatch = new Stopwatch();
 

@@ -113,6 +113,20 @@ namespace CloudWatchAppender.Tests
             Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
             Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
         }
+        
+        [Test]
+        public void SurroundedNames()
+        {
+            var parser = new LogsEventMessageParser("Beginning tick! StreamName: NewName Middle tick! GroupName: GName End tick!");
+            parser.Parse();
+
+            var data = parser.GetParsedData();
+
+            Assert.That(data.Count(), Is.EqualTo(1));
+            Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
+            Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
+            Assert.That(data.Select(x => x.Message), Has.All.EqualTo("Beginning tick! Middle tick! End tick!"));
+        }
 
         [Test]
         public void ParenthesizedNames()

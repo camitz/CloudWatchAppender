@@ -2,6 +2,28 @@ A CloudWatch appender for [log4net](http://logging.apache.org/log4net/ "log4net"
 
 All posts are made asynchronously to CloudWatch via the [AWSSDK](http://aws.amazon.com/sdkfornet/) library for .NET.
 
+# News
+
+## Now supporting CloudWatch Logs
+
+In July AWS launch CloudWatch [Logs](http://aws.amazon.com/about-aws/whats-new/2014/07/10/introducing-amazon-cloudwatch-logs/). CloudWatchAppender now supports them with two brand new appenders, CloudWatchLogsAppender and its buffering counter part, BufferingCloudWatchLogsAppender. The appenders will automatically take care of adding groups and streams, specified in config or in the log message.
+
+## Credentials handling as recommended by AWS
+
+Time has moved on since first launch and putting API keys and secrets in clear text in config files is unsurpisingly no longer the recommended way of doing things. CloudWatchAppender now supports all manners of providing credentials [recommended by AWS](#credentials).
+
+## Support for AWS client config settings
+
+All settings including proxy settings and signature version is now supported via the config-file.
+
+## Supporting .NET 3.5 again and soon to support .NET 5.0
+
+I will maintain a separate project for .NET 3.5 and in the near future also a 5.0 version.
+
+## Next step: Default metric filters
+
+CloudWatchLogsAppender and BufferingCloudWatchLogsAppender will in a future version submit [MetricFilters](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/FilterAndPatternSyntax.html) by default if a PatternLayout-string is specified.
+
 # Installation
 
 To add CloudWatchAppender to your Visual Studio project, run the following command in <a href="http://docs.nuget.org/docs/start-here/using-the-package-manager-console">Package Manager Console</a> or download the source from [GitHub](https://github.com/camitz/CloudWatchAppender).
@@ -34,11 +56,13 @@ To change the default behavior, you can either provide the info in the config-fi
 
 **Warning** Make sure you read about CloudWatch [pricing](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/DeveloperGuide/cloudwatch_concepts.html) so you'll not get any surprises. Particularly, CloudWatch treats each combination of metric name, namespace and dimension as a different custom metric. You have just 10 free custom metrics. After that they start charging you.
 
+**Note** In the above example credentials is in clear text and this is not the Amazon recommended way of doing things. See [Configuring Credentials and End Point](#credentials).
+
 ## BufferingAggregatingCloudWatchAppender
 
 Besides the regular CloudwatchAppender there is the BufferingAggregatingCloudWatchAppender that has several key benefits. Log events are stored in a buffer and only sent to CloudWatch once certain conditions are met, usually when the buffer reaches a certain limit.
 
-The events are assembled to statistics sets so that a minumum number of requests are performed. 
+The events are assembled to statistics sets so that a minimum number of requests are performed. 
 
 This feature can potentially reduce the frequency of http requests to the AWS API by several orders of magnitude. As such it is the recommended appender for most purposes. Use the regular CloudwatchAppender when real time updates to CloudWatch is essential.
 
@@ -49,11 +73,50 @@ Replacing the following in the right place above will post a request to AWS API 
 
 Most usage patterns describes below are applicable to BufferingAggregatingCloudWatchAppender as well.
 
-See [BufferingForwardingAppender](http://logging.apache.org/log4net/release/config-examples.html) and [BufferingApenderSkeleton](http://logging.apache.org/log4net/release/sdk/log4net.Appender.BufferingAppenderSkeleton.html) for more information on how to customize a buffering appender and set conditions for flushing the event buffer. For example, a TimeEvaluator can be used to trigger a buffer flush at certain time intervals. See my blog for an example of this.
+See [BufferingForwardingAppender](http://logging.apache.org/log4net/release/config-examples.html) and [BufferingApenderSkeleton](http://logging.apache.org/log4net/release/sdk/log4net.Appender.BufferingAppenderSkeleton.html) for more information on how to customize a buffering appender and set conditions for flushing the event buffer. For example, a TimeEvaluator can be used to trigger a buffer flush at certain time intervals. See my [blog](http://blog.simpletask.se/post/buffering-aggregating-cloudwatch-appender) for an example of this.
+
+##BufferingCloudWatchLogsAppender
+
+The buffering BufferingCloudWatchLogsAppender targets [CloudWatch Logs](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/WhatIsCloudWatchLogs.html), i.e. is a quite different beast with different applications and in fact more of a traditional end point for log4net. To be sure, you can also gather metrics from logs published in this way and you may find this useful for certain applications.
+
+Use logs to monitor your instances in real time. It is not yet a replacement for other means of logging primarily because of the limited functionality offered. For example there is no searching. 
+
+The appender is set up in much the same way as the BufferingAggregatingCloudWatchAppender, for example:
+
+    <appender name="CloudWatchLogsAppender" type="CloudWatchAppender.BufferingCloudWatchLogsAppender, CloudWatchAppender">
+      <bufferSize value="100" />
+      <lossy value="false" />
+      <evaluator type="log4net.Core.TimeEvaluator">
+        <interval value="1" />
+      </evaluator>
+      <accessKey value="AWSSECRETGOESHERE" />
+      <secret value="AWSACCESSKEYGOESHERE" />
+      <regionendpoint type="Amazon.RegionEndpoint" value="eu-west-1"/>
+      <layout type="CloudWatchAppender.Layout.PatternLayout">
+        <conversionPattern value="%date [%thread] %-5level %logger [%ndc] - %message" />
+      </layout>
+
+      <groupName value="%logger{-1}" />
+      <streamName value="localhost" />
+    </appender>
+
+There are two parameters to note, groupName and streamName. They provide grouping of the log events and are described in the [online documentation](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/WhatIsCloudWatchLogs.html).
+
+With BufferingCloudWatchLogsAppender you can make requests to the same stream from separate applications although it will have to retry until it gets a hold of the latest *sequence token*. If requests come often from different applications at approximately the same time, the algorithm will fail. Trim your buffer size and time interval to avoid this.
+
+##CloudWatchLogsAppender
+
+Because collecting log events is sequential in nature and because CloudWatchAppender is designed to post asyncronous requests to AWS, using a the non-buffered version of the appender makes little sense. Use it only if you application requires immediate prioritized posting of log events.
+
+Consider instead using the BufferingCloudWatchLogsAppender with a small buffer size and/or short time interval.
+
+Having said that, CloudWatchLogsAppender will try to resolve ordering conflicts though not in a very smart way. It will easily become overrun and when it does it just keeps making requests to AWS which will return an error. This is retried 10 times.
+
+Most likely the unbuffered CloudWatchLogsAppender will not be developed further. Use BufferingCloudWatchLogsAppender instead.
 
 ## Config-file
 
-The following example will post a metric with [unit](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html) Milliseconds and the value 20 for all loggers using this appender. The metric name will be ProcessingTime and the namespace MyApp/Process.
+The following example probably has no use in any application but serves to illustrate the capabilities od the appender. It will post a metric with [unit](http://docs.amazonwebservices.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html) Milliseconds and the value 20 at log entry for all loggers using this appender. The metric name will be ProcessingTime and the namespace MyApp/Process. It also attaches a dimension indicating which instance the instance the entry originated from, if used on an AWS instance.
 
     <appender name="CloudWatchAppender" type="CloudwatchAppender.CloudwatchAppender, CloudwatchAppender">
 		<accessKey value="YourAWSAccessKey" />
@@ -79,6 +142,10 @@ Notice also we've provided the first of ten possible ["dimensions"](#dimensions)
 
 The *rateLimit* limits the number of requests sent to CloudWatch to 20 per second. It is not applicable for BufferingAggregatingCloudWatchAppender and will be ignored.
 
+##  Credentials and End Point <a id="credentials"></a>
+
+TODO
+
 ## Using PatternLayout
 
 The same result as above can be accomplished by using the version of ["PatternLayout"](#patternlayout) provided by CloudWatchAppender and using the format rules outlined below to format the input string to the appender.
@@ -89,19 +156,27 @@ The same result as above can be accomplished by using the version of ["PatternLa
 
 ## Event log message
 
+CloudWatchAppender and its buffered counter part treat log messages differently from the two Logs appenders.
+
 If you pass a string to the logger like this
 
     ILog log = LogManager.GetLogger(typeof(MyClass));
     log.Info("These eight words will be ignored by CloudWatchAppender. Value: 20 Milliseconds, MetricName: ProcessingTime " +
 			 "these seven words will be ignored too NameSpace: MyApp/Processor, Dimension0: InstanceID: %metadata{instanceid}");
 
-most of it will be ignored by the CloudWatchAppender. Of course, if there are other appenders listening on the logger, they will handle the string in their way. Most will output the entire string to whatever end point they are designed for.
+most of it will be ignored by the CloudWatchAppender. 
 
-The above message to the logger will behave in the same way as the previous examples. The CloudWatchAppender event parser will look for recognizable tokens, largely corresponding to the entities and units familiar to CloudWatch. The parser is pretty lenient in what is allowed but also let's unexpected input slip without warning. As the messages get complicated, especially if PatternLayout is used, it is important to understand the conflict resolution [rules](#conflicts).
+The above message to the logger will behave in the same way as the previous examples. The CloudWatchAppender event parser will look for recognizable tokens, largely corresponding to the entities and units familiar to CloudWatch. The parser is pretty lenient in what is allowed but also lets unexpected input slip without warning. As the messages get complicated, especially if PatternLayout is used, it is important to understand the conflict resolution [rules](#conflicts).
 
-Note that if the PatternLayout is used, either the original one or the one provided by CloudWatchAppender, the pattern %message or %m (the short hand is deprecated) must be present in the conversion pattern for the event log message to be observed.
+Of course, if there are other appenders listening on the logger, they will handle the string in their way. Most will output the entire string to whatever end point they are designed for. This includes the BufferingCloudWatchLogsAppender which concatenate everything it can't parse into the actual message of to the log event posted to AWS as in the following:
 
-A list of [tokens](#tokens) supported by the event parser can be found below. 
+    ILog log = LogManager.GetLogger(typeof(MyClass));
+    log.Info("These thirteen words will be included GroupName: MyApp/Processor " +
+			 "in the log event message by BufferingCloudWatchLogsAppender. StreamName: %metadata{instanceid}");
+
+Note that if the PatternLayout is used, either the original one or the one provided in the CloudWatchAppender namespace, the pattern %message or %m (the short hand is deprecated by log4net) must be present in the conversion pattern for the event log message to be observed.
+
+A list of [tokens](#tokens) supported by the event parsers can be found below. 
 
 ### The MetricDatum object
 
@@ -213,7 +288,7 @@ In your config file under the appender element you can add dimensions simply by 
         <value value="Apple"/>
       </dimension>
 
-Again, note the [metadata](#metadat) pattern.
+Again, note the [metadata](#metadata) pattern.
 
 The corresponding equivalent pattern/event log message would be
 
@@ -301,7 +376,11 @@ TODO
 
 # <a id="tokens"></a> Tokens recognized by CloudWatchAppender
 
-## Metrics
+## CloudWatchAppender and BufferingAggregatingCloudWatchAppender 
+
+The following are recognized by CloudWatchAppender, BufferingAggregatingCloudWatchAppender and their common event message parser.
+
+### Metrics
 
 * Value
 * Unit
@@ -311,14 +390,14 @@ TODO
 * MetricName
 * Timestamp
 
-## Statistics
+### Statistics
 
 * Maximum
 * Minimum
 * SampleCount
 * Sum
 
-## Units
+### Units
 
 *This list is based on the SDK type StandardUnit and may not be up to date. StandardUnit is used internally across the code base of CloudWatchAppender to store unit values and to perform string conversion. Whatever StandardUnit supports, CloudWatchAppender does too.*
 
@@ -350,6 +429,16 @@ TODO
 * Count/Second
 * None
 
+
+## CloudWatchLogsAppender and BufferingCloudWatchLogsAppender 
+
+The following are recognized by CloudWatchLogsAppender, BufferingCloudWatchLogsAppender and their common event message parser.
+
+* Message
+* GroupName
+* StreamName
+* Timestamp
+
 # Some more reading
 
 Check out the following blog posts that seeded the project.
@@ -359,6 +448,10 @@ Check out the following blog posts that seeded the project.
 [Improving the CloudWatch Appender](http://blog.simpletask.se/improving-cloudwatch-appender)
 
 [Introducing the Buffering and Aggregeting CloudWatch Appender](http://blog.simpletask.se/post/buffering-aggregating-cloudwatch-appender)
+
+# Debugging
+
+TODO
 
 # Releases
 

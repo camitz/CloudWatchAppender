@@ -37,7 +37,7 @@ namespace CloudWatchAppender.Services
                         {
                             Client.CreateLogGroup(new CreateLogGroupRequest { LogGroupName = putLogEventsRequest.LogGroupName });
                         }
-                        catch (ResourceAlreadyExistsException e)
+                        catch (ResourceAlreadyExistsException)
                         {
                         }
                         _validatedGroupNames.TryAdd(putLogEventsRequest.LogGroupName, putLogEventsRequest.LogGroupName);
@@ -49,7 +49,7 @@ namespace CloudWatchAppender.Services
                         {
                             Client.CreateLogStream(new CreateLogStreamRequest { LogGroupName = putLogEventsRequest.LogGroupName, LogStreamName = putLogEventsRequest.LogStreamName });
                         }
-                        catch (ResourceAlreadyExistsException e)
+                        catch (ResourceAlreadyExistsException)
                         {
                         }
                         _validatedStreamNames.TryAdd(putLogEventsRequest.LogStreamName, putLogEventsRequest.LogStreamName);
@@ -78,7 +78,7 @@ namespace CloudWatchAppender.Services
                             _nextSequenceToken[key] = putLogEventsResponse.NextSequenceToken;
                             ret = putLogEventsResponse;
                         }
-                        catch (ResourceNotFoundException e)
+                        catch (ResourceNotFoundException)
                         {
                             throw;
                         }
@@ -99,7 +99,7 @@ namespace CloudWatchAppender.Services
                         else
                             nextSequenceToken = null;
                     }
-                    catch (OperationAbortedException e)
+                    catch (OperationAbortedException)
                     {
                         LogLog.Debug(typeof(CloudWatchLogsClientWrapper), "Task lost due to conflicting operation");
                     }

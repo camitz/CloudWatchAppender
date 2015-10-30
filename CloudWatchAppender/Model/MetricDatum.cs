@@ -208,7 +208,7 @@ namespace CloudWatchAppender.Model
 
 
 
-        public static readonly ISet<string> SupportedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        public static readonly HashSet<string> SupportedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                                                     {
                                                         "Value",
                                                         "Unit",
@@ -219,7 +219,7 @@ namespace CloudWatchAppender.Model
                                                         "Timestamp"
                                                     };
 
-        public static readonly ISet<string> SupportedStatistics = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        public static readonly HashSet<string> SupportedStatistics = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                                                     {
                                                         "Maximum",
                                                         "Minimum",

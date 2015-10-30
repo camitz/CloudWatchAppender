@@ -26,7 +26,7 @@ namespace CloudWatchAppender.Services
 
         protected void ParseTokens(ref List<Match>.Enumerator tokens, string renderedMessage)
         {
-            string t0, unit, value, name, sNum = string.Empty, rest = "";
+            string t0, unit, sNum = string.Empty, rest = "";
             int? startRest = 0;
 
             tokens.MoveNext();

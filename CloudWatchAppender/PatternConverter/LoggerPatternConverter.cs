@@ -36,7 +36,7 @@ namespace CloudWatchAppender.PatternConverter
                                 elements
                                     .Reverse()
                                     .Take(m_precision)
-                                    .Reverse()
+                                    .Reverse().ToArray()
                         )
                     );
                 return;
@@ -45,7 +45,7 @@ namespace CloudWatchAppender.PatternConverter
             writer.Write(
                 string.Join("/",
                             elements
-                                .Take(-m_precision)
+                                .Take(-m_precision).ToArray()
                     )
                 );
         }

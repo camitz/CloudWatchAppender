@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Amazon.CloudWatch;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Amazon.Runtime;
@@ -21,13 +20,6 @@ namespace CloudWatchAppender
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private CloudWatchLogsClientWrapper _client;
         private static readonly Type _declaringType = typeof(BufferingCloudWatchLogsAppender);
-        private StandardUnit _standardUnit;
-        private string _accessKey;
-        private string _secret;
-        private string _endPoint;
-        private string _value;
-        private string _metricName;
-        private string _ns;
         private string _timestamp;
 
         private string _groupName;
@@ -51,39 +43,10 @@ namespace CloudWatchAppender
             get { return _clientConfig ?? (_clientConfig = new AmazonCloudWatchLogsConfig()); }
         }
 
-        public string AccessKey
-        {
-            set
-            {
-                _accessKey = value;
-                _client = null;
-            }
-        }
-
-
         protected override void ResetClient()
         {
             _client = null;
         }
-
-        public string Secret
-        {
-            set
-            {
-                _secret = value;
-                _client = null;
-            }
-        }
-
-        public string EndPoint
-        {
-            set
-            {
-                _endPoint = value;
-                _client = null;
-            }
-        }
-
 
         public string GroupName
         {
@@ -112,7 +75,7 @@ namespace CloudWatchAppender
             }
         }
 
-        public string Timestamp
+        public new string Timestamp
         {
             set
             {
@@ -121,26 +84,12 @@ namespace CloudWatchAppender
             }
         }
 
-        public bool ConfigOverrides
+        public new bool ConfigOverrides
         {
             set
             {
                 _configOverrides = value;
                 _eventProcessor = null;
-            }
-        }
-
-
-        private string _instanceMetaDataReaderClass;
-
-        public string InstanceMetaDataReaderClass
-        {
-            get { return _instanceMetaDataReaderClass; }
-            set
-            {
-                _instanceMetaDataReaderClass = value;
-                InstanceMetaDataReader.Instance =
-                    Activator.CreateInstance(Type.GetType(value)) as IInstanceMetaDataReader;
             }
         }
 
@@ -171,7 +120,7 @@ namespace CloudWatchAppender
         {
             base.ActivateOptions();
 
-            _client = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret, _clientConfig);
+            _client = new CloudWatchLogsClientWrapper(EndPoint, AccessKey, Secret, ClientConfig);
 
             _eventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp, _message);
 

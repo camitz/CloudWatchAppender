@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Amazon.CloudWatch;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Amazon.Runtime;
@@ -16,17 +15,9 @@ namespace CloudWatchAppender
 {
     public class CloudWatchLogsAppender : CloudWatchAppenderBase<LogDatum>, ICloudWatchLogsAppender
     {
-        private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private CloudWatchLogsClientWrapper _client;
-        private LogEventProcessor _logEventProcessor;
         private readonly static Type _declaringType = typeof(CloudWatchLogsAppender);
-        private StandardUnit _standardUnit;
-        private string _accessKey;
-        private string _secret;
-        private string _endPoint;
-        private string _value;
         private string _message;
-        private string _ns;
         private string _timestamp;
 
         private string _groupName;
@@ -47,46 +38,17 @@ namespace CloudWatchAppender
             set { _eventProcessor = value; }
         }
 
-        public string AccessKey
-        {
-            set
-            {
-                _accessKey = value;
-                _client = null;
-            }
-        }
-
 
         protected override void ResetClient()
         {
             _client = null;
         }
 
-        public string Secret
-        {
-            set
-            {
-                _secret = value;
-                _client = null;
-            }
-        }
-
-        public string EndPoint
-        {
-            set
-            {
-                _endPoint = value;
-                _client = null;
-            }
-        }
-
-
         public string GroupName
         {
             set
             {
                 _groupName = value;
-                _logEventProcessor = null;
             }
         }
 
@@ -95,7 +57,6 @@ namespace CloudWatchAppender
             set
             {
                 _streamName = value;
-                _logEventProcessor = null;
             }
         }
 
@@ -104,48 +65,19 @@ namespace CloudWatchAppender
             set
             {
                 _message = value;
-                _logEventProcessor = null;
             }
         }
 
 
-        public string Timestamp
+        public new string Timestamp
         {
             set
             {
                 _timestamp = value;
-                _logEventProcessor = null;
             }
         }
 
-        public bool ConfigOverrides
-        {
-            set
-            {
-                _configOverrides = value;
-                _logEventProcessor = null;
-            }
-        }
-
-
-        private string _instanceMetaDataReaderClass;
         private IEventProcessor<LogDatum> _eventProcessor;
-
-        public string InstanceMetaDataReaderClass
-        {
-            get { return _instanceMetaDataReaderClass; }
-            set
-            {
-                _instanceMetaDataReaderClass = value;
-                InstanceMetaDataReader.Instance =
-                    Activator.CreateInstance(Type.GetType(value)) as IInstanceMetaDataReader;
-            }
-        }
-
-        public int RateLimit
-        {
-            set { _eventRateLimiter = new EventRateLimiter(value); }
-        }
 
         public CloudWatchLogsAppender()
         {
@@ -169,7 +101,7 @@ namespace CloudWatchAppender
         {
             base.ActivateOptions();
 
-            _client = new CloudWatchLogsClientWrapper(_endPoint, _accessKey, _secret, _clientConfig);
+            _client = new CloudWatchLogsClientWrapper(EndPoint, AccessKey, Secret, ClientConfig);
 
             _eventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp, _message);
 
@@ -182,7 +114,7 @@ namespace CloudWatchAppender
         {
             LogLog.Debug(_declaringType, "Appending");
 
-            if (!_eventRateLimiter.Request(loggingEvent.TimeStamp))
+            if (!EventRateLimiter.Request(loggingEvent.TimeStamp))
             {
                 LogLog.Debug(_declaringType, "Appending denied due to event limiter saturated.");
                 return;

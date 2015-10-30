@@ -38,8 +38,6 @@ namespace CloudWatchAppender.Services
             if (Client != null)
                 return;
 
-            RegionEndpoint regionEndpoint;
-
             if (clientConfig == null)
                 if (typeof(T) == typeof(AmazonCloudWatchLogsClient))
                     clientConfig = new AmazonCloudWatchLogsConfig();
@@ -55,8 +53,6 @@ namespace CloudWatchAppender.Services
 
             if (string.IsNullOrEmpty(_secret) && ConfigurationManager.AppSettings["AWSSecretKey"] != null)
                 _secret = ConfigurationManager.AppSettings["AWSSecretKey"];
-
-            //_client = AWSClientFactory.CreateAmazonCloudWatchClient(_accessKey, _secret);
 
             if (!string.IsNullOrEmpty(_endPoint))
             {

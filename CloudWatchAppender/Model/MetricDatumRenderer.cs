@@ -39,7 +39,7 @@ namespace CloudWatchAppender.Model
                 writer.Write("Dimensions: {0}, ", String.Join(", ",
                                                               metricDatum.Dimensions.Select(
                                                                   x =>
-                                                                  String.Format("{0}: {1}", x.Name, x.Value))));
+                                                                  String.Format("{0}: {1}", x.Name, x.Value)).ToArray()));
             }
 
             if (metricDatum.Timestamp != default(DateTime))

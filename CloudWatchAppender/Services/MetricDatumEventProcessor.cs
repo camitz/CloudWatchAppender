@@ -9,7 +9,11 @@ using log4net.Util;
 
 namespace CloudWatchAppender.Services
 {
+#if NET35
     public interface IEventProcessor<T>
+#else
+    public interface IEventProcessor<out T>
+#endif
     {
         IEnumerable<T> ProcessEvent(LoggingEvent loggingEvent, string renderedString);
     }

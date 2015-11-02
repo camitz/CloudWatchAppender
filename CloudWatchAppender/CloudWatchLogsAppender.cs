@@ -17,11 +17,6 @@ namespace CloudWatchAppender
     {
         private CloudWatchLogsClientWrapper _client;
         private readonly static Type _declaringType = typeof(CloudWatchLogsAppender);
-        private string _message;
-        private string _timestamp;
-
-        private string _groupName;
-        private string _streamName;
 
         private bool _configOverrides = true;
 
@@ -38,55 +33,29 @@ namespace CloudWatchAppender
             set { _eventProcessor = value; }
         }
 
-
         protected override void ResetClient()
         {
             _client = null;
         }
 
-        public string GroupName
-        {
-            set
-            {
-                _groupName = value;
-            }
-        }
+        public string GroupName { get; set; }
 
-        public string StreamName
-        {
-            set
-            {
-                _streamName = value;
-            }
-        }
+        public string StreamName { get; set; }
 
-        public string Message
-        {
-            set
-            {
-                _message = value;
-            }
-        }
+        public string Message { get; set; }
 
-
-        public new string Timestamp
-        {
-            set
-            {
-                _timestamp = value;
-            }
-        }
+        public new string Timestamp { get; set; }
 
         private IEventProcessor<LogDatum> _eventProcessor;
 
         public CloudWatchLogsAppender()
         {
             if (Assembly.GetEntryAssembly() != null)
-                _groupName = Assembly.GetEntryAssembly().GetName().Name;
+                GroupName = Assembly.GetEntryAssembly().GetName().Name;
             else
-                _groupName = "unspecified";
+                GroupName = "unspecified";
 
-            _streamName = "unspecified";
+            StreamName = "unspecified";
 
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
@@ -103,7 +72,7 @@ namespace CloudWatchAppender
 
             _client = new CloudWatchLogsClientWrapper(EndPoint, AccessKey, Secret, ClientConfig);
 
-            _eventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp, _message);
+            _eventProcessor = new LogEventProcessor(_configOverrides, GroupName, StreamName, Timestamp, Message);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");

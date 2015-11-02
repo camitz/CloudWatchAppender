@@ -55,6 +55,7 @@ namespace CloudWatchAppender
                 _groupName = value;
                 _eventProcessor = null;
             }
+            get { return _groupName; }
         }
 
         public string StreamName
@@ -64,6 +65,7 @@ namespace CloudWatchAppender
                 _streamName = value;
                 _eventProcessor = null;
             }
+            get { return _streamName; }
         }
 
         public string Message
@@ -73,6 +75,7 @@ namespace CloudWatchAppender
                 _message = value;
                 _eventProcessor = null;
             }
+            get { return _message; }
         }
 
         public new string Timestamp
@@ -82,6 +85,7 @@ namespace CloudWatchAppender
                 _timestamp = value;
                 _eventProcessor = null;
             }
+            get { return Timestamp; }
         }
 
         public new bool ConfigOverrides

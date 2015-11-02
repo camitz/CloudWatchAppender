@@ -27,7 +27,6 @@ namespace CloudWatchAppender
         private string _value;
         private string _metricName;
         private string _ns;
-        private string _timestamp;
         private bool _configOverrides = true;
         private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
 
@@ -125,7 +124,7 @@ namespace CloudWatchAppender
             {
             }
 
-            _eventProcessor = new MetricDatumEventProcessor(_configOverrides, _standardUnit, _ns, _metricName, _timestamp, _value, _dimensions);
+            _eventProcessor = new MetricDatumEventProcessor(_configOverrides, _standardUnit, _ns, _metricName, Timestamp, _value, _dimensions);
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");
@@ -159,17 +158,17 @@ namespace CloudWatchAppender
                     foreach (var dimensionGrouping in metricNameGrouping
                         .GroupBy(x => string.Join(";", x.Dimensions
                             .OrderBy(d => d.Name)
-                            .Select(d => string.Format("{0}/{1}", d.Name, d.Value)))))
+                            .Select(d => string.Format("{0}/{1}", d.Name, d.Value)).ToArray())))
                     {
                         var timestamp = dimensionGrouping.Max(x => x.Timestamp);
                         metricData.Add(new MetricDatum
-                                               {
-                                                   MetricName = metricNameGrouping.Key,
-                                                   Dimensions = dimensionGrouping.First().Dimensions,
-                                                   Timestamp = timestamp > DateTime.MinValue ? timestamp : DateTime.UtcNow,
-                                                   Unit = unit,
-                                                   StatisticValues = Aggregate(dimensionGrouping.AsEnumerable(), unit)
-                                               });
+                        {
+                            MetricName = metricNameGrouping.Key,
+                            Dimensions = dimensionGrouping.First().Dimensions,
+                            Timestamp = timestamp > DateTime.MinValue ? timestamp : DateTime.UtcNow,
+                            Unit = unit,
+                            StatisticValues = Aggregate(dimensionGrouping.AsEnumerable(), unit)
+                        });
                     }
                 }
 

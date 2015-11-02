@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CloudWatchAppender;
 using CloudWatchAppender.Services;
 
 namespace MetaDataTester

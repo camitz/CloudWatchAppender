@@ -5,19 +5,21 @@ using System.Linq;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using log4net.Core;
-using log4net.Layout;
 using log4net.Util;
 
 namespace CloudWatchAppender.Services
 {
+#if NET35
+    public interface IEventProcessor<T>
+#else
     public interface IEventProcessor<out T>
+#endif
     {
         IEnumerable<T> ProcessEvent(LoggingEvent loggingEvent, string renderedString);
     }
 
     public class MetricDatumEventProcessor : IEventProcessor<PutMetricDataRequest>
     {
-        private CloudWatchAppender _cloudWatchAppender;
         private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
         private Dictionary<string, Dimension> _parsedDimensions;
         private bool _hasParsedProperties;
@@ -25,7 +27,6 @@ namespace CloudWatchAppender.Services
         private string _parsedMetricName;
         private DateTimeOffset? _dateTimeOffset;
         private MetricDatumEventMessageParser _metricDatumEventMessageParser;
-        private ILayout _layout;
         private readonly bool _configOverrides;
         private readonly StandardUnit _unit;
         private readonly string _namespace;

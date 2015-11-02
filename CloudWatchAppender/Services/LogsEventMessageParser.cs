@@ -163,7 +163,7 @@ namespace CloudWatchAppender.Services
             return new[] { _currentDatum };
         }
 
-        public static readonly ISet<string> SupportedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        public static readonly HashSet<string> SupportedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                                                     {
                                                         "Message",
                                                         "GroupName",

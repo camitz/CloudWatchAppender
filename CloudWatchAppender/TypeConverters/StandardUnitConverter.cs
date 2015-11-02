@@ -1,5 +1,4 @@
 using System;
-using Amazon;
 using Amazon.CloudWatch;
 using log4net.Util.TypeConverters;
 

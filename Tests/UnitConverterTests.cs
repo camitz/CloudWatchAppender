@@ -1,5 +1,4 @@
-﻿using System;
-using Amazon.CloudWatch;
+﻿using Amazon.CloudWatch;
 using CloudWatchAppender.Services;
 using NUnit.Framework;
 

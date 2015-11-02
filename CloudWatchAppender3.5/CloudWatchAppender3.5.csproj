@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -53,39 +53,103 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BufferingCloudWatchAppenderBase.cs" />
-    <Compile Include="BufferingCloudWatchLogsAppender.cs" />
-    <Compile Include="BufferingAggregatingCloudWatchAppender.cs" />
-    <Compile Include="CloudWatchAppenderBase.cs" />
-    <Compile Include="CloudWatchAppenderException.cs" />
-    <Compile Include="CloudWatchAppender.cs" />
-    <Compile Include="CloudWatchLogsAppender.cs" />
-    <Compile Include="Fakes\FakeInstanceMetaDataReader.cs" />
-    <Compile Include="Layout\PatternLayout.cs" />
-    <Compile Include="Model\LogDatum.cs" />
-    <Compile Include="Model\LogDatumRenderer.cs" />
-    <Compile Include="Model\MetricDatum.cs" />
-    <Compile Include="Model\MetricDatumRenderer.cs" />
-    <Compile Include="PatternConverter\InstanceIDPatternConverter.cs" />
-    <Compile Include="PatternConverter\InstanceMetaDataPatternConverter.cs" />
-    <Compile Include="PatternConverter\LoggerPatternConverter.cs" />
-    <Compile Include="PatternConverter\NamedPatternConverter.cs" />
+    <Compile Include="..\CloudWatchAppender\BufferingAggregatingCloudWatchAppender.cs">
+      <Link>BufferingAggregatingCloudWatchAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\BufferingCloudWatchAppenderBase.cs">
+      <Link>BufferingCloudWatchAppenderBase.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\BufferingCloudWatchLogsAppender.cs">
+      <Link>BufferingCloudWatchLogsAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\CloudWatchAppender.cs">
+      <Link>CloudWatchAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\CloudWatchAppenderBase.cs">
+      <Link>CloudWatchAppenderBase.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\CloudWatchAppenderException.cs">
+      <Link>CloudWatchAppenderException.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\CloudWatchLogsAppender.cs">
+      <Link>CloudWatchLogsAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Fakes\FakeInstanceMetaDataReader.cs">
+      <Link>Fakes\FakeInstanceMetaDataReader.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Layout\PatternLayout.cs">
+      <Link>Layout\PatternLayout.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Model\LogDatum.cs">
+      <Link>Model\LogDatum.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Model\LogDatumRenderer.cs">
+      <Link>Model\LogDatumRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Model\MetricDatum.cs">
+      <Link>Model\MetricDatum.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Model\MetricDatumRenderer.cs">
+      <Link>Model\MetricDatumRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\PatternConverter\InstanceIDPatternConverter.cs">
+      <Link>PatternConverter\InstanceIDPatternConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\PatternConverter\InstanceMetaDataPatternConverter.cs">
+      <Link>PatternConverter\InstanceMetaDataPatternConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\PatternConverter\LoggerPatternConverter.cs">
+      <Link>PatternConverter\LoggerPatternConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\PatternConverter\NamedPatternConverter.cs">
+      <Link>PatternConverter\NamedPatternConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\CloudWatchClientWrapper.cs">
+      <Link>Services\CloudWatchClientWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\CloudWatchClientWrapperBase.cs">
+      <Link>Services\CloudWatchClientWrapperBase.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\CloudWatchLogsClientWrapper.cs">
+      <Link>Services\CloudWatchLogsClientWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\EventMessageParserBase.cs">
+      <Link>Services\EventMessageParserBase.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\EventRateLimiter.cs">
+      <Link>Services\EventRateLimiter.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\InstanceMetaDataReader.cs">
+      <Link>Services\InstanceMetaDataReader.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\LogEventProcessor.cs">
+      <Link>Services\LogEventProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\LogsEventMessageParser.cs">
+      <Link>Services\LogsEventMessageParser.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\MetricDatumEventMessageParser.cs">
+      <Link>Services\MetricDatumEventMessageParser.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\MetricDatumEventProcessor.cs">
+      <Link>Services\MetricDatumEventProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\PatternParser.cs">
+      <Link>Services\PatternParser.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\ServiceTasks.cs">
+      <Link>Services\ServiceTasks.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\UnitConverter.cs">
+      <Link>Services\UnitConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\TypeConverters\RegionConverter.cs">
+      <Link>TypeConverters\RegionConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\TypeConverters\StandardUnitConverter.cs">
+      <Link>TypeConverters\StandardUnitConverter.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\CloudWatchClientWrapper.cs" />
-    <Compile Include="Services\CloudWatchClientWrapperBase.cs" />
-    <Compile Include="Services\CloudWatchLogsClientWrapper.cs" />
-    <Compile Include="Services\EventMessageParserBase.cs" />
-    <Compile Include="Services\LogsEventMessageParser.cs" />
-    <Compile Include="Services\MetricDatumEventMessageParser.cs" />
-    <Compile Include="Services\LogEventProcessor.cs" />
-    <Compile Include="Services\MetricDatumEventProcessor.cs" />
-    <Compile Include="Services\EventRateLimiter.cs" />
-    <Compile Include="Services\InstanceMetaDataReader.cs" />
-    <Compile Include="Services\PatternParser.cs" />
-    <Compile Include="Services\ServiceTasks.cs" />
-    <Compile Include="Services\UnitConverter.cs" />
-    <Compile Include="TypeConverters\RegionConverter.cs" />
-    <Compile Include="TypeConverters\StandardUnitConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

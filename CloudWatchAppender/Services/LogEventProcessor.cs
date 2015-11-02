@@ -2,21 +2,18 @@ using System;
 using System.Collections.Generic;
 using CloudWatchAppender.Model;
 using log4net.Core;
-using log4net.Layout;
 using log4net.Util;
 
 namespace CloudWatchAppender.Services
 {
     public class LogEventProcessor : IEventProcessor<LogDatum>
     {
-        private CloudWatchAppender _cloudWatchAppender;
         private bool _hasParsedProperties;
         private string _parsedStreamName;
         private string _parsedGroupName;
         private string _parsedMessage;
         private DateTime? _dateTimeOffset;
         private LogsEventMessageParser _logsEventMessageParser;
-        private ILayout _layout;
         private readonly bool _configOverrides;
         private readonly string _groupName;
         private readonly string _streamName;

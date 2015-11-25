@@ -5,8 +5,6 @@ skip_tags: false
 configuration: Release
 cache:
 - packages -> **\packages.config
-init:
-  - ps: .\BuildScripts\init.ps1
 install:
   - ps: .\BuildScripts\install.ps1
 assembly_info:

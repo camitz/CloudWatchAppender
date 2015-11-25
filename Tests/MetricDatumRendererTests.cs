@@ -43,72 +43,8 @@ namespace CloudWatchAppender.Tests
             Assert.That(t.ToString(), Is.StringContaining("MetricName: TheMetricName"));
             Assert.That(t.ToString(), Is.StringContaining("Unit: Seconds"));
             Assert.That(t.ToString(), Is.StringContaining("Value: 5.1"));
-            Assert.That(t.ToString(), Is.StringContaining("Timestamp: 2012-09-11 11:11"));
+            Assert.That(t.ToString(), Is.StringContaining("Timestamp: 9/11/2012 11:11"));
             Assert.That(t.ToString(), Is.StringContaining("Dimensions: dim1: v1, dim2: v2"));
-        }
-
-        [Test]
-        public void AppenderMetricDatum()
-        {
-            var t = new StringWriter();
-
-            new MetricDatumRenderer().RenderObject(null, new Model.MetricDatum("A tick!")
-                                        .WithMetricName("TheMetricName")
-                                        .WithDimensions(new[]{new Dimension
-                                                                   {
-                                                                       Name = "dim1", Value = "v1"
-                                                                   },
-                                                                new Dimension
-                                                                    {
-                                                                        Name = "dim2", Value = "v2"
-                                                                    } })
-                                         .WithUnit(new StandardUnit("Seconds"))
-                                         .WithValue(5.1)
-                                         .WithTimestamp(DateTime.Parse("2012-09-11 11:11")),
-                                     t);
-
-            Assert.That(t.ToString(), Is.StringContaining("MetricName: TheMetricName"));
-            Assert.That(t.ToString(), Is.StringContaining("Unit: Seconds"));
-            Assert.That(t.ToString(), Is.StringContaining("Value: 5.1"));
-            Assert.That(t.ToString(), Is.StringContaining("Timestamp: 2012-09-11 11:11"));
-            Assert.That(t.ToString(), Is.StringContaining("Dimensions: dim1: v1, dim2: v2"));
-            Assert.That(t.ToString(), Is.StringContaining("A tick!"));
-        }
-
-        [Test]
-        public void AppenderMetricDatum_StringUnitk()
-        {
-            var t = new StringWriter();
-
-            new MetricDatumRenderer().RenderObject(null, new Model.MetricDatum("A tick!")
-                                        .WithMetricName("TheMetricName")
-                                        .WithDimensions(new[]{new Dimension
-                                                                   {
-                                                                       Name = "dim1", Value = "v1"
-                                                                   },
-                                                                new Dimension
-                                                                    {
-                                                                        Name = "dim2", Value = "v2"
-                                                                    } })
-                                         .WithUnit("Seconds")
-                                         .WithValue(5.1)
-                                         .WithTimestamp(DateTime.Parse("2012-09-11 11:11")),
-                                     t);
-
-            Assert.That(t.ToString(), Is.StringContaining("Unit: Seconds"));
-        }
-
-
-        [Test]
-        public void AppenderMetricDatum_WithDateTimeOffset()
-        {
-            var t = new StringWriter();
-
-            new MetricDatumRenderer().RenderObject(null, new Model.MetricDatum()
-                                         .WithTimestamp(DateTimeOffset.Parse("2012-09-11 11:11")),
-                                     t);
-
-            Assert.That(t.ToString(), Is.StringContaining("Timestamp: 2012-09-11 09:11"));
         }
 
         [Test]

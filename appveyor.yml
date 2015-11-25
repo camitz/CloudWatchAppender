@@ -3,6 +3,8 @@
 version: 1.0.{build}
 skip_tags: false
 configuration: Release
+cache:
+- packages -> **\packages.config
 init:
 - ps: >-
     $parsedReleaseBuildVersion = $env:APPVEYOR_REPO_TAG_NAME -Match "(\d+.\d+.\d+(.\d+)?)"

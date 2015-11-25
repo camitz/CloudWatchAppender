@@ -63,7 +63,7 @@ nuget:
   account_feed: true
   project_feed: true
 before_build:
-- nuget restore CloudWatchAppender\CloudWatchAppender.sln
+- nuget restore CloudWatchAppender\CloudWatchAppender.sln -verbosity detailed
 after_build:
 - ps: >-
     #Create Folder Structure

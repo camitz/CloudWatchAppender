@@ -39,7 +39,7 @@ deploy:
     IsGithubRelease: true
 - provider: NuGet
   api_key:
-    secure: xrh/cFtPH7iBByeeTRQqRbnf88YMmCsZIjdzut9dW4sJrfhWt6lphG7KcqpDwrleAT82B9b6w86XS6j78Csmjvl0mz41xJ374ncCs3vnsxA=
+    secure: nJSdlo2bRHEauK9vfPjJvhao5uLnsuaDIdebgN6kmNVW0jGQBxwxhTUJPg0/nxwg
   artifact: /.*\.nupkg/
   on:
     branch: master

@@ -6,9 +6,9 @@ configuration: Release
 cache:
 - packages -> **\packages.config
 init:
-- ps: .\BuildScripts\init.ps1
+- ps: '.\BuildScripts\init.ps1'
 install:
-- ps: .\BuildScripts\install.ps1
+- ps: '.\BuildScripts\install.ps1'
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -21,7 +21,7 @@ nuget:
 before_build:
 - nuget restore CloudWatchAppender\CloudWatchAppender.sln -verbosity detailed
 after_build:
-- ps: .\BuildScripts\after_build.ps1
+- ps: '.\BuildScripts\after_build.ps1'
 build:
   project: CloudWatchAppender\CloudWatchAppender.sln
   publish_nuget: true

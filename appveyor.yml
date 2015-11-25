@@ -12,7 +12,6 @@ init:
       $env:IsGithubRelease = $TRUE
       Write-Host "Build Version from Parsed Release Build Version: " $env:BuildVersion
     else {
-    }
       $env:BuildVersion = $env:appveyor_build_version
       Write-Host "Build Version from App Veyor Version: " $env:BuildVersion
       $env:IsGithubRelease = ""

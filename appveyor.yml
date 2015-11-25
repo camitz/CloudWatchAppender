@@ -10,8 +10,8 @@ init:
     If($env:appveyor_repo_tag -AND $parsedReleaseBuildVersion) {
       $env:BuildVersion = $matches[0]
       $env:IsGithubRelease = $TRUE
-    }
     else {
+    }
       $env:BuildVersion = $env:appveyor_build_version
       $env:IsGithubRelease = ""
     }
@@ -43,7 +43,8 @@ install:
                 [xml]$nuspec = Get-Content $nuspecPath
 
                 $nuspec.package.metadata.releaseNotes = $release.Body
-                $nuspec.package.metadata.version = $(BuildVersion)
+                $nuspec.package.metadata.version = $env:BuildVersion
+                echo 
                 $nuspec.Save( $nuspecPath )
             }
         }
@@ -65,24 +66,17 @@ before_build:
 - nuget restore CloudWatchAppender\CloudWatchAppender.sln
 after_build:
 - ps: >-
-    try
-    {
-      #Create Folder Structure
-      New-Item -Force -ItemType directory -Path build\lib\net35
-      New-Item -Force -ItemType directory -Path build\lib\net45
-
-      #Copy Files into folders
-      Copy-Item -Force "CloudWatchAppender3.5\bin\Release\CloudWatchAppender.dll" "build\lib\net35"
-      Copy-Item -Force "CloudWatchAppender3.5\bin\Release\CloudWatchAppender.pdb" "build\lib\net35"
-      Copy-Item -Force "CloudWatchAppender\bin\Release\CloudWatchAppender.pdb" "build\lib\net45"
-      Copy-Item -Force "CloudWatchAppender\bin\Release\CloudWatchAppender.pdb" "build\lib\net45"
-      $nuspecPath = (Get-ChildItem -Filter *.nuspec -Recurse )[0].FullName
-      nuget pack $nuspecPath
-    }
-    catch 
-    {
-        Write-Host $_.Exception.GetType().FullName, $_.Exception.Message
-    }
+    #Create Folder Structure
+    New-Item -Force -ItemType directory -Path build\lib\net35
+    New-Item -Force -ItemType directory -Path build\lib\net45
+    
+    #Copy Files into folders
+    Copy-Item -Force "CloudWatchAppender3.5\bin\Release\CloudWatchAppender.dll" "build\lib\net35"
+    Copy-Item -Force "CloudWatchAppender3.5\bin\Release\CloudWatchAppender.pdb" "build\lib\net35"
+    Copy-Item -Force "CloudWatchAppender\bin\Release\CloudWatchAppender.pdb" "build\lib\net45"
+    Copy-Item -Force "CloudWatchAppender\bin\Release\CloudWatchAppender.pdb" "build\lib\net45"
+    $nuspecPath = (Get-ChildItem -Filter *.nuspec -Recurse )[0].FullName
+    nuget pack $nuspecPath
 build:
   project: CloudWatchAppender\CloudWatchAppender.sln
   publish_nuget: true

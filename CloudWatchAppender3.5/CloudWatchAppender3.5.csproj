@@ -104,6 +104,9 @@
     <Compile Include="..\CloudWatchAppender\PatternConverter\NamedPatternConverter.cs">
       <Link>PatternConverter\NamedPatternConverter.cs</Link>
     </Compile>
+    <Compile Include="..\CloudWatchAppender\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="..\CloudWatchAppender\Services\CloudWatchClientWrapper.cs">
       <Link>Services\CloudWatchClientWrapper.cs</Link>
     </Compile>
@@ -149,7 +152,6 @@
     <Compile Include="..\CloudWatchAppender\TypeConverters\StandardUnitConverter.cs">
       <Link>TypeConverters\StandardUnitConverter.cs</Link>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -152,11 +152,8 @@ namespace CloudWatchAppender.Services
                                               if (!_cachedValues.ContainsKey(key))
                                                   return "error_" + key;
 
-#if NET35
                                               Debug.WriteLine(String.Format("Got {0}: {1}", key, _cachedValues[key]));
-#else
-                                              Debug.WriteLine("Got {0}: {1}", key, _cachedValues[key]);
-#endif
+    
                                               _pendingTasks.Remove(key);
                                               return _cachedValues[key];
                                           })
@@ -165,11 +162,8 @@ namespace CloudWatchAppender.Services
 
                 }
 
-#if NET35
                 Debug.WriteLine(String.Format("Returning cached {0}: {1}", key, _cachedValues[key]));
-#else
-                Debug.WriteLine("Returning cached {0}: {1}", key, _cachedValues[key]);
-#endif
+     
                 return _cachedValues[key];
             }
             catch (WebException)

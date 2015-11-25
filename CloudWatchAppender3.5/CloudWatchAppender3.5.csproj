@@ -37,9 +37,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK, Version=2.3.10.0, Culture=neutral, PublicKeyToken=9f476d3089b52be3, processorArchitecture=MSIL">
+    <Reference Include="AWSSDK, Version=2.3.15.0, Culture=neutral, PublicKeyToken=9f476d3089b52be3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CloudWatchAppender\packages\AWSSDK.2.3.10.0\lib\net35\AWSSDK.dll</HintPath>
+      <HintPath>..\CloudWatchAppender\packages\AWSSDK.2.3.15.0\lib\net35\AWSSDK.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\CloudWatchAppender\packages\log4net.2.0.3\lib\net35-full\log4net.dll</HintPath>

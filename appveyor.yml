@@ -6,6 +6,9 @@ configuration: Release
 cache:
 - packages -> **\packages.config
 init:
+<<<<<<< HEAD
+- ps: .\BuildScripts\init.ps1
+=======
 - ps: >-
     $parsedReleaseBuildVersion = $env:APPVEYOR_REPO_TAG_NAME -Match "(\d+.\d+.\d+(.\d+)?)"
     
@@ -21,39 +24,9 @@ init:
     Write-Host "Build Version: " $env:BuildVersion
     
     Write-Host "appveyor_build_version Variable: " $env:appveyor_build_version
+>>>>>>> 8d8cedd183dd815e4e68f8b271af1c00eeb66e2a
 install:
-- ps: >-
-    try
-    {
-        if($env:IsGithubRelease)
-        {
-            $origin = git config --get remote.origin.url
-            if ($origin -like "https://github.com/*.git")
-            {
-                $startToTrim = "https://github.com/"
-                $endToTrim = ".git"
-
-                $releaseUrl = $origin.Substring($startToTrim.Length, $origin.Length - $startToTrim.Length - $endToTrim.Length)
-                
-                $releaseUrl = "https://api.github.com/repos/" + $releaseUrl + "/releases/tags/" + $env:APPVEYOR_REPO_TAG_NAME
-
-                $resp = invoke-webrequest $releaseUrl
-                $release = $resp.Content | ConvertFrom-Json
-
-                $nuspecPath = (Get-ChildItem -Filter *.nuspec -Recurse )[0].FullName
-                [xml]$nuspec = Get-Content $nuspecPath
-
-                $nuspec.package.metadata.releaseNotes = $release.Body
-                $nuspec.package.metadata.version = $env:BuildVersion
-                echo 
-                $nuspec.Save( $nuspecPath )
-            }
-        }
-    }
-    catch 
-    {
-        Write-Host $_.Exception.GetType().FullName, $_.Exception.Message
-    }
+- ps: .\BuildScripts\install.ps1
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -66,25 +39,18 @@ nuget:
 before_build:
 - nuget restore CloudWatchAppender\CloudWatchAppender.sln -verbosity detailed
 after_build:
-- ps: >-
-    #Create Folder Structure
-    New-Item -Force -ItemType directory -Path build\lib\net35
-    New-Item -Force -ItemType directory -Path build\lib\net45
-    
-    #Copy Files into folders
-    Copy-Item -Force "CloudWatchAppender3.5\bin\Release\CloudWatchAppender.dll" "build\lib\net35"
-    Copy-Item -Force "CloudWatchAppender3.5\bin\Release\CloudWatchAppender.pdb" "build\lib\net35"
-    Copy-Item -Force "CloudWatchAppender\bin\Release\CloudWatchAppender.pdb" "build\lib\net45"
-    Copy-Item -Force "CloudWatchAppender\bin\Release\CloudWatchAppender.pdb" "build\lib\net45"
-    $nuspecPath = (Get-ChildItem -Filter *.nuspec -Recurse )[0].FullName
-    nuget pack $nuspecPath
+- ps: .\BuildScripts\after_build.ps1
 build:
   project: CloudWatchAppender\CloudWatchAppender.sln
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
 artifacts:
+<<<<<<< HEAD
+- path: CloudWatchAppender.$(BuildVersion).nupkg
+=======
 - path: /.*\.nupkg/
+>>>>>>> 8d8cedd183dd815e4e68f8b271af1c00eeb66e2a
   name: CloudWatchAppender
 deploy:
 - provider: GitHub

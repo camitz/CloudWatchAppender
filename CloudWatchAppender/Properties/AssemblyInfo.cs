@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("CloudWatchAppender")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A CloudWatch appender for log4net. You can configure log4net to direct some of you log events to CloudWatch, making them show up as data points on a graph.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Camitz")]
 [assembly: AssemblyProduct("CloudWatchAppender")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,10 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
+<<<<<<< HEAD
+[assembly: AssemblyVersion("4.4.1")]
+[assembly: AssemblyFileVersion("4.4.1")]
+=======
 [assembly: AssemblyVersion("4.4")]
 [assembly: AssemblyFileVersion("4.4")]
+>>>>>>> master

@@ -1,3 +1,6 @@
+CloudWatchAppender [![Build status](https://ci.appveyor.com/api/projects/status/vn83giaej7r9htfr?svg=true)](https://ci.appveyor.com/project/camitz/cloudwatchappender) [![NuGet version](https://badge.fury.io/nu/CloudWatchAppender.svg)](https://www.nuget.org/packages/CloudWatchAppender/)
+====================
+
 A CloudWatch appender for [log4net](http://logging.apache.org/log4net/ "log4net"). You can configure log4net to direct some of you log events to [CloudWatch](http://aws.amazon.com/CloudWatch/ "CloudWatch"), making them show up as data points on a graph.
 
 All posts are made asynchronously to CloudWatch via the [AWSSDK](http://aws.amazon.com/sdkfornet/) library for .NET.

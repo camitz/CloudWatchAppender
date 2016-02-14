@@ -5,10 +5,9 @@ using System.Text.RegularExpressions;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Model;
-using CloudWatchAppender.Parsers;
 using MetricDatum = CloudWatchAppender.Model.MetricDatum;
 
-namespace CloudWatchAppender.Services
+namespace CloudWatchAppender.Parsers
 {
     public class MetricDatumEventMessageParser : EventMessageParserBase
     {

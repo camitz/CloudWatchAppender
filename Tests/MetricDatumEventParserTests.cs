@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using CloudWatchAppender.Parsers;
 using CloudWatchAppender.Services;
 using NUnit.Framework;
 

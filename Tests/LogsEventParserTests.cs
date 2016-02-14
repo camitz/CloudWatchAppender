@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Amazon.CloudWatch;
+using CloudWatchAppender.Parsers;
 using CloudWatchAppender.Services;
 using NUnit.Framework;
 

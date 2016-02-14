@@ -40,6 +40,8 @@ namespace BufferedLogs
                         Timestamp = DateTime.Now
                     });
 
+                log.Info("Message: sample text for logging");
+
                 Thread.Sleep(10);
             }
 

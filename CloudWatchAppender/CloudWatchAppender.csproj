@@ -83,6 +83,9 @@
     <Compile Include="Model\LogDatumRenderer.cs" />
     <Compile Include="Model\MetricDatum.cs" />
     <Compile Include="Model\MetricDatumRenderer.cs" />
+    <Compile Include="Parsers\EventMessageParserBase.cs" />
+    <Compile Include="Parsers\LogsEventMessageParser.cs" />
+    <Compile Include="Parsers\MetricDatumEventMessageParser.cs" />
     <Compile Include="PatternConverter\InstanceIDPatternConverter.cs" />
     <Compile Include="PatternConverter\InstanceMetaDataPatternConverter.cs" />
     <Compile Include="PatternConverter\LoggerPatternConverter.cs" />
@@ -91,9 +94,6 @@
     <Compile Include="Services\CloudWatchClientWrapper.cs" />
     <Compile Include="Services\CloudWatchClientWrapperBase.cs" />
     <Compile Include="Services\CloudWatchLogsClientWrapper.cs" />
-    <Compile Include="Services\EventMessageParserBase.cs" />
-    <Compile Include="Services\LogsEventMessageParser.cs" />
-    <Compile Include="Services\MetricDatumEventMessageParser.cs" />
     <Compile Include="Services\LogEventProcessor.cs" />
     <Compile Include="Services\MetricDatumEventProcessor.cs" />
     <Compile Include="Services\EventRateLimiter.cs" />

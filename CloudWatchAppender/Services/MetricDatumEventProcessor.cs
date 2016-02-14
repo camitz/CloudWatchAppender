@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using CloudWatchAppender.Parsers;
 using log4net.Core;
 using log4net.Util;
 

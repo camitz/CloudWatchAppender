@@ -5,9 +5,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Model;
-using CloudWatchAppender.Parsers;
 
-namespace CloudWatchAppender.Services
+namespace CloudWatchAppender.Parsers
 {
     public class LogsEventMessageParser : EventMessageParserBase
     {

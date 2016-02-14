@@ -161,7 +161,7 @@ namespace CloudWatchAppender.Parsers
             _currentDatum = null;
         }
 
-        public override IEnumerable<LogDatum> GetParsedData()
+        protected override IEnumerable<LogDatum> GetParsedData()
         {
             if (_currentDatum.GroupName.Contains("instance"))
             {

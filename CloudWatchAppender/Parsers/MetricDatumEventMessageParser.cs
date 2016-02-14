@@ -258,7 +258,7 @@ namespace CloudWatchAppender.Parsers
             _currentDatum = null;
         }
 
-        public override IEnumerable<PutMetricDataRequest> GetParsedData()
+        protected override IEnumerable<PutMetricDataRequest> GetParsedData()
         {
             return _data.Select(x => x.Request);
         }

@@ -75,9 +75,7 @@ namespace CloudWatchAppender.Services
             if (!string.IsNullOrEmpty(_value) && _configOverrides)
                 _metricDatumEventMessageParser.DefaultValue = Double.Parse(_value, CultureInfo.InvariantCulture);
 
-            _metricDatumEventMessageParser.Parse(renderedString);
-
-            return _metricDatumEventMessageParser.GetParsedData();
+            return _metricDatumEventMessageParser.Parse(renderedString);
         }
 
         private void ParseProperties(PatternParser patternParser)

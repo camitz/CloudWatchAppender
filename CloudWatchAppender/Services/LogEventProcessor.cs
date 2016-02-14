@@ -54,9 +54,7 @@ namespace CloudWatchAppender.Services
                                       DefaultTimestamp = _dateTimeOffset??loggingEvent.TimeStamp
                                   };
 
-            _logsEventMessageParser.Parse(renderedString);
-
-            return _logsEventMessageParser.GetParsedData();
+            return _logsEventMessageParser.Parse(renderedString);
         }
 
         private void ParseProperties(PatternParser patternParser)

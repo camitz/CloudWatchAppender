@@ -154,7 +154,7 @@ namespace CloudWatchAppender.Parsers
         protected virtual void LocalParse(ref List<Match>.Enumerator tokens, string sNum) { }
 
 
-        public abstract IEnumerable<TDatum> GetParsedData();
+        protected abstract IEnumerable<TDatum> GetParsedData();
         public IEnumerable<TDatum> Parse(string renderedMessage)
         {
             Init();

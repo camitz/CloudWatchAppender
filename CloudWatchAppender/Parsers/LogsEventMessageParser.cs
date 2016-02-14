@@ -8,7 +8,7 @@ using CloudWatchAppender.Model;
 
 namespace CloudWatchAppender.Parsers
 {
-    public class LogsEventMessageParser : EventMessageParserBase
+    public class LogsEventMessageParser : EventMessageParserBase<LogDatum>
     {
         private Dictionary<string, Dimension> _dimensions;
         private LogDatum _currentDatum;
@@ -86,8 +86,8 @@ namespace CloudWatchAppender.Parsers
 
 
 
-        public LogsEventMessageParser(string renderedMessage, bool useOverrides = true)
-            : base(renderedMessage, useOverrides)
+        public LogsEventMessageParser(bool useOverrides = true)
+            : base(useOverrides)
         {
             if (Assembly.GetEntryAssembly() != null)
                 _assemblyName = Assembly.GetEntryAssembly().GetName().Name;
@@ -161,7 +161,7 @@ namespace CloudWatchAppender.Parsers
             _currentDatum = null;
         }
 
-        public IEnumerable<LogDatum> GetParsedData()
+        public override IEnumerable<LogDatum> GetParsedData()
         {
             if (_currentDatum.GroupName.Contains("instance"))
             {

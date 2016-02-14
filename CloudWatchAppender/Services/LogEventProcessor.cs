@@ -46,7 +46,7 @@ namespace CloudWatchAppender.Services
                 _hasParsedProperties = true;
             }
 
-            _logsEventMessageParser = new LogsEventMessageParser(renderedString, _configOverrides)
+            _logsEventMessageParser = new LogsEventMessageParser(useOverrides: _configOverrides)
                                   {
                                       DefaultStreamName = _parsedStreamName,
                                       DefaultGroupName = _parsedGroupName,
@@ -54,7 +54,7 @@ namespace CloudWatchAppender.Services
                                       DefaultTimestamp = _dateTimeOffset??loggingEvent.TimeStamp
                                   };
 
-            _logsEventMessageParser.Parse();
+            _logsEventMessageParser.Parse(renderedString);
 
             return _logsEventMessageParser.GetParsedData();
         }

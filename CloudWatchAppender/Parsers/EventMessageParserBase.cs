@@ -8,15 +8,13 @@ using CloudWatchAppender.Model;
 
 namespace CloudWatchAppender.Parsers
 {
-    public abstract class EventMessageParserBase
+    public abstract class EventMessageParserBase<TDatum>
     {
         protected readonly bool DefaultsOverridePattern;
-        private readonly string _renderedMessage;
         private List<AppenderValue> _values;
 
-        protected EventMessageParserBase(string renderedMessage, bool useOverrides)
+        protected EventMessageParserBase(bool useOverrides)
         {
-            _renderedMessage = renderedMessage;
             DefaultsOverridePattern = useOverrides;
         }
 
@@ -41,7 +39,7 @@ namespace CloudWatchAppender.Parsers
                     }
 
                     if (startRest.HasValue)
-                        rest += _renderedMessage.Substring(startRest.Value, tokens.Current.Index - startRest.Value);
+                        rest += renderedMessage.Substring(startRest.Value, tokens.Current.Index - startRest.Value);
 
                     startRest = null;
 
@@ -117,7 +115,7 @@ namespace CloudWatchAppender.Parsers
             }
 
             if (startRest.HasValue)
-                rest += _renderedMessage.Substring(startRest.Value, _renderedMessage.Length - startRest.Value);
+                rest += renderedMessage.Substring(startRest.Value, renderedMessage.Length - startRest.Value);
 
             _values.Add(new AppenderValue { Name = "rest", sValue = rest.Trim() });
         }
@@ -156,20 +154,21 @@ namespace CloudWatchAppender.Parsers
         protected virtual void LocalParse(ref List<Match>.Enumerator tokens, string sNum) { }
 
 
-        public void Parse()
+        public abstract IEnumerable<TDatum> GetParsedData();
+        public IEnumerable<TDatum> Parse(string renderedMessage)
         {
             Init();
-            if (!string.IsNullOrEmpty(_renderedMessage))
+            if (!string.IsNullOrEmpty(renderedMessage))
             {
 
                 var tokens =
-                    Regex.Matches(_renderedMessage,
+                    Regex.Matches(renderedMessage,
                         @"(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|\((?<word>[\w /]+)\)|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
                         .Cast<Match>()
                         .ToList()
                         .GetEnumerator();
 
-                ParseTokens(ref tokens, _renderedMessage);
+                ParseTokens(ref tokens, renderedMessage);
             }
 
             NewDatum();
@@ -191,6 +190,8 @@ namespace CloudWatchAppender.Parsers
             }
 
             SetDefaults();
+
+            return GetParsedData();
         }
 
         protected virtual void Init()

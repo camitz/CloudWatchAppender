@@ -63,7 +63,7 @@ namespace CloudWatchAppender.Services
                 _hasParsedProperties = true;
             }
 
-            _metricDatumEventMessageParser = new MetricDatumEventMessageParser(renderedString, _configOverrides)
+            _metricDatumEventMessageParser = new MetricDatumEventMessageParser(_configOverrides)
                          {
                              DefaultMetricName = _parsedMetricName,
                              DefaultNameSpace = _parsedNamespace,
@@ -75,7 +75,7 @@ namespace CloudWatchAppender.Services
             if (!string.IsNullOrEmpty(_value) && _configOverrides)
                 _metricDatumEventMessageParser.DefaultValue = Double.Parse(_value, CultureInfo.InvariantCulture);
 
-            _metricDatumEventMessageParser.Parse();
+            _metricDatumEventMessageParser.Parse(renderedString);
 
             return _metricDatumEventMessageParser.GetParsedData();
         }

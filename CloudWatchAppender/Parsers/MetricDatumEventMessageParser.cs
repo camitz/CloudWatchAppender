@@ -9,7 +9,7 @@ using MetricDatum = CloudWatchAppender.Model.MetricDatum;
 
 namespace CloudWatchAppender.Parsers
 {
-    public class MetricDatumEventMessageParser : EventMessageParserBase
+    public class MetricDatumEventMessageParser : EventMessageParserBase<PutMetricDataRequest>
     {
         private readonly bool _defaultsOverridePattern;
         private Dictionary<string, Dimension> _dimensions;
@@ -180,8 +180,8 @@ namespace CloudWatchAppender.Parsers
 
 
 
-        public MetricDatumEventMessageParser(string renderedMessage, bool useOverrides = true)
-            : base(renderedMessage, useOverrides)
+        public MetricDatumEventMessageParser(bool useOverrides = true)
+            : base(useOverrides)
         {
             _defaultsOverridePattern = useOverrides;
         }
@@ -258,7 +258,7 @@ namespace CloudWatchAppender.Parsers
             _currentDatum = null;
         }
 
-        public IEnumerable<PutMetricDataRequest> GetParsedData()
+        public override IEnumerable<PutMetricDataRequest> GetParsedData()
         {
             return _data.Select(x => x.Request);
         }

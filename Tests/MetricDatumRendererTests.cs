@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
@@ -43,7 +44,7 @@ namespace CloudWatchAppender.Tests
             Assert.That(t.ToString(), Is.StringContaining("MetricName: TheMetricName"));
             Assert.That(t.ToString(), Is.StringContaining("Unit: Seconds"));
             Assert.That(t.ToString(), Is.StringContaining("Value: 5.1"));
-            Assert.That(t.ToString(), Is.StringContaining("Timestamp: 9/11/2012 11:11"));
+            Assert.That(t.ToString(), Is.StringContaining("Timestamp: " + DateTime.Parse("2012-09-11 11:11").ToString(CultureInfo.CurrentCulture)));
             Assert.That(t.ToString(), Is.StringContaining("Dimensions: dim1: v1, dim2: v2"));
         }
 

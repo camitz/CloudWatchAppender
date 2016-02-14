@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Amazon.CloudWatch;
 using CloudWatchAppender.Parsers;
-using CloudWatchAppender.Services;
 using NUnit.Framework;
 
 namespace CloudWatchAppender.Tests
@@ -19,17 +18,20 @@ namespace CloudWatchAppender.Tests
         public void SingleValueAndUnit()
         {
             var parser = new MetricDatumEventMessageParser("A tick! Value: 3.0 Kilobytes/Second");
-            parser.Parse();
-
-            var passes = 0;
-            foreach (var r in parser.GetParsedData())
+            for (int i = 0; i < 2; i++)
             {
-                Assert.AreEqual(StandardUnit.KilobytesSecond, r.MetricData[0].Unit);
-                Assert.AreEqual(3.0, r.MetricData[0].Value);
-                passes++;
-            }
+                parser.Parse();
 
-            Assert.AreEqual(1, passes);
+                var passes = 0;
+                foreach (var r in parser.GetParsedData())
+                {
+                    Assert.AreEqual(StandardUnit.KilobytesSecond, r.MetricData[0].Unit);
+                    Assert.AreEqual(3.0, r.MetricData[0].Value);
+                    passes++;
+                }
+
+                Assert.AreEqual(1, passes);
+            }
         }
 
         [Test]
@@ -40,17 +42,21 @@ namespace CloudWatchAppender.Tests
                              DefaultValue = 4.0,
                              DefaultUnit = "Megabytes/Second"
                          };
-            parser.Parse();
 
-            var passes = 0;
-            foreach (var r in parser.GetParsedData())
+            for (int i = 0; i < 2; i++)
             {
-                Assert.AreEqual(StandardUnit.MegabytesSecond, r.MetricData[0].Unit);
-                Assert.AreEqual(4.0, r.MetricData[0].Value);
-                passes++;
-            }
+                parser.Parse();
 
-            Assert.AreEqual(1, passes);
+                var passes = 0;
+                foreach (var r in parser.GetParsedData())
+                {
+                    Assert.AreEqual(StandardUnit.MegabytesSecond, r.MetricData[0].Unit);
+                    Assert.AreEqual(4.0, r.MetricData[0].Value);
+                    passes++;
+                }
+
+                Assert.AreEqual(1, passes);
+            }
         }
 
 
@@ -58,89 +64,108 @@ namespace CloudWatchAppender.Tests
         public void NothingRecognizableShouldProduceCount1()
         {
             var parser = new LogsEventMessageParser("A tick");
-            parser.Parse();
 
-            var passes = 0;
-            foreach (var r in parser.GetParsedData())
+            for (int i = 0; i < 2; i++)
             {
-                Assert.AreEqual("unspecified", r.StreamName);
-                Assert.AreEqual("A tick", r.Message);
-                Assert.AreEqual(null, r.Timestamp);
-                Assert.AreEqual("unspecified", r.GroupName);
+                parser.Parse();
 
-                passes++;
+                var passes = 0;
+                foreach (var r in parser.GetParsedData())
+                {
+                    Assert.AreEqual("unspecified", r.StreamName);
+                    Assert.AreEqual("A tick", r.Message);
+                    Assert.AreEqual(null, r.Timestamp);
+                    Assert.AreEqual("unspecified", r.GroupName);
+
+                    passes++;
+                }
+                Assert.AreEqual(1, passes);
             }
-            Assert.AreEqual(1, passes);
         }
 
         [Test]
         public void TrailingNames()
         {
             var parser = new LogsEventMessageParser("A tick! StreamName: NewName GroupName: GName");
-            parser.Parse();
+            for (int i = 0; i < 2; i++)
+            {
+                parser.Parse();
 
-            var data = parser.GetParsedData();
+                var data = parser.GetParsedData();
 
-            Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
-            Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
-            Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
+                Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+            }
         }
 
         [Test]
         public void LeadingNames()
         {
             var parser = new LogsEventMessageParser("StreamName: NewName GroupName: GName A tick!");
-            parser.Parse();
+            for (int i = 0; i < 2; i++)
+            {
+                parser.Parse();
 
-            var data = parser.GetParsedData();
+                var data = parser.GetParsedData();
 
-            Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
-            Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
-            Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
+                Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+            }
         }
-        
+
         [Test]
         public void SurroundingingNames()
         {
             var parser = new LogsEventMessageParser("StreamName: NewName A tick! GroupName: GName");
-            parser.Parse();
+            for (int i = 0; i < 2; i++)
+            {
+                parser.Parse();
 
-            var data = parser.GetParsedData();
+                var data = parser.GetParsedData();
 
-            Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
-            Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
-            Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
+                Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+            }
         }
-        
+
         [Test]
         public void SurroundedNames()
         {
             var parser = new LogsEventMessageParser("Beginning tick! StreamName: NewName Middle tick! GroupName: GName End tick!");
-            parser.Parse();
+            for (int i = 0; i < 2; i++)
+            {
+                parser.Parse();
 
-            var data = parser.GetParsedData();
+                var data = parser.GetParsedData();
 
-            Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
-            Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
-            Assert.That(data.Select(x => x.Message), Has.All.EqualTo("Beginning tick! Middle tick! End tick!"));
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
+                Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("Beginning tick! Middle tick! End tick!"));
+            }
         }
 
         [Test]
         public void ParenthesizedNames()
         {
             var parser = new LogsEventMessageParser("StreamName: (New Name) A tick! GroupName: GName");
-            parser.Parse();
+            for (int i = 0; i < 2; i++)
+            {
+                parser.Parse();
 
-            var data = parser.GetParsedData();
+                var data = parser.GetParsedData();
 
-            Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("New Name"));
-            Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
-            Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("New Name"));
+                Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+            }
         }
 
 
@@ -148,25 +173,31 @@ namespace CloudWatchAppender.Tests
         public void Timestamp()
         {
             var parser = new LogsEventMessageParser("A tick! Timestamp: 2012-09-06 17:55:55 +02:00");
-            parser.Parse();
-            var data = parser.GetParsedData();
+            for (int i = 0; i < 2; i++)
+            {
+                parser.Parse();
+                var data = parser.GetParsedData();
 
-            Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 17:55:55")));
-            Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
-
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 17:55:55")));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+            }
 
             parser = new LogsEventMessageParser("A tick! Timestamp: 2012-09-06 15:55:55");
-            parser.Parse();
-            data = parser.GetParsedData();
+            for (int i = 0; i < 2; i++)
+            {
+                parser.Parse();
+                var data = parser.GetParsedData();
 
-            Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 15:55:55")));
-            Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
-
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 15:55:55")));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+            }
         }
+
+
         [Test]
-        [Ignore("Ignore until App Veyor deploy to nuget is working")]
+        //[Ignore("Ignore until App Veyor deploy to nuget is working")]
         public void Timestamp_Override()
         {
             var parser = new LogsEventMessageParser("A tick! Timestamp: 2012-09-06 17:55:55 +02:00")
@@ -174,12 +205,15 @@ namespace CloudWatchAppender.Tests
                              DefaultTimestamp = DateTime.Parse("2012-09-06 12:55:55 +02:00")
                          };
 
-            parser.Parse();
-            var data = parser.GetParsedData();
+            for (int i = 0; i < 2; i++)
+            {
+                parser.Parse();
+                var data = parser.GetParsedData();
 
-            Assert.That(data.Count(), Is.EqualTo(1));
-            Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 12:55:55")));
-            Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 12:55:55")));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+            }
         }
     }
 }

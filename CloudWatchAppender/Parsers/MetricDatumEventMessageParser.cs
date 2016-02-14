@@ -12,8 +12,8 @@ namespace CloudWatchAppender.Parsers
     public class MetricDatumEventMessageParser : EventMessageParserBase
     {
         private readonly bool _defaultsOverridePattern;
-        private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
-        private readonly List<MetricDatum> _data = new List<MetricDatum>();
+        private Dictionary<string, Dimension> _dimensions;
+        private List<MetricDatum> _data;
         private MetricDatum _currentDatum;
 
         public string DefaultMetricName { get; set; }
@@ -177,10 +177,11 @@ namespace CloudWatchAppender.Parsers
             _data.Add(_currentDatum);
         }
 
-    
 
 
-        public MetricDatumEventMessageParser(string renderedMessage, bool useOverrides = true):base(renderedMessage,useOverrides)
+
+        public MetricDatumEventMessageParser(string renderedMessage, bool useOverrides = true)
+            : base(renderedMessage, useOverrides)
         {
             _defaultsOverridePattern = useOverrides;
         }
@@ -194,7 +195,7 @@ namespace CloudWatchAppender.Parsers
             if (!tokens.MoveNext())
                 return;
 
-            string name,value;
+            string name, value;
             if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
             {
                 tokens.MoveNext();
@@ -204,7 +205,7 @@ namespace CloudWatchAppender.Parsers
                 {
                     if (
                         string.IsNullOrEmpty(
-                            name = tokens.Current.Groups["name"].Value.Split(new[] {':'})[0]))
+                            name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
                     {
                         tokens.MoveNext();
                         continue;
@@ -220,7 +221,7 @@ namespace CloudWatchAppender.Parsers
                         continue;
                     }
 
-                    _dimensions[name] = new Dimension {Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum};
+                    _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
                 }
             }
             else
@@ -230,7 +231,7 @@ namespace CloudWatchAppender.Parsers
 
                 if (
                     string.IsNullOrEmpty(
-                        name = tokens.Current.Groups["name"].Value.Split(new[] {':'})[0]))
+                        name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
                 {
                     tokens.MoveNext();
                     return;
@@ -245,8 +246,16 @@ namespace CloudWatchAppender.Parsers
                     return;
                 }
 
-                _dimensions[name] = new Dimension {Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum};
+                _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
             }
+        }
+
+        protected override void Init()
+        {
+            base.Init();
+            _dimensions = new Dictionary<string, Dimension>();
+            _data = new List<MetricDatum>();
+            _currentDatum = null;
         }
 
         public IEnumerable<PutMetricDataRequest> GetParsedData()

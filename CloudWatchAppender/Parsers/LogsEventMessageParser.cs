@@ -10,7 +10,7 @@ namespace CloudWatchAppender.Parsers
 {
     public class LogsEventMessageParser : EventMessageParserBase
     {
-        private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
+        private Dictionary<string, Dimension> _dimensions;
         private LogDatum _currentDatum;
         private static string _assemblyName;
 
@@ -152,6 +152,13 @@ namespace CloudWatchAppender.Parsers
 
                 _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
             }
+        }
+
+        protected override void Init()
+        {
+            base.Init();
+            _dimensions=new Dictionary<string, Dimension>();
+            _currentDatum = null;
         }
 
         public IEnumerable<LogDatum> GetParsedData()

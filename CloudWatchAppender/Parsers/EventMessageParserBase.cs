@@ -12,7 +12,7 @@ namespace CloudWatchAppender.Parsers
     {
         protected readonly bool DefaultsOverridePattern;
         private readonly string _renderedMessage;
-        private readonly List<AppenderValue> _values = new List<AppenderValue>();
+        private List<AppenderValue> _values;
 
         protected EventMessageParserBase(string renderedMessage, bool useOverrides)
         {
@@ -158,6 +158,7 @@ namespace CloudWatchAppender.Parsers
 
         public void Parse()
         {
+            Init();
             if (!string.IsNullOrEmpty(_renderedMessage))
             {
 
@@ -190,6 +191,11 @@ namespace CloudWatchAppender.Parsers
             }
 
             SetDefaults();
+        }
+
+        protected virtual void Init()
+        {
+            _values = new List<AppenderValue>();
         }
     }
 

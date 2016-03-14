@@ -8,6 +8,7 @@ using Amazon.Runtime;
 using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
+using CloudWatchAppender.Parsers;
 using CloudWatchAppender.Services;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
@@ -22,7 +23,6 @@ namespace CloudWatchAppender
     public class BufferingAggregatingCloudWatchAppender : BufferingCloudWatchAppenderBase<PutMetricDataRequest>, ICloudWatchAppender
     {
         private CloudWatchClientWrapper _client;
-        private readonly static Type _declaringType = typeof(BufferingAggregatingCloudWatchAppender);
         private StandardUnit _standardUnit;
         private string _value;
         private string _metricName;
@@ -30,7 +30,7 @@ namespace CloudWatchAppender
         private bool _configOverrides = true;
         private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
 
-
+        
         private AmazonCloudWatchConfig _clientConfig;
         private IEventProcessor<PutMetricDataRequest> _eventProcessor;
 
@@ -116,6 +116,8 @@ namespace CloudWatchAppender
 
             hierarchy.AddRenderer(typeof(MetricDatum), new MetricDatumRenderer());
 
+            EventMessageParser = EventMessageParser ?? new MetricDatumEventMessageParser(ConfigOverrides);
+
             try
             {
                 _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret, _clientConfig);
@@ -124,7 +126,8 @@ namespace CloudWatchAppender
             {
             }
 
-            _eventProcessor = new MetricDatumEventProcessor(_configOverrides, _standardUnit, _ns, _metricName, Timestamp, _value, _dimensions);
+            _eventProcessor = new MetricDatumEventProcessor(_configOverrides, _standardUnit, _ns, _metricName, Timestamp, _value, _dimensions)
+                              {EventMessageParser = EventMessageParser};
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");

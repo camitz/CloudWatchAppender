@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BufferingAssemblerTest.cs" />
+    <Compile Include="DummyEventParserTests.cs" />
     <Compile Include="EventRateLimiterTests.cs" />
     <Compile Include="MetricDatumEventParserTests.cs" />
     <Compile Include="LogsEventParserTests.cs" />

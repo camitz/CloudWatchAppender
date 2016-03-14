@@ -8,7 +8,23 @@ using CloudWatchAppender.Model;
 
 namespace CloudWatchAppender.Parsers
 {
-    public class LogsEventMessageParser : EventMessageParserBase<LogDatum>
+    public class DummyLogsEventMessageParser : LogsEventMessageParser
+    {
+        public DummyLogsEventMessageParser() : base(true)
+        {
+        }
+
+        protected override bool ShouldLocalParse(string t0)
+        {
+            return false;
+        }
+
+        protected override bool IsSupportedName(string t0)
+        {
+            return false;
+        }
+    }
+    public class LogsEventMessageParser : EventMessageParserBase<LogDatum>, ILogsEventMessageParser
     {
         private Dictionary<string, Dimension> _dimensions;
         private LogDatum _currentDatum;
@@ -18,7 +34,17 @@ namespace CloudWatchAppender.Parsers
         public string DefaultMessage { get; set; }
         public DateTime? DefaultTimestamp { get; set; }
         public string DefaultStreamName { get; set; }
+        public new bool ConfigOverrides { get { return base.ConfigOverrides; } set { base.ConfigOverrides = value; } }
 
+        public LogsEventMessageParser()
+            : base(true)
+        { }
+        public LogsEventMessageParser(bool useOverrides)
+            : base(useOverrides)
+        {
+            if (Assembly.GetEntryAssembly() != null)
+                _assemblyName = Assembly.GetEntryAssembly().GetName().Name;
+        }
         protected override void SetDefaults()
         {
             if (string.IsNullOrEmpty(_currentDatum.StreamName))
@@ -86,11 +112,9 @@ namespace CloudWatchAppender.Parsers
 
 
 
-        public LogsEventMessageParser(bool useOverrides = true)
-            : base(useOverrides)
+        protected override bool ShouldLocalParse(string t0)
         {
-            if (Assembly.GetEntryAssembly() != null)
-                _assemblyName = Assembly.GetEntryAssembly().GetName().Name;
+            return t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase);
         }
 
 
@@ -157,7 +181,7 @@ namespace CloudWatchAppender.Parsers
         protected override void Init()
         {
             base.Init();
-            _dimensions=new Dictionary<string, Dimension>();
+            _dimensions = new Dictionary<string, Dimension>();
             _currentDatum = null;
         }
 
@@ -165,7 +189,7 @@ namespace CloudWatchAppender.Parsers
         {
             if (_currentDatum.GroupName.Contains("instance"))
             {
-                
+
             }
             return new[] { _currentDatum };
         }

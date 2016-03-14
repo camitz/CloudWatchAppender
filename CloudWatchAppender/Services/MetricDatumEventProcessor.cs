@@ -13,10 +13,11 @@ namespace CloudWatchAppender.Services
 #if NET35
     public interface IEventProcessor<T>
 #else
-    public interface IEventProcessor<out T>
+    public interface IEventProcessor<T>
 #endif
     {
         IEnumerable<T> ProcessEvent(LoggingEvent loggingEvent, string renderedString);
+        IEventMessageParser<T> EventMessageParser { get; set; }
     }
 
     public class MetricDatumEventProcessor : IEventProcessor<PutMetricDataRequest>
@@ -63,6 +64,7 @@ namespace CloudWatchAppender.Services
                 _hasParsedProperties = true;
             }
 
+            //todo:reuse
             _metricDatumEventMessageParser = new MetricDatumEventMessageParser(_configOverrides)
                          {
                              DefaultMetricName = _parsedMetricName,
@@ -77,6 +79,8 @@ namespace CloudWatchAppender.Services
 
             return _metricDatumEventMessageParser.Parse(renderedString);
         }
+
+        public IEventMessageParser<PutMetricDataRequest> EventMessageParser { get; set; }
 
         private void ParseProperties(PatternParser patternParser)
         {

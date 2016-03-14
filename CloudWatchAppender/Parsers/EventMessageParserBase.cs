@@ -8,9 +8,10 @@ using CloudWatchAppender.Model;
 
 namespace CloudWatchAppender.Parsers
 {
-    public abstract class EventMessageParserBase<TDatum>
+   
+    public abstract class EventMessageParserBase<TDatum> : IEventMessageParser<TDatum>
     {
-        protected readonly bool DefaultsOverridePattern;
+        protected bool DefaultsOverridePattern;
         private List<AppenderValue> _values;
 
         protected EventMessageParserBase(bool useOverrides)
@@ -18,6 +19,7 @@ namespace CloudWatchAppender.Parsers
             DefaultsOverridePattern = useOverrides;
         }
 
+        public virtual bool ConfigOverrides { get { return DefaultsOverridePattern; } set { DefaultsOverridePattern = value; } }
         protected abstract void SetDefaults();
         protected abstract void NewDatum();
         protected abstract bool FillName(AppenderValue value);
@@ -120,10 +122,8 @@ namespace CloudWatchAppender.Parsers
             _values.Add(new AppenderValue { Name = "rest", sValue = rest.Trim() });
         }
 
-        private static bool ShouldLocalParse(string t0)
-        {
-            return t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase);
-        }
+        protected abstract bool ShouldLocalParse(string t0);
+
 
         protected abstract bool IsSupportedName(string t0);
 

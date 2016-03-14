@@ -84,6 +84,7 @@
     <Compile Include="Model\MetricDatum.cs" />
     <Compile Include="Model\MetricDatumRenderer.cs" />
     <Compile Include="Parsers\EventMessageParserBase.cs" />
+    <Compile Include="Parsers\IEventMessageParser.cs" />
     <Compile Include="Parsers\LogsEventMessageParser.cs" />
     <Compile Include="Parsers\MetricDatumEventMessageParser.cs" />
     <Compile Include="PatternConverter\InstanceIDPatternConverter.cs" />

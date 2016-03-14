@@ -6,6 +6,7 @@ using Amazon.CloudWatchLogs.Model;
 using Amazon.Runtime;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
+using CloudWatchAppender.Parsers;
 using CloudWatchAppender.Services;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
@@ -17,8 +18,6 @@ namespace CloudWatchAppender
     {
         private CloudWatchLogsClientWrapper _client;
         private readonly static Type _declaringType = typeof(CloudWatchLogsAppender);
-
-        private bool _configOverrides = true;
 
         private AmazonCloudWatchLogsConfig _clientConfig;
 
@@ -70,9 +69,14 @@ namespace CloudWatchAppender
         {
             base.ActivateOptions();
 
+            EventMessageParser = EventMessageParser ?? new LogsEventMessageParser(ConfigOverrides);
+
             _client = new CloudWatchLogsClientWrapper(EndPoint, AccessKey, Secret, ClientConfig);
 
-            _eventProcessor = new LogEventProcessor(_configOverrides, GroupName, StreamName, Timestamp, Message);
+            _eventProcessor = new LogEventProcessor(GroupName, StreamName, Timestamp, Message)
+                              {
+                                  EventMessageParser = EventMessageParser
+                              };
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");

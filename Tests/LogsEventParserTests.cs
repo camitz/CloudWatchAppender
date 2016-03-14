@@ -14,50 +14,7 @@ namespace CloudWatchAppender.Tests
         {
         }
 
-        [Test]
-        public void SingleValueAndUnit()
-        {
-            var parser = new MetricDatumEventMessageParser();
-            for (int i = 0; i < 2; i++)
-            {
-                var parsedData = parser.Parse("A tick! Value: 3.0 Kilobytes/Second");
-
-                var passes = 0;
-                foreach (var r in parsedData)
-                {
-                    Assert.AreEqual(StandardUnit.KilobytesSecond, r.MetricData[0].Unit);
-                    Assert.AreEqual(3.0, r.MetricData[0].Value);
-                    passes++;
-                }
-
-                Assert.AreEqual(1, passes);
-            }
-        }
-
-        [Test]
-        public void SingleValueAndUnit_Overrides()
-        {
-            var parser = new MetricDatumEventMessageParser()
-            {
-                DefaultValue = 4.0,
-                DefaultUnit = "Megabytes/Second"
-            };
-
-            for (int i = 0; i < 2; i++)
-            {
-                var parsedData = parser.Parse("A tick! Value: 3.0 Kilobytes/Second");
-
-                var passes = 0;
-                foreach (var r in parsedData)
-                {
-                    Assert.AreEqual(StandardUnit.MegabytesSecond, r.MetricData[0].Unit);
-                    Assert.AreEqual(4.0, r.MetricData[0].Value);
-                    passes++;
-                }
-
-                Assert.AreEqual(1, passes);
-            }
-        }
+    
 
 
         [Test]

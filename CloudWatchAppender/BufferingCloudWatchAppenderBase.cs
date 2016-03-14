@@ -3,6 +3,7 @@ using System.Net;
 using Amazon;
 using Amazon.CloudWatch;
 using Amazon.Runtime;
+using CloudWatchAppender.Parsers;
 using CloudWatchAppender.Services;
 using CloudWatchAppender.TypeConverters;
 using log4net.Appender;
@@ -49,6 +50,16 @@ namespace CloudWatchAppender
             get { return _endPoint; }
         }
 
+        public IEventMessageParser<T> EventMessageParser
+        {
+            set
+            {
+                _eventMessageParser = value;
+                ResetClient();
+            }
+            get { return _eventMessageParser; }
+        }
+
         public bool ConfigOverrides
         {
             set
@@ -64,6 +75,7 @@ namespace CloudWatchAppender
         private string _accessKey;
         private string _secret;
         private string _endPoint;
+        private IEventMessageParser<T> _eventMessageParser;
         private bool _configOverrides;
         private string _timestamp;
         private EventRateLimiter _eventRateLimiter;

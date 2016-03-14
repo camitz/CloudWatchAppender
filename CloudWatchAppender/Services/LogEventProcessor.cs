@@ -15,15 +15,13 @@ namespace CloudWatchAppender.Services
         private string _parsedMessage;
         private DateTime? _dateTimeOffset;
         private LogsEventMessageParser _logsEventMessageParser;
-        private readonly bool _configOverrides;
         private readonly string _groupName;
         private readonly string _streamName;
         private readonly string _timestamp;
         private readonly string _message;
 
-        public LogEventProcessor(bool configOverrides, string groupName, string streamName, string timestamp, string message)
+        public LogEventProcessor(string groupName, string streamName, string timestamp, string message)
         {
-            _configOverrides = configOverrides;
             _groupName = groupName;
             _streamName = streamName;
             _timestamp = timestamp;
@@ -46,16 +44,17 @@ namespace CloudWatchAppender.Services
                 _hasParsedProperties = true;
             }
 
-            _logsEventMessageParser = new LogsEventMessageParser(useOverrides: _configOverrides)
-                                  {
-                                      DefaultStreamName = _parsedStreamName,
-                                      DefaultGroupName = _parsedGroupName,
-                                      DefaultMessage = _parsedMessage,
-                                      DefaultTimestamp = _dateTimeOffset??loggingEvent.TimeStamp
-                                  };
+            var eventMessageParser = EventMessageParser as ILogsEventMessageParser;
+            
+            eventMessageParser.DefaultStreamName = _parsedStreamName;
+            eventMessageParser.DefaultGroupName = _parsedGroupName;
+            eventMessageParser.DefaultMessage = _parsedMessage;
+            eventMessageParser.DefaultTimestamp = _dateTimeOffset ?? loggingEvent.TimeStamp;
 
-            return _logsEventMessageParser.Parse(renderedString);
+            return eventMessageParser.Parse(renderedString);
         }
+
+        public IEventMessageParser<LogDatum> EventMessageParser { get; set; }
 
         private void ParseProperties(PatternParser patternParser)
         {

@@ -7,6 +7,7 @@ using Amazon.CloudWatchLogs.Model;
 using Amazon.Runtime;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
+using CloudWatchAppender.Parsers;
 using CloudWatchAppender.Services;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
@@ -85,7 +86,7 @@ namespace CloudWatchAppender
                 _timestamp = value;
                 _eventProcessor = null;
             }
-            get { return Timestamp; }
+            get { return _timestamp; }
         }
 
         public new bool ConfigOverrides
@@ -124,9 +125,15 @@ namespace CloudWatchAppender
         {
             base.ActivateOptions();
 
+            EventMessageParser = EventMessageParser ?? new LogsEventMessageParser(_configOverrides);
+
             _client = new CloudWatchLogsClientWrapper(EndPoint, AccessKey, Secret, ClientConfig);
 
-            _eventProcessor = new LogEventProcessor(_configOverrides, _groupName, _streamName, _timestamp, _message);
+            _eventProcessor = new LogEventProcessor(_groupName, _streamName, _timestamp, _message)
+                              {
+                                  EventMessageParser = EventMessageParser
+                              };
+
 
             if (Layout == null)
                 Layout = new PatternLayout("%message");

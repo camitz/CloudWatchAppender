@@ -5,6 +5,7 @@ using Amazon.CloudWatch.Model;
 using Amazon.Runtime;
 using CloudWatchAppender.Layout;
 using CloudWatchAppender.Model;
+using CloudWatchAppender.Parsers;
 using CloudWatchAppender.Services;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
@@ -114,6 +115,8 @@ namespace CloudWatchAppender
 
         public override void ActivateOptions()
         {
+            EventMessageParser = EventMessageParser ?? new MetricDatumEventMessageParser(ConfigOverrides);
+            
             _client = new CloudWatchClientWrapper(EndPoint, AccessKey, Secret, _clientConfig);
 
             MetricDatumEventProcessor = new MetricDatumEventProcessor(ConfigOverrides, _standardUnit, _ns, _metricName, Timestamp, _value, _dimensions);

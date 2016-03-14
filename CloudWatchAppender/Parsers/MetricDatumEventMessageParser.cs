@@ -28,6 +28,15 @@ namespace CloudWatchAppender.Parsers
         public double? DefaultSum { get; set; }
         public double? DefaultMaximum { get; set; }
         public double? DefaultMinimum { get; set; }
+        public new bool ConfigOverrides{ get { return base.ConfigOverrides; }set { base.ConfigOverrides = value; } }
+
+        public MetricDatumEventMessageParser() : base(true) { }
+        public MetricDatumEventMessageParser(bool useOverrides)
+            : base(useOverrides)
+        {
+            _defaultsOverridePattern = useOverrides;
+        }
+
 
         protected override void SetDefaults()
         {
@@ -68,6 +77,7 @@ namespace CloudWatchAppender.Parsers
                 }
             }
         }
+
 
         protected override bool IsSupportedName(string t0)
         {
@@ -180,15 +190,13 @@ namespace CloudWatchAppender.Parsers
 
 
 
-        public MetricDatumEventMessageParser(bool useOverrides = true)
-            : base(useOverrides)
+
+
+
+        protected override bool ShouldLocalParse(string t0)
         {
-            _defaultsOverridePattern = useOverrides;
+            return t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase);
         }
-
-
-
-
 
         protected override void LocalParse(ref List<Match>.Enumerator tokens, string sNum)
         {

@@ -198,7 +198,7 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-        //[Ignore("Ignore until App Veyor deploy to nuget is working")]
+        [Ignore("Ignore until App Veyor deploy to nuget is working")]
         public void Timestamp_Override()
         {
             var parser = new MetricDatumEventMessageParser()

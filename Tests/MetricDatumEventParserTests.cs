@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Parsers;
@@ -209,7 +210,7 @@ namespace CloudWatchAppender.Tests
             var passes = 0;
             foreach (var r in parsedData)
             {
-                Assert.AreEqual(DateTime.Parse("2012-09-06 10:55:55"), r.MetricData[0].Timestamp);
+                Assert.AreEqual(DateTime.Parse("2012-09-06 10:55:55Z").ToUniversalTime(), r.MetricData[0].Timestamp);
                 passes++;
             }
 
@@ -217,7 +218,7 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-        //[Ignore("Ignore until App Veyor deploy to nuget is working")]
+        [Ignore("Ignore until App Veyor deploy to nuget is working")]
         public void Timestamp()
         {
             var parser = new MetricDatumEventMessageParser();

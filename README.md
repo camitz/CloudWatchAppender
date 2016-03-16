@@ -7,17 +7,9 @@ All posts are made asynchronously to CloudWatch via the [AWSSDK](http://aws.amaz
 
 # News
 
-## Now supporting CloudWatch Logs
+## Resolved issues [#14](https://github.com/camitz/CloudWatchAppender/issues/14) and [#15](https://github.com/camitz/CloudWatchAppender/issues/15).
 
-In July AWS launch CloudWatch [Logs](http://aws.amazon.com/about-aws/whats-new/2014/07/10/introducing-amazon-cloudwatch-logs/). CloudWatchAppender now supports them with two brand new appenders, CloudWatchLogsAppender and its buffering counter part, BufferingCloudWatchLogsAppender. The appenders will automatically take care of adding groups and streams, specified in config or in the log message.
-
-## Credentials handling as recommended by AWS
-
-Time has moved on since first launch and putting API keys and secrets in clear text in config files is unsurpisingly no longer the recommended way of doing things. CloudWatchAppender now supports all manners of providing credentials [recommended by AWS](#credentials).
-
-## Support for AWS client config settings
-
-All settings including proxy settings and signature version is now supported via the config-file.
+See [Replacing the Event Message Parsers](replaceparser).
 
 ## Supporting .NET 3.5 again and soon to support .NET 5.0
 
@@ -173,7 +165,7 @@ If you pass a string to the logger like this
 
 most of it will be ignored by the CloudWatchAppender. 
 
-The above message to the logger will behave in the same way as the previous examples. The CloudWatchAppender event parser will look for recognizable tokens, largely corresponding to the entities and units familiar to CloudWatch. The parser is pretty lenient in what is allowed but also lets unexpected input slip without warning. As the messages get complicated, especially if PatternLayout is used, it is important to understand the conflict resolution [rules](#conflicts).
+The above message to the logger will behave in the same way as the previous examples. The CloudWatchAppender event message parser will look for recognizable tokens, largely corresponding to the entities and units familiar to CloudWatch. The parser is pretty lenient in what is allowed but also lets unexpected input slip without warning. As the messages get complicated, especially if PatternLayout is used, it is important to understand the conflict resolution [rules](#conflicts).
 
 Of course, if there are other appenders listening on the logger, they will handle the string in their way. Most will output the entire string to whatever end point they are designed for. This includes the BufferingCloudWatchLogsAppender which concatenate everything it can't parse into the actual message of to the log event posted to AWS as in the following:
 
@@ -446,6 +438,18 @@ The following are recognized by CloudWatchLogsAppender, BufferingCloudWatchLogsA
 * StreamName
 * Timestamp
 
+## Replacing the Event Message Parsers <a name="replaceparser"></a>
+
+In order to avoid the appenders recognizing and removing the above reserved keywords from your message, or provide custom parsing, you may replace the message parser with a custom one. For your convenience we have provided DummyLogsEventMessageParser. This is easily done in config.
+
+With te following config, `Message: my important message` will be forwarded to CloudWatchLogs as is.
+
+    <appender name="CloudWatchLogsAppender" type="CloudWatchAppender.BufferingCloudWatchLogsAppender, CloudWatchAppender">
+      //Other config here...
+      <eventMessageParser type="CloudWatchAppender.Parsers.DummyLogsEventMessageParser"/>        
+    </appender>
+
+
 # Some more reading
 
 Check out the following blog posts that seeded the project.
@@ -460,131 +464,6 @@ Check out the following blog posts that seeded the project.
 
 TODO
 
-# Releases
 
-## 4.2.0-alpha2
-
-* UnitConverter implemented.
-* Bug and stability fixes
-* Refactoring MetricDatum + some deprecations.
-* Premature amazon client created caused null ref. Didn't affect buffering appender.
-* Similar bug prevented config overriding.
-
-## 4.1.3 <font size="2">(beta) </font>
-
-* Premature amazon client created caused null ref. Didn't affect buffering appender.
-* Similar bug prevented config overriding.
-
-## 4.1.2 <font size="2">(beta) </font>
-
-* AWS has a limit of maximum 20 metric data objects per request. Wasn't imposed previously.
-
-## 4.1.1 <font size="2">(beta) 2014-04-23 </font>
-
-* Trying to parse unit caused (unbuffered) CloudWatchAppender to fail. This is not supported anymore. If I broke you code let me know.
-
-## 4.1 <font size="2">(beta) 2014-04-23 </font>
-
-* Implemented BufferingAggregatingCloudWatchAppender.
-* More stable handling of asynchronousy.
-* Debug outputs and error messages routed to log4net's internal scheme.
-
-## 4.0 <font size="2">(beta) 2014-04-14 </font>
-
-### Breaking changes
-
-* Negative specifier of the %logger with negative precision specifier pattern changed. Now includes n left most elements. See [Augmented %logger functionality](#logger).
-
-## 3.0 <font size="2">(beta) 2014-01-27 </font>
-
-Long over due upgrade to .NET 4.5 and version 2 (2.0.6.1) of the AWS SDK.
-
-## 2.2 <font size="2">(beta) 2012-10-02 </font>
-
-### Performance enhancements
-
-* Up to 200 % faster on base case i.e. log.Info("") and minimal config.
-
-## 2.1.1 <font size="2">(beta) 2012-10-02 </font>
-
-### Bug fixes
-
-* Zeroing out dimensions in config didn't work
-* Exceptions and timeouts not well handled, potentially could crash the iis worker
-* Backwards compatibility for instance id didn't work
-
-## 2.1.0 <font size="2">(beta) 2012-09-24 </font>
-
-### New features
-
-* Rate limit (rateLimit)
-* More instance metadata options (former instanceid pattern deprecated)
-* Instance metadata reader async
-
-## 2.0.1 <font size="2">(beta) 2012-09-13 </font>
-
-* Essential bugfix.
-
-## 2.0.0 <font size="2">(beta) 2012-09-13 </font>
-
-### Breaking changes
-
-* Due to confusion with the appender Name property, the alias Name for MetricName will is longer be supported.
-
-### Bug fixes
-
-* Patterns in dimension values weren't properly parsed.
-
-## 1.3.2 <font size="2">(beta) 2012-09-12</font>
-
-### Bug fixes
-
-* Backward compatibility (credentials in AppSettings) was broken in 1.3.1.
-
-## 1.3.1 <font size="2">(beta) 2012-09-12</font>
-
-### Bug fixes
-
-* A layout was required in config.
-* Default timestamp didn't work. Prevented requests.
-
-## 1.3 <font size="2">(beta) 2012-09-11</font>
-
-### New features 
-
-* Credentials and EndPoint can now be provided in the appender config.
-* MetricDatum (both variants) supported in call to log event method.
-* Eliminiting debug output from AWSSDK in config is no longer necessary.
-
-### Bug fixes
-
-* Credentials and EndPoint needed to be set in AppSettings. Undocumented.
-
-## 1.2 <font size="2">(beta) 2012-09-06</font>
-
-### New features 
-
-* MetricDatum timestamp property supported. Current date format provider used for parsing, UTC assumed. For example Timestamp: <nobr>2012-09-06 14:00:00 +02:00</nobr>.
-
-### Bug fixes
-
-* Bug in AWSSDK concerning decimal separator in locales using for example "," instead of ".". Hacked by temporarily setting default locale.
-
-## 1.1 (beta)
-
-### New features 
-
-* Intance id is cached. 
-* . to / conversion for all NameSpace strings in MetricDAtum.
-* Support for lowercase units. 
-* Ceased support for ordered dimensions 
-
-### Bug fixes
-
-* ConfigOverrides false wasn't checked for value 
-* ConfigOverrides didn't work as expected
-* Couldn't override dimensions (error)
-
-## 1.0 (beta)
 
 [![endorse](http://api.coderwall.com/camitz/endorsecount.png)](http://coderwall.com/camitz)

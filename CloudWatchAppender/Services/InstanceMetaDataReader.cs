@@ -30,7 +30,7 @@ namespace CloudWatchAppender.Services
 
     public interface IInstanceMetaDataReader
     {
-        string GetMetaData(string key);
+        string GetMetaData(string key, out bool error);
 
         [Obsolete]
         string GetInstanceID();
@@ -72,13 +72,17 @@ namespace CloudWatchAppender.Services
         [Obsolete]
         public string GetInstanceID()
         {
-            return GetMetaData(MetaDataKeys.instanceid);
+            bool error;
+            return GetMetaData(MetaDataKeys.instanceid, out error);
         }
 
-        public string GetMetaData(string key)
+        public string GetMetaData(string key, out bool outError)
         {
             if (!_metaDataKeys.ContainsKey(key))
                 throw new InvalidOperationException(string.Format("Meta data key {0} is not supported or does not exist.", key));
+
+            outError = false;
+            var error = false;
 
             try
             {
@@ -116,8 +120,8 @@ namespace CloudWatchAppender.Services
                     _pendingTasks[key] =
                         Task.Factory.StartNew(() =>
                                                   {
-                                                      if (++_attempts[key] > 3)
-                                                          _cachedValues[key] = "MaxAttemptsExceeded";
+                                                      if (++_attempts[key] > 10)
+                                                          _cachedValues[key] = key+":MaxAttemptsExceeded";
 
                                                       var task =
                                                           Task.Factory.StartNew(() =>
@@ -129,10 +133,13 @@ namespace CloudWatchAppender.Services
                                                                                                     .GetResponse()
                                                                                                     .GetResponseStream();
                                                                                         }
-                                                                                        catch (Exception) { }
+                                                                                        catch (Exception e)
+                                                                                        {
+                                                                                            error = true;
+                                                                                        }
                                                                                     }, ct);
 
-                                                      if (!task.Wait(1000))
+                                                      if (!task.Wait(2000))
                                                           tokenSource.Cancel();
 
                                                       if (responseStream != null)
@@ -143,27 +150,39 @@ namespace CloudWatchAppender.Services
                                                               _cachedValues[key] = s;
                                                               _attempts[key] = 0;
                                                           }
+                                                          else
+                                                              error = true;
                                                       }
+                                                      else
+                                                          error = true;
                                                   });
 
-                    return task1
+                    var result = task1
                             .ContinueWith(x =>
                                           {
-                                              if (!_cachedValues.ContainsKey(key))
-                                                  return "error_" + key;
+                                              try
+                                              {
+                                                  _pendingTasks.Remove(key);
+                                              }
+                                              catch (Exception) { }
 
-                                              Debug.WriteLine(String.Format("Got {0}: {1}", key, _cachedValues[key]));
-    
-                                              _pendingTasks.Remove(key);
+                                              if (error || !_cachedValues.ContainsKey(key))
+                                              {
+                                                  error = true;
+                                                  return "error_" + key;
+                                              }
+                                              Debug.WriteLine("Got {0}: {1}", key, _cachedValues[key]);
+
                                               return _cachedValues[key];
                                           })
                             .Result;
 
-
+                    outError = error;
+                    return result;
                 }
 
-                Debug.WriteLine(String.Format("Returning cached {0}: {1}", key, _cachedValues[key]));
-     
+                Debug.WriteLine("Returning cached {0}: {1}", key, _cachedValues[key]);
+
                 return _cachedValues[key];
             }
             catch (WebException)

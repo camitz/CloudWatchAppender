@@ -11,11 +11,17 @@ namespace CloudWatchAppender.PatternConverter
     {
         protected override void Convert(TextWriter writer, LoggingEvent loggingEvent)
         {
-            var s = InstanceMetaDataReader.Instance.GetMetaData(MetaDataKeys.instanceid);
+            bool error;
+            var s = InstanceMetaDataReader.Instance.GetMetaData(MetaDataKeys.instanceid, out error);
+
+            if (error)
+                loggingEvent.Properties["CloudWatchAppender.MetaData." + MetaDataKeys.instanceid + ".Error"] = "error";
+
             if (string.IsNullOrEmpty(s))
                 writer.Write("NoInstanceID");
 
             writer.Write(s);
+
         }
     }
 }

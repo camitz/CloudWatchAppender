@@ -16,9 +16,14 @@ namespace CloudWatchAppender.PatternConverter
             if (string.IsNullOrEmpty(Option))
                 throw new InvalidOperationException("The option must be set. Example: metadata{instanceid}.");
 
-            var s = InstanceMetaDataReader.Instance.GetMetaData(Option);
+            bool error;
+            var s = InstanceMetaDataReader.Instance.GetMetaData(Option, out error);
+
+            if (error)
+                loggingEvent.Properties["CloudWatchAppender.MetaData." + MetaDataKeys.instanceid + ".Error"] = "error";
+
             if (string.IsNullOrEmpty(s))
-                writer.Write("No" + Option);
+                writer.Write(Option + ":error");
 
             writer.Write(s);
         }

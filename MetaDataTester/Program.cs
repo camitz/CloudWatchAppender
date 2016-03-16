@@ -27,10 +27,11 @@ namespace MetaDataTester
                             "reservationid"
                         };
 
+            bool error;
+
             foreach (var key in keys)
-                Console.WriteLine(string.Format("{0}: {1}",
-                    InstanceMetaDataReader.Instance.MetaDataKeyLookup[key],
-                    InstanceMetaDataReader.Instance.GetMetaData(key)));
+                Console.WriteLine("{0}: {1}", InstanceMetaDataReader.Instance.MetaDataKeyLookup[key],
+                    InstanceMetaDataReader.Instance.GetMetaData(key, out error));
         }
 
 

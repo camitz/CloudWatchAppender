@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Parsers;
 using log4net.Core;
@@ -9,7 +10,7 @@ namespace CloudWatchAppender.Services
 {
     public class LogEventProcessor : IEventProcessor<LogDatum>
     {
-        private bool _hasParsedProperties;
+        private bool _dirtyParsedProperties = true;
         private string _parsedStreamName;
         private string _parsedGroupName;
         private string _parsedMessage;
@@ -38,14 +39,16 @@ namespace CloudWatchAppender.Services
 
             LogLog.Debug(_declaringType, string.Format("RenderedString: {0}", renderedString));
 
-            if (!_hasParsedProperties)
+            if (_dirtyParsedProperties)
             {
                 ParseProperties(patternParser);
-                _hasParsedProperties = true;
+
+                if (!loggingEvent.Properties.GetKeys().Any(key => key.StartsWith("CloudWatchAppender.MetaData.") && key.EndsWith(".Error")))
+                    _dirtyParsedProperties = false;
             }
 
             var eventMessageParser = EventMessageParser as ILogsEventMessageParser;
-            
+
             eventMessageParser.DefaultStreamName = _parsedStreamName;
             eventMessageParser.DefaultGroupName = _parsedGroupName;
             eventMessageParser.DefaultMessage = _parsedMessage;

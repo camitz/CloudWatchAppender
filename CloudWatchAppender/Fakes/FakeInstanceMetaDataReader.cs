@@ -25,8 +25,9 @@ namespace CloudWatchAppender.Fakes
                                                                {"reservationid", "fake-reservation-id"}
                                                            };
 
-        public string GetMetaData(string key)
+        public string GetMetaData(string key,out bool error)
         {
+            error = false;
             return _metaDataKeys[key];
         }
 

@@ -83,6 +83,7 @@
     <Compile Include="Model\LogDatumRenderer.cs" />
     <Compile Include="Model\MetricDatum.cs" />
     <Compile Include="Model\MetricDatumRenderer.cs" />
+    <Compile Include="Parsers\DummyLogsEventMessageParser.cs" />
     <Compile Include="Parsers\EventMessageParserBase.cs" />
     <Compile Include="Parsers\IEventMessageParser.cs" />
     <Compile Include="Parsers\LogsEventMessageParser.cs" />

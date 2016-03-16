@@ -171,7 +171,7 @@ namespace CloudWatchAppender.Services
                                                   error = true;
                                                   return "error_" + key;
                                               }
-                                              Debug.WriteLine("Got {0}: {1}", key, _cachedValues[key]);
+                                              Debug.WriteLine(string.Format("Got {0}: {1}", key, _cachedValues[key]));
 
                                               return _cachedValues[key];
                                           })
@@ -181,7 +181,7 @@ namespace CloudWatchAppender.Services
                     return result;
                 }
 
-                Debug.WriteLine("Returning cached {0}: {1}", key, _cachedValues[key]);
+                Debug.WriteLine(string.Format("Returning cached {0}: {1}", key, _cachedValues[key]));
 
                 return _cachedValues[key];
             }

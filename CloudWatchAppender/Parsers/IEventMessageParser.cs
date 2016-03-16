@@ -4,7 +4,7 @@ using CloudWatchAppender.Model;
 
 namespace CloudWatchAppender.Parsers
 {
-    public interface IEventMessageParser<out TDatum>
+    public interface IEventMessageParser<TDatum>
     {
         IEnumerable<TDatum> Parse(string renderedString);
     }

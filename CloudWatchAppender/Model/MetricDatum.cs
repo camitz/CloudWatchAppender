@@ -149,7 +149,7 @@ namespace CloudWatchAppender.Model
                 if (_timestamp.HasValue)
                     throw new DatumFilledException("Value has been set already.");
 
-                _timestamp = value.Value.UtcDateTime;
+                _timestamp = value.Value;
             }
         }
 
@@ -176,7 +176,7 @@ namespace CloudWatchAppender.Model
                         StatisticValues = _statisticValues,
                         MetricName = _metricName,
                         Dimensions = _dimensions,
-                        Timestamp = _timestamp.HasValue ? _timestamp.Value.DateTime : DateTime.UtcNow,
+                        Timestamp = _timestamp.HasValue ? _timestamp.Value.UtcDateTime : DateTime.UtcNow,
                         Unit = _unit
                     };
                 }
@@ -187,7 +187,7 @@ namespace CloudWatchAppender.Model
                            Unit = _unit,
                            MetricName = _metricName,
                            Dimensions = _dimensions,
-                           Timestamp = _timestamp.HasValue ? _timestamp.Value.DateTime : DateTime.UtcNow
+                           Timestamp = _timestamp.HasValue ? _timestamp.Value.UtcDateTime : DateTime.UtcNow
                        };
             }
         }

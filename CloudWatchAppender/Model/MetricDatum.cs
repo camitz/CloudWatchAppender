@@ -10,42 +10,41 @@ namespace CloudWatchAppender.Model
 {
     public class MetricDatum
     {
-        Amazon.CloudWatch.Model.MetricDatum _datum = new Amazon.CloudWatch.Model.MetricDatum();
-        PutMetricDataRequest _request = new PutMetricDataRequest();
+        readonly PutMetricDataRequest _request = new PutMetricDataRequest();
 
         private DatumMode? _mode;
 
         private DateTimeOffset? _timestamp;
 
-        public double Value
+        public double? Value
         {
             get
             {
-                return _datum.Value;
+                return _value;
             }
             set
             {
-                if (Mode==DatumMode.StatisticsMode)
+                if (Mode == DatumMode.StatisticsMode)
                     throw new DatumFilledException("Value cannot be set since we're in statistics mode.");
 
                 _mode = DatumMode.ValueMode;
-                _datum.Value = value;
+                _value = value;
             }
         }
 
         public StandardUnit Unit
         {
-            get { return _datum.Unit; }
+            get { return _unit; }
             set
             {
                 if (!string.IsNullOrEmpty(value))
                 {
-                    if (!string.IsNullOrEmpty(_datum.Unit) && _datum.Unit != value)
+                    if (!string.IsNullOrEmpty(_unit) && _unit != value)
                         throw new DatumFilledException("Unit has been set already.");
 
-                    _datum.Unit = value;
+                    _unit = value;
 
-                    if (_datum.Unit != value)
+                    if (_unit != value)
                         LogLog.Warn(typeof(MetricDatum), string.Format("Unit {0} not supported. Using default.", value));
                 }
             }
@@ -53,13 +52,13 @@ namespace CloudWatchAppender.Model
 
         public string MetricName
         {
-            get { return _datum.MetricName; }
+            get { return _metricName; }
             set
             {
-                if (!string.IsNullOrEmpty(_datum.MetricName))
+                if (!string.IsNullOrEmpty(_metricName))
                     throw new DatumFilledException("MetricName has been set already.");
 
-                _datum.MetricName = value;
+                _metricName = value;
             }
         }
 
@@ -77,65 +76,65 @@ namespace CloudWatchAppender.Model
 
         public double Maximum
         {
-            get { return _datum.StatisticValues.Maximum; }
+            get { return _statisticValues.Maximum; }
             set
             {
                 if (Mode == DatumMode.ValueMode)
                     throw new DatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _mode = DatumMode.StatisticsMode;
-                if (_datum.StatisticValues == null)
-                    _datum.StatisticValues = new StatisticSet();
+                if (_statisticValues == null)
+                    _statisticValues = new StatisticSet();
 
-                _datum.StatisticValues.Maximum = value;
+                _statisticValues.Maximum = value;
             }
         }
 
         public double Minimum
         {
-            get { return _datum.StatisticValues.Minimum; }
+            get { return _statisticValues.Minimum; }
             set
             {
                 if (Mode == DatumMode.ValueMode)
                     throw new DatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _mode = DatumMode.StatisticsMode;
-                if (_datum.StatisticValues == null)
-                    _datum.StatisticValues = new StatisticSet();
+                if (_statisticValues == null)
+                    _statisticValues = new StatisticSet();
 
-                _datum.StatisticValues.Minimum = value;
+                _statisticValues.Minimum = value;
             }
         }
 
         public double Sum
         {
-            get { return _datum.StatisticValues.Sum; }
+            get { return _statisticValues.Sum; }
             set
             {
                 if (Mode == DatumMode.ValueMode)
                     throw new DatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _mode = DatumMode.StatisticsMode;
-                if (_datum.StatisticValues == null)
-                    _datum.StatisticValues = new StatisticSet();
+                if (_statisticValues == null)
+                    _statisticValues = new StatisticSet();
 
-                _datum.StatisticValues.Sum = value;
+                _statisticValues.Sum = value;
             }
         }
 
         public double SampleCount
         {
-            get { return _datum.StatisticValues.SampleCount; }
+            get { return _statisticValues.SampleCount; }
             set
             {
                 if (Mode == DatumMode.ValueMode)
                     throw new DatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _mode = DatumMode.StatisticsMode;
-                if (_datum.StatisticValues == null)
-                    _datum.StatisticValues = new StatisticSet();
+                if (_statisticValues == null)
+                    _statisticValues = new StatisticSet();
 
-                _datum.StatisticValues.SampleCount = value;
+                _statisticValues.SampleCount = value;
             }
         }
 
@@ -143,23 +142,14 @@ namespace CloudWatchAppender.Model
         {
             get
             {
-                try
-                {
-                    return _datum.Timestamp;
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
+                return _timestamp;
             }
             set
             {
                 if (_timestamp.HasValue)
                     throw new DatumFilledException("Value has been set already.");
 
-                _timestamp = value;
-
-                _datum.Timestamp = value.Value.UtcDateTime;
+                _timestamp = value.Value.UtcDateTime;
             }
         }
 
@@ -168,41 +158,65 @@ namespace CloudWatchAppender.Model
             get
             {
                 if (!_request.MetricData.Any())
-                    _request.MetricData.Add(_datum);
+                {
+                    _request.MetricData.Add(AWSDatum);
+                }
                 return _request;
             }
         }
 
         internal Amazon.CloudWatch.Model.MetricDatum AWSDatum
         {
-            get { return _datum; }
+            get
+            {
+                if (Mode == DatumMode.StatisticsMode)
+                {
+                    return new Amazon.CloudWatch.Model.MetricDatum
+                    {
+                        StatisticValues = _statisticValues,
+                        MetricName = _metricName,
+                        Dimensions = _dimensions,
+                        Timestamp = _timestamp.HasValue ? _timestamp.Value.DateTime : DateTime.UtcNow,
+                        Unit = _unit
+                    };
+                }
+
+                return new Amazon.CloudWatch.Model.MetricDatum
+                       {
+                           Value = _value ?? 0,
+                           Unit = _unit,
+                           MetricName = _metricName,
+                           Dimensions = _dimensions,
+                           Timestamp = _timestamp.HasValue ? _timestamp.Value.DateTime : DateTime.UtcNow
+                       };
+            }
         }
 
         public List<Dimension> Dimensions
         {
-            get { return AWSDatum.Dimensions; }
+            get { return _dimensions; }
             set
             {
-                if (AWSDatum.Dimensions.Count != 0)
+                if (_dimensions != null)
                     throw new DatumFilledException("Value has been set already.");
 
-                AWSDatum.Dimensions = value;
+                _dimensions = value;
             }
         }
 
         public StatisticSet StatisticValues
         {
-            get { return AWSDatum.StatisticValues; }
+            get { return _statisticValues; }
             set
             {
                 if (Mode == DatumMode.ValueMode)
                     throw new DatumFilledException("Statistics cannot be set since we're in value mode.");
 
                 _mode = DatumMode.StatisticsMode;
-                if (_datum.StatisticValues == null)
-                    _datum.StatisticValues = new StatisticSet();
+                if (_statisticValues == null)
+                    _statisticValues = new StatisticSet();
 
-                _datum.StatisticValues = value;
+                _statisticValues = value;
             }
         }
 
@@ -226,6 +240,12 @@ namespace CloudWatchAppender.Model
                                                         "SampleCount",
                                                         "Sum"
                                                     };
+
+        private double? _value;
+        private StandardUnit _unit;
+        private string _metricName;
+        private StatisticSet _statisticValues;
+        private List<Dimension> _dimensions;
 
         public string Message { get; set; }
 
@@ -254,49 +274,50 @@ namespace CloudWatchAppender.Model
         [Obsolete("Deprecated")]
         public MetricDatum WithMetricName(string value)
         {
-            _datum.MetricName = value;
+            _metricName = value;
             return this;
         }
 
         [Obsolete("Deprecated")]
         public MetricDatum WithUnit(StandardUnit value)
         {
-            _datum.Unit = value;
+            _unit = value;
             return this;
         }
 
         [Obsolete("Deprecated")]
         public MetricDatum WithValue(double value)
         {
-            _datum.Value = value;
+            _value = value;
             return this;
         }
 
         [Obsolete("Deprecated")]
         public MetricDatum WithTimestamp(DateTime value)
         {
-            _datum.Timestamp = value;
+            _timestamp = value;
             return this;
         }
 
         [Obsolete("Deprecated")]
         public MetricDatum WithTimestamp(DateTimeOffset value)
         {
-            _datum.Timestamp = value.UtcDateTime;
+            _timestamp = value.UtcDateTime;
             return this;
         }
 
         [Obsolete("Deprecated")]
         public MetricDatum WithDimensions(IEnumerable<Dimension> value)
         {
-            _datum.Dimensions = value.ToList();
+            _dimensions = value.ToList();
             return this;
         }
 
         [Obsolete("Deprecated")]
         public MetricDatum WithStatisticValues(StatisticSet statisticSet)
         {
-            _datum.StatisticValues = statisticSet;
+            _statisticValues = statisticSet;
+            _mode = DatumMode.StatisticsMode;
             return this;
         }
 

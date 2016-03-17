@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Model;
 using NUnit.Framework;

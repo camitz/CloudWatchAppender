@@ -36,6 +36,24 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
+        public void SingleValueAndUnit_Zero()
+        {
+            var parser = new MetricDatumEventMessageParser();
+            var parsedData = parser.Parse("A tick! Value: 0.0 Kilobytes/Second");
+
+            Assert.That(parsedData, Has.Exactly(1).Not.Null);
+            var passes = 0;
+            foreach (var r in parsedData)
+            {
+                Assert.AreEqual(StandardUnit.KilobytesSecond, r.MetricData[0].Unit);
+                Assert.AreEqual(0.0, r.MetricData[0].Value);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+        }
+
+        [Test]
         public void SingleValueAndUnit_Overrides()
         {
             var parser = new MetricDatumEventMessageParser()
@@ -121,7 +139,7 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual(0, r.MetricData[0].Dimensions.Count);
                 Assert.AreEqual("CloudWatchAppender", r.MetricData[0].MetricName);
                 Assert.AreEqual(StandardUnit.Count, r.MetricData[0].Unit);
-                Assert.AreEqual(1.0, r.MetricData[0].Value);
+                Assert.AreEqual(0, r.MetricData[0].Value);
 
                 passes++;
             }
@@ -487,7 +505,7 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual("4.5", r.MetricData[0].Dimensions[1].Value);
 
                 Assert.AreEqual(StandardUnit.Count, r.MetricData[0].Unit);
-                Assert.AreEqual(1.0, r.MetricData[0].Value);
+                Assert.AreEqual(0, r.MetricData[0].Value);
             }
         }
     }

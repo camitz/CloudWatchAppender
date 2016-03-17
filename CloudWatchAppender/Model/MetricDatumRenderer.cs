@@ -34,7 +34,7 @@ namespace CloudWatchAppender.Model
             if (metricDatum.StatisticValues == null)
                 writer.Write("Value: {0}, ", metricDatum.Value.ToString(CultureInfo.InvariantCulture));
 
-            if (metricDatum.Dimensions.Any())
+            if (metricDatum.Dimensions != null && metricDatum.Dimensions.Any())
             {
                 writer.Write("Dimensions: {0}, ", String.Join(", ",
                                                               metricDatum.Dimensions.Select(

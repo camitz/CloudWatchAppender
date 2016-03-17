@@ -61,7 +61,7 @@ namespace CloudWatchAppender.Parsers
                 if (datum.Mode == DatumMode.ValueMode)
                 {
                     if (datum.Value == 0.0)
-                        datum.Value = DefaultValue ?? 1;
+                        datum.Value = DefaultValue ?? 0;
                 }
                 else
                 {
@@ -90,7 +90,7 @@ namespace CloudWatchAppender.Parsers
             switch (value.Name.ToLowerInvariant())
             {
                 case "value":
-                    if (_currentDatum.Value != 0.0)
+                    if (_currentDatum.Value.HasValue)
                         return false;
 
                     _currentDatum.Value = DefaultsOverridePattern ? DefaultValue ?? value.dValue.Value : value.dValue.Value;

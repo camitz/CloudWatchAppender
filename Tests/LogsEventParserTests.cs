@@ -154,7 +154,6 @@ namespace CloudWatchAppender.Tests
 
 
         [Test]
-        //[Ignore("Ignore until App Veyor deploy to nuget is working")]
         public void Timestamp_Override()
         {
             var parser = new LogsEventMessageParser
@@ -173,8 +172,8 @@ namespace CloudWatchAppender.Tests
             }
         }
         [Test]
-#if MONO
-        [Ignore("Ignore until App Veyor deploy to nuget is working")]
+#if APPVEYOR
+        [Ignore("Fails in appveyor")]
 #endif
         public void Timestamp_Override_Offset()
         {

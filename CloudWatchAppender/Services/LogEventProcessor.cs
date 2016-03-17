@@ -15,7 +15,6 @@ namespace CloudWatchAppender.Services
         private string _parsedGroupName;
         private string _parsedMessage;
         private DateTime? _dateTimeOffset;
-        private LogsEventMessageParser _logsEventMessageParser;
         private readonly string _groupName;
         private readonly string _streamName;
         private readonly string _timestamp;

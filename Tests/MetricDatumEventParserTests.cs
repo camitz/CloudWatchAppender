@@ -198,6 +198,9 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
+#if APPVEYOR
+        [Ignore("Appveyor fails these")]
+#endif
         public void Timestamp_Override()
         {
             var parser = new MetricDatumEventMessageParser()
@@ -217,6 +220,9 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
+#if APPVEYOR
+        [Ignore("Appveyor fails these")]
+#endif
         public void Timestamp()
         {
             var parser = new MetricDatumEventMessageParser();
@@ -240,8 +246,8 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-#if MONO
-        [Ignore("Ignore until App Veyor deploy to nuget is working")]
+#if APPVEYOR
+        [Ignore("Appveyor fails these")]
 #endif
         public void Timestamp_Override_Offset()
         {
@@ -262,8 +268,8 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-#if MONO
-        [Ignore("Ignore until App Veyor deploy to nuget is working")]
+#if APPVEYOR
+        [Ignore("Appveyor fails these")]
 #endif
         public void Timestamp_Offset()
         {

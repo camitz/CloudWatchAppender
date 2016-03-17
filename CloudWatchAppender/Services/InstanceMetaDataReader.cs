@@ -133,7 +133,7 @@ namespace CloudWatchAppender.Services
                                                                                                     .GetResponse()
                                                                                                     .GetResponseStream();
                                                                                         }
-                                                                                        catch (Exception e)
+                                                                                        catch (Exception)
                                                                                         {
                                                                                             error = true;
                                                                                         }

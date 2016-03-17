@@ -77,7 +77,6 @@ namespace CloudWatchAppender
         private string _endPoint;
         private IEventMessageParser<T> _eventMessageParser;
         private bool _configOverrides;
-        private IEventProcessor<T> _eventProcessor;
         private string _timestamp;
         private EventRateLimiter _eventRateLimiter;
 

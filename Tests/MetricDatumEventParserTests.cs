@@ -216,9 +216,7 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-#if APPVEYOR
-        [Ignore("Appveyor fails these")]
-#endif
+#if !APPVEYOR
         public void Timestamp_Override()
         {
             var parser = new MetricDatumEventMessageParser()
@@ -236,6 +234,7 @@ namespace CloudWatchAppender.Tests
 
             Assert.AreEqual(1, passes);
         }
+#endif
 
         [Test]
 #if APPVEYOR

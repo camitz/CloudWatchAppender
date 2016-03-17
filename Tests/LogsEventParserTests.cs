@@ -156,10 +156,8 @@ namespace CloudWatchAppender.Tests
         }
 
 
+#if !APPVEYOR
         [Test]
-#if APPVEYOR
-        [Ignore("Appveyor fails these")]
-#endif
         public void Timestamp_Override()
         {
             var parser = new LogsEventMessageParser
@@ -177,7 +175,7 @@ namespace CloudWatchAppender.Tests
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
             }
         }
-#if !APPVEYOR
+     
         [Test]
         public void Timestamp_Override_Offset()
         {

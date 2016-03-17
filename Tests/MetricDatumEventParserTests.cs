@@ -215,8 +215,8 @@ namespace CloudWatchAppender.Tests
             Assert.AreEqual(1, passes);
         }
 
-        [Test]
 #if !APPVEYOR
+        [Test]
         public void Timestamp_Override()
         {
             var parser = new MetricDatumEventMessageParser()
@@ -234,12 +234,8 @@ namespace CloudWatchAppender.Tests
 
             Assert.AreEqual(1, passes);
         }
-#endif
 
         [Test]
-#if APPVEYOR
-        [Ignore("Appveyor fails these")]
-#endif
         public void Timestamp()
         {
             var parser = new MetricDatumEventMessageParser();
@@ -263,9 +259,6 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-#if APPVEYOR
-        [Ignore("Appveyor fails these")]
-#endif
         public void Timestamp_Override_Offset()
         {
             var parser = new MetricDatumEventMessageParser()
@@ -285,9 +278,6 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-#if APPVEYOR
-        [Ignore("Appveyor fails these")]
-#endif
         public void Timestamp_Offset()
         {
             var parser = new MetricDatumEventMessageParser();
@@ -309,6 +299,8 @@ namespace CloudWatchAppender.Tests
             foreach (var r in parsedData)
                 Assert.AreEqual(DateTime.Parse("2012-09-06 15:55:55"), r.MetricData[0].Timestamp);
         }
+
+#endif
 
         [Test]
         public void DimensionsList()

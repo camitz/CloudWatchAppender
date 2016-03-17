@@ -154,10 +154,31 @@ namespace CloudWatchAppender.Tests
 
 
         [Test]
-        [Ignore("Ignore until App Veyor deploy to nuget is working")]
+        //[Ignore("Ignore until App Veyor deploy to nuget is working")]
         public void Timestamp_Override()
         {
-            var parser = new LogsEventMessageParser()
+            var parser = new LogsEventMessageParser
+            {
+                DefaultTimestamp = DateTime.Parse("2012-09-06 12:55:55")
+            };
+
+            for (int i = 0; i < 2; i++)
+            {
+                var parsedData = parser.Parse("A tick! Timestamp: 2012-09-06 17:55:55");
+                var data = parsedData;
+
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 12:55:55")));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+            }
+        }
+        [Test]
+#if MONO
+        [Ignore("Ignore until App Veyor deploy to nuget is working")]
+#endif
+        public void Timestamp_Override_Offset()
+        {
+            var parser = new LogsEventMessageParser
             {
                 DefaultTimestamp = DateTime.Parse("2012-09-06 12:55:55 +02:00")
             };
@@ -168,7 +189,7 @@ namespace CloudWatchAppender.Tests
                 var data = parsedData;
 
                 Assert.That(data.Count(), Is.EqualTo(1));
-                Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 12:55:55")));
+                Assert.That(data.Select(x => x.Timestamp), Has.All.EqualTo(DateTime.Parse("2012-09-06 12:55:55Z").ToUniversalTime()));
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
             }
         }

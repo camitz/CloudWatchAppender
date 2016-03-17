@@ -198,8 +198,52 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-        [Ignore("Ignore until App Veyor deploy to nuget is working")]
         public void Timestamp_Override()
+        {
+            var parser = new MetricDatumEventMessageParser()
+            {
+                DefaultTimestamp = DateTimeOffset.Parse("2012-09-06 12:55:55")
+            };
+            var parsedData = parser.Parse("A tick! Timestamp: 2012-09-06 17:55:55");
+
+            var passes = 0;
+            foreach (var r in parsedData)
+            {
+                Assert.AreEqual(DateTime.Parse("2012-09-06 10:55:55"), r.MetricData[0].Timestamp);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+        }
+
+        [Test]
+        public void Timestamp()
+        {
+            var parser = new MetricDatumEventMessageParser();
+            var parsedData = parser.Parse("A tick! Timestamp: 2012-09-06 17:55:55");
+
+            var passes = 0;
+            foreach (var r in parsedData)
+            {
+                Assert.AreEqual(DateTime.Parse("2012-09-06 17:55:55"), r.MetricData[0].Timestamp);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+
+
+            parser = new MetricDatumEventMessageParser();
+            parsedData = parser.Parse("A tick! Timestamp: 2012-09-06 15:55:55");
+
+            foreach (var r in parsedData)
+                Assert.AreEqual(DateTime.Parse("2012-09-06 15:55:55"), r.MetricData[0].Timestamp);
+        }
+
+        [Test]
+#if MONO
+        [Ignore("Ignore until App Veyor deploy to nuget is working")]
+#endif
+        public void Timestamp_Override_Offset()
         {
             var parser = new MetricDatumEventMessageParser()
             {
@@ -218,8 +262,10 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
+#if MONO
         [Ignore("Ignore until App Veyor deploy to nuget is working")]
-        public void Timestamp()
+#endif
+        public void Timestamp_Offset()
         {
             var parser = new MetricDatumEventMessageParser();
             var parsedData = parser.Parse("A tick! Timestamp: 2012-09-06 17:55:55 +02:00");

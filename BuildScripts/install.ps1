@@ -1,4 +1,4 @@
-$parsedReleaseBuildVersion = $env:APPVEYOR_REPO_TAG_NAME -Match "  ((\d+.\d+.\d+(.\d+)?)(-alpha|-pre|-beta)?)"
+$parsedReleaseBuildVersion = $env:APPVEYOR_REPO_TAG_NAME -Match "\d+\.\d+(\.\d+)?(\.\d+)?(-(alpha|beta|pre)\.?\d*)?"
     
 If($env:appveyor_repo_tag -AND $parsedReleaseBuildVersion) {
 	$env:BuildVersion = $matches[0]

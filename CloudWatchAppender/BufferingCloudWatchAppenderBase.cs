@@ -123,7 +123,7 @@ namespace CloudWatchAppender
         public SigningAlgorithm SignatureMethod { set { ClientConfig.SignatureMethod = value; } }
 
         public string SignatureVersion { get { return ClientConfig.SignatureVersion; } set { ClientConfig.SignatureVersion = value; } }
-        public string UserAgent { get { return ClientConfig.UserAgent; } set { ClientConfig.UserAgent = value; } }
+        public string UserAgent { get { return ClientConfig.UserAgent; } }
         public RegionEndpoint RegionEndpoint { set { ClientConfig.RegionEndpoint = value; } }
         public string ServiceURL { get { return ClientConfig.ServiceURL; } set { ClientConfig.ServiceURL = value; } }
         public bool UseHttp { get { return ClientConfig.UseHttp; } set { ClientConfig.UseHttp = value; } }

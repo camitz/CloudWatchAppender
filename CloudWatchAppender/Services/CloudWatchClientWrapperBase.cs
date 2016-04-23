@@ -72,9 +72,9 @@ namespace CloudWatchAppender.Services
                     if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AWSProfileName"]) || ProfileManager.ListProfileNames().Contains("default"))
                     {
                         if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AWSRegion"]))
-                            Client = AWSClientFactoryWrapper<T>.CreateServiceClient();
+                            Client = (T)AWSClientFactoryWrapper<T>.CreateServiceClient();
                         else if (clientConfig.RegionEndpoint != null)
-                            Client = AWSClientFactoryWrapper<T>.CreateServiceClient(clientConfig);
+                            Client = (T)AWSClientFactoryWrapper<T>.CreateServiceClient(clientConfig);
                     }
                     else
                     {
@@ -82,7 +82,7 @@ namespace CloudWatchAppender.Services
                         {
                             LogLog.Debug(typeof(CloudWatchClientWrapperBase<>), "Role: " + availableRole);
                         }
-                        Client = AWSClientFactoryWrapper<T>.CreateServiceClient(clientConfig);
+                        Client = (T)AWSClientFactoryWrapper<T>.CreateServiceClient(clientConfig);
                     }
                 }
                 catch (AmazonServiceException e)
@@ -97,9 +97,9 @@ namespace CloudWatchAppender.Services
 
             if (Client == null && !string.IsNullOrEmpty(_accessKey))
                 if (clientConfig != null)
-                    Client = AWSClientFactoryWrapper<T>.CreateServiceClient(_accessKey, _secret, clientConfig);
+                    Client = (T)AWSClientFactoryWrapper<T>.CreateServiceClient(_accessKey, _secret, clientConfig);
                 else
-                    Client = AWSClientFactoryWrapper<T>.CreateServiceClient(_accessKey, _secret);
+                    Client = (T)AWSClientFactoryWrapper<T>.CreateServiceClient(_accessKey, _secret);
 
             if (Client == null)
                 throw new CloudWatchAppenderException("Couldn't create Amazon client.");
@@ -183,60 +183,60 @@ namespace CloudWatchAppender.Services
         }
     }
 
-    static class AWSClientFactoryWrapper<T>
+    static class AWSClientFactoryWrapper<T> where T : AmazonServiceClient
     {
-        public static T CreateServiceClient(ClientConfig cloudWatchConfig)
+        public static AmazonServiceClient CreateServiceClient(ClientConfig cloudWatchConfig) 
         {
             if (typeof(T) == typeof(AmazonCloudWatchLogsClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchLogsClient((AmazonCloudWatchLogsConfig)cloudWatchConfig);
+                return new AmazonCloudWatchLogsClient((AmazonCloudWatchLogsConfig)cloudWatchConfig);
             if (typeof(T) == typeof(AmazonCloudWatchClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchClient((AmazonCloudWatchConfig)cloudWatchConfig);
+                return new AmazonCloudWatchClient((AmazonCloudWatchConfig)cloudWatchConfig);
 
             throw new NotSupportedException();
         }
 
-        public static T CreateServiceClient(RegionEndpoint regionEndpoint)
+        public static AmazonServiceClient CreateServiceClient(RegionEndpoint regionEndpoint)
         {
             if (typeof(T) == typeof(AmazonCloudWatchLogsClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchLogsClient(regionEndpoint);
+                return new AmazonCloudWatchLogsClient(regionEndpoint);
             if (typeof(T) == typeof(AmazonCloudWatchClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchClient(regionEndpoint);
+                return new AmazonCloudWatchClient(regionEndpoint);
             throw new NotSupportedException();
         }
 
-        public static T CreateServiceClient(string accessKey, string secret, RegionEndpoint regionEndpoint)
+        public static AmazonServiceClient CreateServiceClient(string accessKey, string secret, RegionEndpoint regionEndpoint)
         {
             if (typeof(T) == typeof(AmazonCloudWatchLogsClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchLogsClient(accessKey, secret, regionEndpoint);
+                return new AmazonCloudWatchLogsClient(accessKey, secret, regionEndpoint);
             if (typeof(T) == typeof(AmazonCloudWatchClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchClient(accessKey, secret, regionEndpoint);
+                return new AmazonCloudWatchClient(accessKey, secret, regionEndpoint);
             throw new NotSupportedException();
         }
 
-        public static T CreateServiceClient(string accessKey, string secret)
+        public static AmazonServiceClient CreateServiceClient(string accessKey, string secret)
         {
             if (typeof(T) == typeof(AmazonCloudWatchLogsClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchLogsClient(accessKey, secret);
+                return new AmazonCloudWatchLogsClient(accessKey, secret);
             if (typeof(T) == typeof(AmazonCloudWatchClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchClient(accessKey, secret);
+                return new AmazonCloudWatchClient(accessKey, secret);
             throw new NotSupportedException();
         }
 
-        public static T CreateServiceClient(string accessKey, string secret, ClientConfig clientConfig)
+        public static AmazonServiceClient CreateServiceClient(string accessKey, string secret, ClientConfig clientConfig)
         {
             if (typeof(T) == typeof(AmazonCloudWatchLogsClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchLogsClient(accessKey, secret, (AmazonCloudWatchLogsConfig)clientConfig);
+                return new AmazonCloudWatchLogsClient(accessKey, secret, (AmazonCloudWatchLogsConfig)clientConfig);
             if (typeof(T) == typeof(AmazonCloudWatchClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchClient(accessKey, secret, (AmazonCloudWatchConfig)clientConfig);
+                return new AmazonCloudWatchClient(accessKey, secret, (AmazonCloudWatchConfig)clientConfig);
             throw new NotSupportedException();
         }
 
-        public static T CreateServiceClient()
+        public static AmazonServiceClient CreateServiceClient()
         {
             if (typeof(T) == typeof(AmazonCloudWatchLogsClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchLogsClient();
+                return new AmazonCloudWatchLogsClient();
             if (typeof(T) == typeof(AmazonCloudWatchClient))
-                return (T)AWSClientFactory.CreateAmazonCloudWatchClient();
+                return new AmazonCloudWatchClient();
             throw new NotSupportedException();
         }
     }

@@ -119,7 +119,7 @@ namespace CloudWatchAppender
         //public abstract string ServiceVersion { get; }
         public SigningAlgorithm SignatureMethod { set { ClientConfig.SignatureMethod = value; } }
         public string SignatureVersion { get { return ClientConfig.SignatureVersion; } set { ClientConfig.SignatureVersion = value; } }
-        public string UserAgent { get { return ClientConfig.UserAgent; } set { ClientConfig.UserAgent = value; } }
+        public string UserAgent { get { return ClientConfig.UserAgent; } }
         public RegionEndpoint RegionEndpoint {  set { ClientConfig.RegionEndpoint = value; } }
         public string ServiceURL { get { return ClientConfig.ServiceURL; } set { ClientConfig.ServiceURL = value; } }
         public bool UseHttp { get { return ClientConfig.UseHttp; } set { ClientConfig.UseHttp = value; } }
@@ -164,7 +164,7 @@ namespace CloudWatchAppender
         //abstract string ServiceVersion { get; }
         SigningAlgorithm SignatureMethod {  set; }
         string SignatureVersion { get; set; }
-        string UserAgent { get; set; }
+        string UserAgent { get; }
         RegionEndpoint RegionEndpoint { set; }
         string ServiceURL { get; set; }
         bool UseHttp { get; set; }

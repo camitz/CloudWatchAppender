@@ -17,7 +17,7 @@ using log4net.Util;
 
 namespace CloudWatchAppender
 {
-    public class BufferingSQSLogsAppender : BufferingSQSAppenderBase<SQSDatum>,ISQSAppender
+    public class BufferingSQSLogsAppender : BufferingSQSAppenderBase<SQSDatum>, ISQSAppender
     {
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private SQSClientWrapper _client;
@@ -160,14 +160,21 @@ namespace CloudWatchAppender
         private static IEnumerable<SendMessageBatchRequestWrapper> Assemble(IEnumerable<SQSDatum> rs)
         {
             var requests = new List<SendMessageBatchRequestWrapper>();
-            foreach (var grouping0 in rs.GroupBy(r => r.QueueName))
+            foreach (var grouping in rs.GroupBy(r => r.QueueName))
             {
+                var skip = 0;
+
+                while (grouping.Skip(skip).Any())
+                {
+                    var size = 0;
+
+                    var rss = grouping.Skip(skip).TakeWhile(x => (size += x.Message.Length) < 256 * 1024);
+
                     requests.Add(new SendMessageBatchRequestWrapper
                                  {
-                                     QueueName = grouping0.Key,
-                                     Entries = 
-                                         grouping0
-                                         .OrderBy(x => x.Timestamp)
+                                     QueueName = grouping.Key,
+                                     Entries =
+                                         rss
                                          .Select(
                                              x => new SendMessageBatchRequestEntry
                                                   {
@@ -175,6 +182,9 @@ namespace CloudWatchAppender
                                                   }
                                          ).ToList()
                                  });
+
+                    skip += rss.Count();
+                }
             }
 
             return requests;

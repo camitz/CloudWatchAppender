@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 
 namespace CloudWatchAppender.Model
@@ -16,7 +15,6 @@ namespace CloudWatchAppender.Model
 
         public string Message { get; set; }
         public string QueueName { get; set; }
-        public DateTime? Timestamp { get; set; }
 
         public override string ToString()
         {

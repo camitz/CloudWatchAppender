@@ -33,9 +33,6 @@ namespace CloudWatchAppender.Parsers
 
             if (string.IsNullOrEmpty(_currentDatum.Message))
                 _currentDatum.Message = DefaultMessage ?? "";
-
-            if (!_currentDatum.Timestamp.HasValue)
-                _currentDatum.Timestamp = DefaultTimestamp;
         }
 
 
@@ -69,12 +66,6 @@ namespace CloudWatchAppender.Parsers
                     _currentDatum.QueueName = DefaultsOverridePattern ? DefaultQueueName ?? value.sValue : value.sValue;
                     break;
 
-                case "timestamp":
-                    if (_currentDatum.Timestamp.HasValue)
-                        return false;
-
-                    _currentDatum.Timestamp = DefaultsOverridePattern ? DefaultTimestamp ?? value.Time.Value.DateTime : value.Time.Value.DateTime;
-                    break;
             }
 
             return true;

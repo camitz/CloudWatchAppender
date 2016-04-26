@@ -21,8 +21,6 @@ namespace CloudWatchAppender.Model
             if (!String.IsNullOrEmpty(sqsDatum.QueueName))
                 writer.Write("Streamname: {0}, ", sqsDatum.QueueName);
 
-            if (sqsDatum.Timestamp != default(DateTime))
-                writer.Write("Timestamp: {0}, ", sqsDatum.Timestamp.Value.ToString(CultureInfo.CurrentCulture));
         }
     }
 }

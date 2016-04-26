@@ -1,9 +1,10 @@
+//to core?
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Amazon.CloudWatch;
+//using Amazon.CloudWatch;
 using CloudWatchAppender.Model;
 
 namespace CloudWatchAppender.Parsers
@@ -100,15 +101,16 @@ namespace CloudWatchAppender.Parsers
                                     sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue,
                                     Name = t0
                                 };
-                        //unitparse
-                        if (tokens.MoveNext())
-                            if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
-                            {
-                                v.Unit = unit;
-                                var t = StandardUnit.FindValue(unit.ToLowerInvariant());
-                                if (t.ToString() != unit.ToLowerInvariant()) //If conversion capitalizes unit then it is valid and should not be included in rest.
-                                    tokens.MoveNext();
-                            }
+
+                        //cloudwatch specific
+                        //if (tokens.MoveNext())
+                        //    if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
+                        //    {
+                        //        v.Unit = unit;
+                        //        var t = StandardUnit.FindValue(unit.ToLowerInvariant());
+                        //        if (t.ToString() != unit.ToLowerInvariant()) //If conversion capitalizes unit then it is valid and should not be included in rest.
+                        //            tokens.MoveNext();
+                        //    }
 
                         _values.Add(v);
                     }
@@ -126,7 +128,7 @@ namespace CloudWatchAppender.Parsers
             _values.Add(new AppenderValue { Name = "__cav_rest", sValue = rest.Trim() });
         }
 
-        protected abstract bool ShouldLocalParse(string t0);
+        protected virtual bool ShouldLocalParse(string t0) { return false;}
 
 
         protected abstract bool IsSupportedName(string t0);
@@ -204,11 +206,19 @@ namespace CloudWatchAppender.Parsers
         }
     }
 
+    public class DatumFilledException : InvalidOperationException
+    {
+        public DatumFilledException(string message)
+            : base(message)
+        {
+
+        }
+    }
     public struct AppenderValue
     {
         public string Name;
         public double? dValue;
-        public StandardUnit Unit;
+        //public StandardUnit Unit;//cloudwatch specific
         public string sValue;
         public DateTimeOffset? Time;
     }

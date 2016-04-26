@@ -27,7 +27,7 @@ namespace CloudWatchAppender.Parsers
         public double? DefaultSum { get; set; }
         public double? DefaultMaximum { get; set; }
         public double? DefaultMinimum { get; set; }
-        public new bool ConfigOverrides{ get { return base.ConfigOverrides; }set { base.ConfigOverrides = value; } }
+        public new bool ConfigOverrides { get { return base.ConfigOverrides; } set { base.ConfigOverrides = value; } }
 
         public MetricDatumEventMessageParser() : base(true) { }
         public MetricDatumEventMessageParser(bool useOverrides)
@@ -80,7 +80,8 @@ namespace CloudWatchAppender.Parsers
 
         protected override bool IsSupportedName(string t0)
         {
-            return MetricDatum.SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) ||
+
+            return Aggresive || MetricDatum.SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) ||
                    MetricDatum.SupportedStatistics.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase));
         }
 
@@ -155,6 +156,22 @@ namespace CloudWatchAppender.Parsers
                         return false;
 
                     _currentDatum.Timestamp = DefaultsOverridePattern ? DefaultTimestamp ?? value.Time.Value : value.Time.Value;
+                    break;
+
+                case "__cav_rest":
+                    break;
+
+                default:
+                    if (!Aggresive)
+                        break;
+
+                    if (!string.IsNullOrEmpty(_currentDatum.MetricName))
+                        return false;
+
+                    _currentDatum.MetricName = DefaultsOverridePattern ? DefaultMetricName ?? value.Name : value.Name;
+                    _currentDatum.Value = DefaultsOverridePattern ? DefaultValue ?? value.dValue.Value : value.dValue.Value;
+                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
+
                     break;
             }
 

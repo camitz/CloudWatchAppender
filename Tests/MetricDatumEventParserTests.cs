@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using CloudWatchAppender.Parsers;
@@ -29,6 +30,7 @@ namespace CloudWatchAppender.Tests
             {
                 Assert.AreEqual(StandardUnit.KilobytesSecond, r.MetricData[0].Unit);
                 Assert.AreEqual(3.0, r.MetricData[0].Value);
+                //Assert.AreEqual("A tick!", r.MetricData[1].Value);
                 passes++;
             }
 
@@ -366,7 +368,7 @@ namespace CloudWatchAppender.Tests
                                                              {"Cake", new Dimension{Name="Cake", Value = "chocolate"}}
                                                          }
             };
-            var parsedData = parser.Parse("A tick! Dimensions: (InstanceID: qwerty, Fruit: apple) Value: 4.5 Seconds");
+            var parsedData = parser.Parse("A tick! Dummy: 4.6 Kilobytes Dimensions: (InstanceID: qwerty, Fruit: apple) Value: 4.5 Seconds ");
 
             var passes = 0;
             foreach (var r in parsedData)
@@ -488,6 +490,8 @@ namespace CloudWatchAppender.Tests
             var parser = new MetricDatumEventMessageParser();
             var parsedData = parser.Parse("A tick! Dimensions: (InstanceID: qwerty Value: 4.5 Seconds");
 
+            Assert.AreEqual(1, parsedData.Count());
+
             foreach (var r in parsedData)
             {
                 Assert.AreEqual(2, r.MetricData[0].Dimensions.Count);
@@ -498,6 +502,41 @@ namespace CloudWatchAppender.Tests
 
                 Assert.AreEqual(StandardUnit.Count, r.MetricData[0].Unit);
                 Assert.AreEqual(0, r.MetricData[0].Value);
+            }
+        }
+
+        [Test]
+        public void MultipleValuesWithAggressiveParsing([Values(true, false)] bool aggresive, [Values(true, false)] bool configOverrides)
+        {
+            var parser = new MetricDatumEventMessageParser
+                         {
+                             Aggresive = aggresive,
+                             ConfigOverrides = configOverrides
+                         };
+            var parsedData = parser.Parse("A tick! Metric1: 5 seconds Metric2: 4.6 kilobytes").ToArray();
+
+            if (aggresive)
+            {
+                Assert.AreEqual(2, parsedData.Count());
+
+                Assert.AreEqual(0, parsedData[0].MetricData[0].Dimensions.Count);
+                Assert.AreEqual(StandardUnit.Seconds, parsedData[0].MetricData[0].Unit);
+                Assert.AreEqual(5d, parsedData[0].MetricData[0].Value);
+                Assert.AreEqual("Metric1", parsedData[0].MetricData[0].MetricName);
+
+                Assert.AreEqual(0, parsedData[1].MetricData[0].Dimensions.Count);
+                Assert.AreEqual(StandardUnit.Kilobytes, parsedData[1].MetricData[0].Unit);
+                Assert.AreEqual(4.6d, parsedData[1].MetricData[0].Value);
+                Assert.AreEqual("Metric2", parsedData[1].MetricData[0].MetricName);
+            }
+            else
+            {
+                Assert.AreEqual(1, parsedData.Count());
+
+                Assert.AreEqual(0, parsedData[0].MetricData[0].Dimensions.Count);
+                Assert.AreEqual(StandardUnit.Count, parsedData[0].MetricData[0].Unit);
+                Assert.AreEqual(0, parsedData[0].MetricData[0].Value);
+                Assert.AreEqual("CloudWatchAppender", parsedData[0].MetricData[0].MetricName);
             }
         }
     }

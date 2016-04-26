@@ -20,6 +20,7 @@ namespace CloudWatchAppender.Parsers
         }
 
         public virtual bool ConfigOverrides { get { return DefaultsOverridePattern; } set { DefaultsOverridePattern = value; } }
+        public bool Aggresive { get; set; }
         protected abstract void SetDefaults();
         protected abstract void NewDatum();
         protected abstract bool FillName(AppenderValue value);
@@ -104,6 +105,9 @@ namespace CloudWatchAppender.Parsers
                             if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
                             {
                                 v.Unit = unit;
+                                var t = StandardUnit.FindValue(unit.ToLowerInvariant());
+                                if (t.ToString() != unit) //If conversion capitalizes unit then it is valid and should not be included in rest.
+                                    tokens.MoveNext();
                             }
 
                         _values.Add(v);
@@ -119,7 +123,7 @@ namespace CloudWatchAppender.Parsers
             if (startRest.HasValue)
                 rest += renderedMessage.Substring(startRest.Value, renderedMessage.Length - startRest.Value);
 
-            _values.Add(new AppenderValue { Name = "rest", sValue = rest.Trim() });
+            _values.Add(new AppenderValue { Name = "__cav_rest", sValue = rest.Trim() });
         }
 
         protected abstract bool ShouldLocalParse(string t0);

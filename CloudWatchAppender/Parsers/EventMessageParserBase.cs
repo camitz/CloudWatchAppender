@@ -106,7 +106,7 @@ namespace CloudWatchAppender.Parsers
                             {
                                 v.Unit = unit;
                                 var t = StandardUnit.FindValue(unit.ToLowerInvariant());
-                                if (t.ToString() != unit) //If conversion capitalizes unit then it is valid and should not be included in rest.
+                                if (t.ToString() != unit.ToLowerInvariant()) //If conversion capitalizes unit then it is valid and should not be included in rest.
                                     tokens.MoveNext();
                             }
 

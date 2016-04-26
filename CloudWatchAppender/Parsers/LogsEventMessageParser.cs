@@ -56,7 +56,7 @@ namespace CloudWatchAppender.Parsers
         {
             switch (value.Name.ToLowerInvariant())
             {
-                case "rest":
+                case "__cav_rest":
                     if (!string.IsNullOrEmpty(_currentDatum.Message))
                         return false;
 

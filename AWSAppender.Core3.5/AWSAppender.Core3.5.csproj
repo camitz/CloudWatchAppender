@@ -54,6 +54,9 @@
     <Compile Include="..\AWSAppender.Core\AWSAppenderBase.cs">
       <Link>AWSAppenderBase.cs</Link>
     </Compile>
+    <Compile Include="..\AWSAppender.Core\BufferingAWSAppenderBase.cs">
+      <Link>BufferingAWSAppenderBase.cs</Link>
+    </Compile>
     <Compile Include="..\AWSAppender.Core\Fakes\FakeInstanceMetaDataReader.cs">
       <Link>Fakes\FakeInstanceMetaDataReader.cs</Link>
     </Compile>
@@ -75,11 +78,20 @@
     <Compile Include="..\AWSAppender.Core\PatternConverter\NamedPatternConverter.cs">
       <Link>PatternConverter\NamedPatternConverter.cs</Link>
     </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\AppenderValue.cs">
+      <Link>Services\AppenderValue.cs</Link>
+    </Compile>
     <Compile Include="..\AWSAppender.Core\Services\AWSClientFactoryWrapper.cs">
       <Link>Services\AWSClientFactoryWrapper.cs</Link>
     </Compile>
     <Compile Include="..\AWSAppender.Core\Services\ClientWrapperBase.cs">
       <Link>Services\ClientWrapperBase.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\DatumFilledException.cs">
+      <Link>Services\DatumFilledException.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\EventMessageParserBase.cs">
+      <Link>Services\EventMessageParserBase.cs</Link>
     </Compile>
     <Compile Include="..\AWSAppender.Core\Services\EventRateLimiter.cs">
       <Link>Services\EventRateLimiter.cs</Link>

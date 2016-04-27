@@ -65,23 +65,23 @@
     <Compile Include="..\CloudWatchAppender\BufferingAggregatingCloudWatchAppender.cs">
       <Link>BufferingAggregatingCloudWatchAppender.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchAppender\BufferingCloudWatchAppenderBase.cs">
-      <Link>BufferingCloudWatchAppenderBase.cs</Link>
-    </Compile>
     <Compile Include="..\CloudWatchAppender\BufferingCloudWatchLogsAppender.cs">
       <Link>BufferingCloudWatchLogsAppender.cs</Link>
     </Compile>
     <Compile Include="..\CloudWatchAppender\CloudWatchAppender.cs">
       <Link>CloudWatchAppender.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchAppender\CloudWatchAppenderBase.cs">
-      <Link>CloudWatchAppenderBase.cs</Link>
-    </Compile>
     <Compile Include="..\CloudWatchAppender\CloudWatchAppenderException.cs">
       <Link>CloudWatchAppenderException.cs</Link>
     </Compile>
     <Compile Include="..\CloudWatchAppender\CloudWatchLogsAppender.cs">
       <Link>CloudWatchLogsAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\ICloudWatchAppender.cs">
+      <Link>ICloudWatchAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\ICloudWatchLogsAppender.cs">
+      <Link>ICloudWatchLogsAppender.cs</Link>
     </Compile>
     <Compile Include="..\CloudWatchAppender\Model\LogDatum.cs">
       <Link>Model\LogDatum.cs</Link>
@@ -97,9 +97,6 @@
     </Compile>
     <Compile Include="..\CloudWatchAppender\Parsers\DummyLogsEventMessageParser.cs">
       <Link>Parsers\DummyLogsEventMessageParser.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchAppender\Parsers\EventMessageParserBase.cs">
-      <Link>Parsers\EventMessageParserBase.cs</Link>
     </Compile>
     <Compile Include="..\CloudWatchAppender\Parsers\IEventMessageParser.cs">
       <Link>Parsers\IEventMessageParser.cs</Link>

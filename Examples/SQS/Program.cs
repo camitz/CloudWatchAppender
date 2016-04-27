@@ -4,7 +4,7 @@ using AWSAppender.Core.Services;
 using log4net;
 using log4net.Config;
 
-namespace Logs
+namespace SQS
 {
     internal class Logs
     {

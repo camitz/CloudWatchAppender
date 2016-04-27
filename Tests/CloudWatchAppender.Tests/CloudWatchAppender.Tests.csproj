@@ -40,14 +40,12 @@
       <HintPath>..\CloudWatchAppender\packages\AWSSDK.CloudWatch.3.1.0.5\lib\net45\AWSSDK.CloudWatch.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AWSSDK.CloudWatchLogs">
-      <HintPath>..\..\packages\AWSSDK.CloudWatchLogs.3.1.2.4\lib\net45\AWSSDK.CloudWatchLogs.dll</HintPath>
-    </Reference>
     <Reference Include="AWSSDK.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\CloudWatchAppender\packages\AWSSDK.Core.3.1.4.3\lib\net45\AWSSDK.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net">
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="nunit.core">
@@ -79,10 +77,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BufferingAssemblerTest.cs" />
-    <Compile Include="DummyEventParserTests.cs" />
     <Compile Include="EventRateLimiterTests.cs" />
     <Compile Include="MetricDatumEventParserTests.cs" />
-    <Compile Include="LogsEventParserTests.cs" />
     <Compile Include="MetricDatumRendererTests.cs" />
     <Compile Include="PatternConverterTests.cs" />
     <Compile Include="PatternParserTests.cs" />

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace CloudWatchAppender.Model
+namespace CloudWatchLogsAppender.Model
 {
     public class LogDatum
     {

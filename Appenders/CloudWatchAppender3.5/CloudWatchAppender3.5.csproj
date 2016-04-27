@@ -65,44 +65,20 @@
     <Compile Include="..\CloudWatchAppender\BufferingAggregatingCloudWatchAppender.cs">
       <Link>BufferingAggregatingCloudWatchAppender.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchAppender\BufferingCloudWatchLogsAppender.cs">
-      <Link>BufferingCloudWatchLogsAppender.cs</Link>
-    </Compile>
     <Compile Include="..\CloudWatchAppender\CloudWatchAppender.cs">
       <Link>CloudWatchAppender.cs</Link>
     </Compile>
     <Compile Include="..\CloudWatchAppender\CloudWatchAppenderException.cs">
       <Link>CloudWatchAppenderException.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchAppender\CloudWatchLogsAppender.cs">
-      <Link>CloudWatchLogsAppender.cs</Link>
-    </Compile>
     <Compile Include="..\CloudWatchAppender\ICloudWatchAppender.cs">
       <Link>ICloudWatchAppender.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchAppender\ICloudWatchLogsAppender.cs">
-      <Link>ICloudWatchLogsAppender.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchAppender\Model\LogDatum.cs">
-      <Link>Model\LogDatum.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchAppender\Model\LogDatumRenderer.cs">
-      <Link>Model\LogDatumRenderer.cs</Link>
     </Compile>
     <Compile Include="..\CloudWatchAppender\Model\MetricDatum.cs">
       <Link>Model\MetricDatum.cs</Link>
     </Compile>
     <Compile Include="..\CloudWatchAppender\Model\MetricDatumRenderer.cs">
       <Link>Model\MetricDatumRenderer.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchAppender\Parsers\DummyLogsEventMessageParser.cs">
-      <Link>Parsers\DummyLogsEventMessageParser.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchAppender\Parsers\IEventMessageParser.cs">
-      <Link>Parsers\IEventMessageParser.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchAppender\Parsers\LogsEventMessageParser.cs">
-      <Link>Parsers\LogsEventMessageParser.cs</Link>
     </Compile>
     <Compile Include="..\CloudWatchAppender\Parsers\MetricDatumEventMessageParser.cs">
       <Link>Parsers\MetricDatumEventMessageParser.cs</Link>
@@ -112,12 +88,6 @@
     </Compile>
     <Compile Include="..\CloudWatchAppender\Services\CloudWatchClientWrapper.cs">
       <Link>Services\CloudWatchClientWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchAppender\Services\CloudWatchLogsClientWrapper.cs">
-      <Link>Services\CloudWatchLogsClientWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchAppender\Services\LogEventProcessor.cs">
-      <Link>Services\LogEventProcessor.cs</Link>
     </Compile>
     <Compile Include="..\CloudWatchAppender\Services\MetricDatumEventProcessor.cs">
       <Link>Services\MetricDatumEventProcessor.cs</Link>

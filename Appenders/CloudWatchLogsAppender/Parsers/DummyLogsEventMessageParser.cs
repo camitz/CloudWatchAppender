@@ -1,4 +1,4 @@
-namespace CloudWatchAppender.Parsers
+namespace CloudWatchLogsAppender.Parsers
 {
     public class DummyLogsEventMessageParser : LogsEventMessageParser
     {

@@ -1,6 +1,6 @@
 ﻿using AWSAppender.Core;
 
-namespace CloudWatchAppender
+namespace CloudWatchLogsAppender
 {
     public interface ICloudWatchLogsAppender : IAWSAppender
     {

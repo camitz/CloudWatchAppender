@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9D22716F-0CF0-45DB-8957-9DACADFFF930}</ProjectGuid>
+    <ProjectGuid>{23F90E5A-5C96-4116-B27A-5836CD3C0472}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CloudWatchAppender</RootNamespace>
-    <AssemblyName>CloudWatchAppender</AssemblyName>
+    <RootNamespace>CloudWatchLogsAppender</RootNamespace>
+    <AssemblyName>CloudWatchLogsAppender</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">C:\cocoin\trunk\</SolutionDir>
@@ -37,8 +37,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.CloudWatch, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>packages\AWSSDK.CloudWatch.3.1.0.5\lib\net45\AWSSDK.CloudWatch.dll</HintPath>
+    <Reference Include="AWSSDK.CloudWatchLogs, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>packages\AWSSDK.CloudWatchLogs.3.1.2.4\lib\net45\AWSSDK.CloudWatchLogs.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="AWSSDK.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
@@ -74,18 +74,17 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BufferingAggregatingCloudWatchAppender.cs" />
-    <Compile Include="CloudWatchAppender.cs" />
-    <Compile Include="CloudWatchAppenderException.cs" />
-    <Compile Include="ICloudWatchAppender.cs" />
-    <Compile Include="Model\MetricDatum.cs" />
-    <Compile Include="Model\MetricDatumRenderer.cs" />
-    <Compile Include="Parsers\MetricDatumEventMessageParser.cs" />
+    <Compile Include="BufferingCloudWatchLogsAppender.cs" />
+    <Compile Include="ICloudWatchLogsAppender.cs" />
+    <Compile Include="CloudWatchLogsAppender.cs" />
+    <Compile Include="Model\LogDatum.cs" />
+    <Compile Include="Model\LogDatumRenderer.cs" />
+    <Compile Include="Parsers\DummyLogsEventMessageParser.cs" />
+    <Compile Include="Parsers\ILogsEventMessageParser.cs" />
+    <Compile Include="Parsers\LogsEventMessageParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\CloudWatchClientWrapper.cs" />
-    <Compile Include="Services\MetricDatumEventProcessor.cs" />
-    <Compile Include="Services\UnitConverter.cs" />
-    <Compile Include="TypeConverters\StandardUnitConverter.cs" />
+    <Compile Include="Services\CloudWatchLogsClientWrapper.cs" />
+    <Compile Include="Services\LogEventProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

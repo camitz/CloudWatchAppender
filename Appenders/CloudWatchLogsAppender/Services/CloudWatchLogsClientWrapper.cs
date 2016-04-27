@@ -6,7 +6,7 @@ using Amazon.CloudWatchLogs.Model;
 using Amazon.Runtime;
 using log4net.Util;
 
-namespace CloudWatchAppender.Services
+namespace CloudWatchLogsAppender.Services
 {
     public class CloudWatchLogsClientWrapper : AWSAppender.Core.Services.ClientWrapperBase<AmazonCloudWatchLogsConfig,AmazonCloudWatchLogsClient>
     {

@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using SQSAppender.Services;
 
-namespace CloudWatchAppender.Tests
+namespace SQSAppender.Tests
 {
     [TestFixture]
     public class SQSEventProcessorTests

@@ -2,7 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using SQSAppender.Parsers;
 
-namespace CloudWatchAppender.Tests
+namespace SQSAppender.Tests
 {
     [TestFixture]
     public class SQSEventParserTests

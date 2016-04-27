@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Amazon.CloudWatch.Model;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Model;
+using CloudWatchLogsAppender.Model;
 
-namespace CloudWatchAppender.Parsers
+namespace CloudWatchLogsAppender.Parsers
 {
     public class LogsEventMessageParser : EventMessageParserBase<LogDatum>, ILogsEventMessageParser
     {
-        private Dictionary<string, Dimension> _dimensions;
+        //private Dictionary<string, Dimension> _dimensions;
         private LogDatum _currentDatum;
         private static string _assemblyName;
 
@@ -134,7 +133,7 @@ namespace CloudWatchAppender.Parsers
                         continue;
                     }
 
-                    _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
+                    //_dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
                 }
             }
             else
@@ -159,14 +158,14 @@ namespace CloudWatchAppender.Parsers
                     return;
                 }
 
-                _dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
+                //_dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
             }
         }
 
         protected override void Init()
         {
             base.Init();
-            _dimensions = new Dictionary<string, Dimension>();
+            //_dimensions = new Dictionary<string, Dimension>();
             _currentDatum = null;
         }
 

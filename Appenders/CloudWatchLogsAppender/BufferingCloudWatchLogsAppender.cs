@@ -8,14 +8,14 @@ using Amazon.Runtime;
 using AWSAppender.Core;
 using AWSAppender.Core.Layout;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Model;
-using CloudWatchAppender.Parsers;
-using CloudWatchAppender.Services;
+using CloudWatchLogsAppender.Model;
+using CloudWatchLogsAppender.Parsers;
+using CloudWatchLogsAppender.Services;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
 
-namespace CloudWatchAppender
+namespace CloudWatchLogsAppender
 {
     public class BufferingCloudWatchLogsAppender : BufferingAWSAppenderBase<LogDatum>,
         ICloudWatchLogsAppender

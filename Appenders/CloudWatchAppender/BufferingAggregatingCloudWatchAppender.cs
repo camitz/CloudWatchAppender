@@ -8,7 +8,6 @@ using Amazon.Runtime;
 using AWSAppender.Core;
 using AWSAppender.Core.Layout;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Parsers;
 using CloudWatchAppender.Services;

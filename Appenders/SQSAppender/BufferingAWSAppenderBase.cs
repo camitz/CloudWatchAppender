@@ -1,5 +1,6 @@
-﻿//to core
+//to core?
 
+//using Amazon.CloudWatch;
 using System;
 using System.Net;
 using Amazon;
@@ -12,13 +13,13 @@ using SQSAppender.TypeConverters;
 
 namespace SQSAppender
 {
-    public abstract class CloudWatchAppenderBase<T> : AppenderSkeleton, IAWSAppender
+    public abstract class BufferingAWSAppenderBase<T> : BufferingAppenderSkeleton, IAWSAppender
     {
-        //to core?
-        protected CloudWatchAppenderBase()
+        protected BufferingAWSAppenderBase()
         {
             log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(RegionEndpoint), typeof(RegionConverter));
-            //log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(StandardUnit), typeof(StandardUnitConverter)); //cloudwatch specific
+            //log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(StandardUnit), typeof(StandardUnitConverter));                         //cloudwatch specific
+
         }
 
         public string AccessKey
@@ -62,6 +63,7 @@ namespace SQSAppender
             }
             get { return _eventMessageParser; }
         }
+
         public bool ConfigOverrides
         {
             set
@@ -103,10 +105,13 @@ namespace SQSAppender
             get { return _timestamp; }
         }
 
-        public int RateLimit
+        public EventRateLimiter EventRateLimiter
         {
-            set { EventRateLimiter = new EventRateLimiter(value); }
+            get { return _eventRateLimiter ?? (_eventRateLimiter = new EventRateLimiter()); }
+            set { _eventRateLimiter = value; }
         }
+
+        public abstract IEventProcessor<T> EventProcessor { get; set; }
 
         #region ClientConfig
 
@@ -120,9 +125,10 @@ namespace SQSAppender
         public TimeSpan? ReadWriteTimeout { get { return ClientConfig.ReadWriteTimeout; } set { ClientConfig.ReadWriteTimeout = value; } }
         //public abstract string ServiceVersion { get; }
         public SigningAlgorithm SignatureMethod { set { ClientConfig.SignatureMethod = value; } }
+
         public string SignatureVersion { get { return ClientConfig.SignatureVersion; } set { ClientConfig.SignatureVersion = value; } }
         public string UserAgent { get { return ClientConfig.UserAgent; } }
-        public RegionEndpoint RegionEndpoint {  set { ClientConfig.RegionEndpoint = value; } }
+        public RegionEndpoint RegionEndpoint { set { ClientConfig.RegionEndpoint = value; } }
         public string ServiceURL { get { return ClientConfig.ServiceURL; } set { ClientConfig.ServiceURL = value; } }
         public bool UseHttp { get { return ClientConfig.UseHttp; } set { ClientConfig.UseHttp = value; } }
         public string AuthenticationRegion { get { return ClientConfig.AuthenticationRegion; } set { ClientConfig.AuthenticationRegion = value; } }
@@ -136,59 +142,7 @@ namespace SQSAppender
         public ICredentials ProxyCredentials { get { return ClientConfig.ProxyCredentials; } set { ClientConfig.ProxyCredentials = value; } }
         public TimeSpan? Timeout { get { return ClientConfig.Timeout; } set { ClientConfig.Timeout = value; } }
 
-        public EventRateLimiter EventRateLimiter
-        {
-            get { return _eventRateLimiter ?? (_eventRateLimiter = new EventRateLimiter()); }
-            set { _eventRateLimiter = value; }
-        }
-
-        public abstract IEventProcessor<T> EventProcessor { get; set; }
 
         #endregion
     }
-
-    public interface IAWSAppender
-    {
-        //to core?
-        string AccessKey { set; }
-        string Secret { set; }
-        string EndPoint { set; }
-        string Timestamp { set; }
-        bool ConfigOverrides { set; }
-        string InstanceMetaDataReaderClass { get; set; }
-
-        #region clientconfig
-        string ProxyHost { get; set; }
-        int ProxyPort { get; set; }
-        int MaxIdleTime { get; set; }
-        int ConnectionLimit { get; set; }
-        bool UseNagleAlgorithm { get; set; }
-        TimeSpan? ReadWriteTimeout { get; set; }
-        //abstract string ServiceVersion { get; }
-        SigningAlgorithm SignatureMethod {  set; }
-        string SignatureVersion { get; set; }
-        string UserAgent { get; }
-        RegionEndpoint RegionEndpoint { set; }
-        string ServiceURL { get; set; }
-        bool UseHttp { get; set; }
-        string AuthenticationRegion { get; set; }
-        string AuthenticationServiceName { get; set; }
-        int MaxErrorRetry { get; set; }
-        bool LogResponse { get; set; }
-        bool ReadEntireResponse { get; set; }
-        int AWSBufferSize { get; set; }
-        long ProgressUpdateInterval { get; set; }
-        bool LogMetrics { get; set; }
-        ICredentials ProxyCredentials { get; set; }
-        TimeSpan? Timeout { get; set; }
-        #endregion
-    }
-
-    public interface ISQSAppender : IAWSAppender
-    {
-        string QueueName { set; }
-        string Message { set; }
-    }
-
 }
-

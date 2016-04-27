@@ -101,7 +101,7 @@ namespace SQSAppender.Services
                     Client = (TClient)AWSClientFactoryWrapper<TClient>.CreateServiceClient(_accessKey, _secret);
 
             if (Client == null)
-                throw new CloudWatchAppenderException("Couldn't create Amazon client.");
+                throw new SQSAppenderException("Couldn't create Amazon client.");
 
         }
 
@@ -145,8 +145,7 @@ namespace SQSAppender.Services
                                      {
                                          tokenSource.Cancel();
                                          LogLog.Error(GetType(),
-                                             "IsqsAppender timed out while submitting to CloudWatch. Exception (if any): {0}",
-                                             nestedTask.Exception);
+                                             "ISQSAppender timed out while submitting to CloudWatch. Exception (if any): {0}", nestedTask.Exception);
                                      }
                                  }
                                  catch (Exception e)

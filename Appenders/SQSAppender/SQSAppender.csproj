@@ -73,10 +73,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BufferingSQSAppenderBase.cs" />
+    <Compile Include="BufferingAWSAppenderBase.cs" />
     <Compile Include="BufferingSQSAppender.cs" />
-    <Compile Include="CloudWatchAppenderBase.cs" />
-    <Compile Include="CloudWatchAppenderException.cs" />
+    <Compile Include="AWSAppenderBase.cs" />
+    <Compile Include="SQSAppenderException.cs" />
     <Compile Include="SQSAppender.cs" />
     <Compile Include="Model\SQSDatum.cs" />
     <Compile Include="Model\SQSDatumRenderer.cs" />

@@ -28,7 +28,6 @@ namespace SQSAppender.Services
         private DateTime? _dateTimeOffset;
         private readonly string _queueName;
         private readonly string _message;
-        private string _id;
         private string _parsedId;
 
         public SQSEventProcessor(string queueName, string message)
@@ -40,6 +39,7 @@ namespace SQSAppender.Services
 
         public IEnumerable<SQSDatum> ProcessEvent(LoggingEvent loggingEvent, string renderedString)
         {
+            //move to base class
             var patternParser = new PatternParser(loggingEvent);
 
             if (renderedString.Contains("%"))
@@ -59,7 +59,6 @@ namespace SQSAppender.Services
 
             eventMessageParser.DefaultQueueName = _parsedQueueName;
             eventMessageParser.DefaultMessage = _parsedMessage;
-            eventMessageParser.DefaultID = _parsedId;
 
             return eventMessageParser.Parse(renderedString);
         }
@@ -75,10 +74,6 @@ namespace SQSAppender.Services
             _parsedMessage = string.IsNullOrEmpty(_message)
                 ? null
                 : patternParser.Parse(_message);
-
-            _parsedId = string.IsNullOrEmpty(_id)
-                ? Guid.NewGuid().ToString()
-                : patternParser.Parse(_id);
         }
 
         private readonly static Type _declaringType = typeof(SQSEventProcessor);

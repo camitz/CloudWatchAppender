@@ -18,7 +18,7 @@ using SQSAppender.Services;
 
 namespace SQSAppender
 {
-    public class BufferingSQSAppender : BufferingSQSAppenderBase<SQSDatum>, ISQSAppender
+    public class BufferingSQSAppender : BufferingAWSAppenderBase<SQSDatum>, ISQSAppender
     {
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private SQSClientWrapper _client;
@@ -148,6 +148,9 @@ namespace SQSAppender
 
         private static IEnumerable<SendMessageBatchRequestWrapper> Assemble(IEnumerable<SQSDatum> data)
         {
+            if (data.Any(x => x.Message.Length > 256*1024))
+                throw new MessageTooLargeException();
+
             var requests = new List<SendMessageBatchRequestWrapper>();
             foreach (var grouping in data.GroupBy(r => r.QueueName))
             {
@@ -157,7 +160,10 @@ namespace SQSAppender
                 {
                     var size = 0;
 
-                    var taken = grouping.Skip(skip).TakeWhile(x => (size += x.Message.Length) < 256 * 1024);
+                    var taken = grouping
+                        .Skip(skip)
+                        .TakeWhile(x => (size += x.Message.Length) < 256 * 1024)
+                        .Take(10);
 
                     requests.Add(new SendMessageBatchRequestWrapper
                                  {
@@ -179,6 +185,10 @@ namespace SQSAppender
 
             return requests;
         }
+    }
+
+    internal class MessageTooLargeException : Exception
+    {
     }
 }
 

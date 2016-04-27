@@ -14,7 +14,7 @@ using SQSAppender.Services;
 
 namespace SQSAppender
 {
-    public class SQSAppender : CloudWatchAppenderBase<SQSDatum>, ISQSAppender
+    public class SQSAppender : AWSAppenderBase<SQSDatum>, ISQSAppender
     {
         private SQSClientWrapper _client;
         private static readonly Type _declaringType = typeof(SQSAppender);

@@ -25,13 +25,17 @@ namespace CloudWatchAppender.Tests
                 var parsedData = parser.Parse("A tick");
 
                 var passes = 0;
+                string prevID = null;
                 foreach (var r in parsedData)
                 {
                     Assert.AreEqual("unspecified", r.QueueName);
                     Assert.AreEqual("A tick", r.Message);
+                    Assert.AreNotEqual(prevID, r.ID);
 
+                    prevID = r.ID;
                     passes++;
                 }
+
                 Assert.AreEqual(1, passes);
             }
         }

@@ -13,6 +13,5 @@ namespace SQSAppender.Parsers
     {
         string DefaultQueueName { get; set; }
         string DefaultMessage { get; set; }
-        string DefaultID { get; set; }
     }
 }

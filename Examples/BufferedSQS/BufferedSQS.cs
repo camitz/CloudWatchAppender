@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Model;
-using CloudWatchAppender.Services;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Repository;
+using SQSAppender.Model;
 
 namespace BufferedLogs
 {
-    internal class BufferedLogs
+    internal class BufferedSQS
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(BufferedLogs));
-        private const int nTicks = 1000;
+        private static readonly ILog log = LogManager.GetLogger(typeof(BufferedSQS));
+        private const int nTicks = 100;
 
         private static void Main(string[] args)
         {
             XmlConfigurator.Configure();
 
-            var streams = new[] { "Stream1", "Stream2" };
-            var groups = new[] { "GRoup1", "GRaoup2" };
+            var queues = new[] { "Queue1", "Queue2" };
             var random = new Random();
 
             var stopWatch = new Stopwatch();
@@ -32,19 +31,17 @@ namespace BufferedLogs
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
 
                 if (random.Next(2) == 0)
-                    log.InfoFormat("A tick! Groupname: {0} Streamname: {1}",
-                        groups[random.Next(2)], streams[random.Next(2)]);
+                    log.InfoFormat("A tick! Queuename: {0} ID: {1}", queues[random.Next(2)], random.NextDouble().ToString(CultureInfo.InvariantCulture).Replace(".",""));
                 else
-                    log.Info(new LogDatum("A tick!")
+                    log.Info(new SQSDatum("A tick!")
                     {
-                        GroupName = groups[random.Next(2)],
-                        StreamName = streams[random.Next(2)],
-                        Timestamp = DateTime.Now
+                        QueueName = queues[random.Next(2)],
+                        ID = random.NextDouble().ToString(CultureInfo.InvariantCulture).Replace(".", "")
                     });
 
                 log.Info("Message: sample text for logging");
 
-                Thread.Sleep(10);
+                //Thread.Sleep(10);
             }
 
             ILoggerRepository rep = LogManager.GetRepository();

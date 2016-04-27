@@ -13,7 +13,6 @@ namespace SQSAppender.Parsers
 
         public string DefaultMessage { get; set; }
         public string DefaultQueueName { get; set; }
-        public string DefaultID { get; set; }
         public new bool ConfigOverrides { get { return base.ConfigOverrides; } set { base.ConfigOverrides = value; } }
 
         public SQSMessageParser()
@@ -31,7 +30,7 @@ namespace SQSAppender.Parsers
                 _currentDatum.QueueName = DefaultQueueName ?? _assemblyName ?? "unspecified";
 
             if (string.IsNullOrEmpty(_currentDatum.ID))
-                _currentDatum.ID = DefaultID ?? Guid.NewGuid().ToString();
+                _currentDatum.ID = Guid.NewGuid().ToString();
 
             if (string.IsNullOrEmpty(_currentDatum.Message))
                 _currentDatum.Message = DefaultMessage ?? "";
@@ -72,7 +71,7 @@ namespace SQSAppender.Parsers
                     if (!string.IsNullOrEmpty(_currentDatum.ID))
                         return false;
 
-                    _currentDatum.ID = DefaultsOverridePattern ? DefaultID ?? value.sValue : value.sValue;
+                    _currentDatum.ID = value.sValue;
                     break;
 
             }
@@ -90,7 +89,7 @@ namespace SQSAppender.Parsers
                                                     {
                                                         "Message",
                                                         "QueueName",
-                                                        "Timestamp"
+                                                        "ID"
                                                     };
 
     }

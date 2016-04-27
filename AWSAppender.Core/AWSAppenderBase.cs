@@ -1,25 +1,19 @@
-//to core?
-
-//using Amazon.CloudWatch;
 using System;
 using System.Net;
 using Amazon;
 using Amazon.Runtime;
 using AWSAppender.Core.Services;
+using AWSAppender.Core.TypeConverters;
 using log4net.Appender;
-using SQSAppender.Parsers;
-using SQSAppender.Services;
-using SQSAppender.TypeConverters;
 
-namespace SQSAppender
+namespace AWSAppender.Core
 {
-    public abstract class BufferingAWSAppenderBase<T> : BufferingAppenderSkeleton, IAWSAppender
+    public abstract class AWSAppenderBase<T> : AppenderSkeleton, IAWSAppender
     {
-        protected BufferingAWSAppenderBase()
+        protected AWSAppenderBase()
         {
             log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(RegionEndpoint), typeof(RegionConverter));
-            //log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(StandardUnit), typeof(StandardUnitConverter));                         //cloudwatch specific
-
+            //log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(StandardUnit), typeof(StandardUnitConverter)); //cloudwatch specific
         }
 
         public string AccessKey
@@ -63,7 +57,6 @@ namespace SQSAppender
             }
             get { return _eventMessageParser; }
         }
-
         public bool ConfigOverrides
         {
             set
@@ -105,13 +98,10 @@ namespace SQSAppender
             get { return _timestamp; }
         }
 
-        public EventRateLimiter EventRateLimiter
+        public int RateLimit
         {
-            get { return _eventRateLimiter ?? (_eventRateLimiter = new EventRateLimiter()); }
-            set { _eventRateLimiter = value; }
+            set { EventRateLimiter = new EventRateLimiter(value); }
         }
-
-        public abstract IEventProcessor<T> EventProcessor { get; set; }
 
         #region ClientConfig
 
@@ -125,10 +115,9 @@ namespace SQSAppender
         public TimeSpan? ReadWriteTimeout { get { return ClientConfig.ReadWriteTimeout; } set { ClientConfig.ReadWriteTimeout = value; } }
         //public abstract string ServiceVersion { get; }
         public SigningAlgorithm SignatureMethod { set { ClientConfig.SignatureMethod = value; } }
-
         public string SignatureVersion { get { return ClientConfig.SignatureVersion; } set { ClientConfig.SignatureVersion = value; } }
         public string UserAgent { get { return ClientConfig.UserAgent; } }
-        public RegionEndpoint RegionEndpoint { set { ClientConfig.RegionEndpoint = value; } }
+        public RegionEndpoint RegionEndpoint {  set { ClientConfig.RegionEndpoint = value; } }
         public string ServiceURL { get { return ClientConfig.ServiceURL; } set { ClientConfig.ServiceURL = value; } }
         public bool UseHttp { get { return ClientConfig.UseHttp; } set { ClientConfig.UseHttp = value; } }
         public string AuthenticationRegion { get { return ClientConfig.AuthenticationRegion; } set { ClientConfig.AuthenticationRegion = value; } }
@@ -142,6 +131,13 @@ namespace SQSAppender
         public ICredentials ProxyCredentials { get { return ClientConfig.ProxyCredentials; } set { ClientConfig.ProxyCredentials = value; } }
         public TimeSpan? Timeout { get { return ClientConfig.Timeout; } set { ClientConfig.Timeout = value; } }
 
+        public EventRateLimiter EventRateLimiter
+        {
+            get { return _eventRateLimiter ?? (_eventRateLimiter = new EventRateLimiter()); }
+            set { _eventRateLimiter = value; }
+        }
+
+        public abstract IEventProcessor<T> EventProcessor { get; set; }
 
         #endregion
     }

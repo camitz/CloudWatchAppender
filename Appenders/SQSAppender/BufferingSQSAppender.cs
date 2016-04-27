@@ -1,12 +1,11 @@
-﻿//using Amazon.CloudWatchLogs;
-//using Amazon.CloudWatchLogs.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using AWSAppender.Core;
 using AWSAppender.Core.Layout;
 using AWSAppender.Core.Services;
 using log4net.Core;

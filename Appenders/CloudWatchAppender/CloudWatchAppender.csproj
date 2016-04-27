@@ -78,31 +78,28 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BufferingCloudWatchAppenderBase.cs" />
     <Compile Include="BufferingCloudWatchLogsAppender.cs" />
     <Compile Include="BufferingAggregatingCloudWatchAppender.cs" />
-    <Compile Include="CloudWatchAppenderBase.cs" />
+    <Compile Include="ICloudWatchLogsAppender.cs" />
     <Compile Include="CloudWatchAppender.cs" />
     <Compile Include="CloudWatchAppenderException.cs" />
     <Compile Include="CloudWatchLogsAppender.cs" />
     <Compile Include="Fakes\FakeInstanceMetaDataReader.cs" />
+    <Compile Include="ICloudWatchAppender.cs" />
     <Compile Include="Model\LogDatum.cs" />
     <Compile Include="Model\LogDatumRenderer.cs" />
     <Compile Include="Model\MetricDatum.cs" />
     <Compile Include="Model\MetricDatumRenderer.cs" />
     <Compile Include="Parsers\DummyLogsEventMessageParser.cs" />
-    <Compile Include="Parsers\EventMessageParserBase.cs" />
     <Compile Include="Parsers\IEventMessageParser.cs" />
     <Compile Include="Parsers\LogsEventMessageParser.cs" />
     <Compile Include="Parsers\MetricDatumEventMessageParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CloudWatchClientWrapper.cs" />
-    <Compile Include="Services\CloudWatchClientWrapperBase.cs" />
     <Compile Include="Services\CloudWatchLogsClientWrapper.cs" />
     <Compile Include="Services\LogEventProcessor.cs" />
     <Compile Include="Services\MetricDatumEventProcessor.cs" />
     <Compile Include="Services\UnitConverter.cs" />
-    <Compile Include="TypeConverters\RegionConverter.cs" />
     <Compile Include="TypeConverters\StandardUnitConverter.cs" />
   </ItemGroup>
   <ItemGroup>

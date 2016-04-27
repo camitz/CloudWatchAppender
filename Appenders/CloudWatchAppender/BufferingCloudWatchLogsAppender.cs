@@ -5,6 +5,7 @@ using System.Reflection;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Amazon.Runtime;
+using AWSAppender.Core;
 using AWSAppender.Core.Layout;
 using AWSAppender.Core.Services;
 using CloudWatchAppender.Model;
@@ -16,7 +17,7 @@ using log4net.Util;
 
 namespace CloudWatchAppender
 {
-    public class BufferingCloudWatchLogsAppender : BufferingCloudWatchAppenderBase<LogDatum>,
+    public class BufferingCloudWatchLogsAppender : BufferingAWSAppenderBase<LogDatum>,
         ICloudWatchLogsAppender
     {
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();

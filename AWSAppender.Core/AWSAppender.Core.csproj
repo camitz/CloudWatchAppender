@@ -32,10 +32,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\AWSSDK.Core.3.1.4.3\lib\net45\AWSSDK.Core.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,17 +49,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AWSAppenderBase.cs" />
+    <Compile Include="BufferingAWSAppenderBase.cs" />
     <Compile Include="Fakes\FakeInstanceMetaDataReader.cs" />
+    <Compile Include="IAWSAppender.cs" />
     <Compile Include="Layout\PatternLayout.cs" />
     <Compile Include="PatternConverter\InstanceIDPatternConverter.cs" />
     <Compile Include="PatternConverter\InstanceMetaDataPatternConverter.cs" />
     <Compile Include="PatternConverter\LoggerPatternConverter.cs" />
     <Compile Include="PatternConverter\NamedPatternConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AppenderValue.cs" />
+    <Compile Include="Services\AWSClientFactoryWrapper.cs" />
+    <Compile Include="Services\ClientWrapperBase.cs" />
+    <Compile Include="Services\DatumFilledException.cs" />
+    <Compile Include="Services\EventMessageParserBase.cs" />
     <Compile Include="Services\EventRateLimiter.cs" />
+    <Compile Include="Services\IEventMessageParser.cs" />
+    <Compile Include="Services\IEventProcessor.cs" />
     <Compile Include="Services\InstanceMetaDataReader.cs" />
     <Compile Include="Services\PatternParser.cs" />
     <Compile Include="Services\ServiceTasks.cs" />
+    <Compile Include="TypeConverters\RegionConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Parsers\" />

@@ -1,5 +1,3 @@
-//to core?
-
 using System;
 using System.Collections.Concurrent;
 using System.Configuration;
@@ -10,10 +8,9 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.Util;
-using AWSAppender.Core.Services;
 using log4net.Util;
 
-namespace SQSAppender.Services
+namespace AWSAppender.Core.Services
 {
     public abstract class ClientWrapperBase<TConfig, TClient>
         where TConfig : ClientConfig
@@ -101,7 +98,7 @@ namespace SQSAppender.Services
                     Client = (TClient)AWSClientFactoryWrapper<TClient>.CreateServiceClient(_accessKey, _secret);
 
             if (Client == null)
-                throw new SQSAppenderException("Couldn't create Amazon client.");
+                throw new AWSAppenderException("Couldn't create Amazon client.");
 
         }
 
@@ -181,37 +178,17 @@ namespace SQSAppender.Services
         }
     }
 
-    static class AWSClientFactoryWrapper<TClient> where TClient : AmazonServiceClient
+    internal class AWSAppenderException : Exception
     {
-        //to core?
-        public static AmazonServiceClient CreateServiceClient(ClientConfig cloudWatchConfig) 
+        public AWSAppenderException(string msg, Exception innerException)
+            : base(msg, innerException)
         {
-            return (TClient)Activator.CreateInstance(typeof (TClient),new[]{cloudWatchConfig});
+
         }
 
-        public static AmazonServiceClient CreateServiceClient(RegionEndpoint regionEndpoint)
+        public AWSAppenderException(string msg)
+            : base(msg)
         {
-            return (TClient)Activator.CreateInstance(typeof(TClient), new[] { regionEndpoint });
-        }
-
-        public static AmazonServiceClient CreateServiceClient(string accessKey, string secret, RegionEndpoint regionEndpoint)
-        {
-            return (TClient)Activator.CreateInstance(typeof(TClient), new object[] { accessKey,secret,regionEndpoint });
-        }
-
-        public static AmazonServiceClient CreateServiceClient(string accessKey, string secret)
-        {
-            return (TClient)Activator.CreateInstance(typeof(TClient), new[] { accessKey, secret });
-        }
-
-        public static AmazonServiceClient CreateServiceClient(string accessKey, string secret, ClientConfig clientConfig)
-        {
-            return (TClient)Activator.CreateInstance(typeof(TClient), new object[] { accessKey, secret, clientConfig });
-        }
-
-        public static AmazonServiceClient CreateServiceClient()
-        {
-            return (TClient)Activator.CreateInstance(typeof(TClient));
         }
     }
 }

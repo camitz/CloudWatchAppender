@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using AWSAppender.Core.Services;
 using CloudWatchAppender.Parsers;
 using log4net.Core;
 using log4net.Util;
@@ -11,16 +12,6 @@ using PatternParser = AWSAppender.Core.Services.PatternParser;
 
 namespace CloudWatchAppender.Services
 {
-#if NET35
-    public interface IEventProcessor<T>
-#else
-    public interface IEventProcessor<T>
-#endif
-    {
-        IEnumerable<T> ProcessEvent(LoggingEvent loggingEvent, string renderedString);
-        IEventMessageParser<T> EventMessageParser { get; set; }
-    }
-
     public class MetricDatumEventProcessor : IEventProcessor<PutMetricDataRequest>
     {
         private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();

@@ -1,15 +1,11 @@
-//to core?
-
-//using Amazon.CloudWatch;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace SQSAppender.Parsers
+namespace AWSAppender.Core.Services
 {
-   
     public abstract class EventMessageParserBase<TDatum> : IEventMessageParser<TDatum>
     {
         protected bool DefaultsOverridePattern;
@@ -21,14 +17,13 @@ namespace SQSAppender.Parsers
         }
 
         public virtual bool ConfigOverrides { get { return DefaultsOverridePattern; } set { DefaultsOverridePattern = value; } }
-        public bool Aggresive { get; set; }
         protected abstract void SetDefaults();
         protected abstract void NewDatum();
         protected abstract bool FillName(AppenderValue value);
 
         protected void ParseTokens(ref List<Match>.Enumerator tokens, string renderedMessage)
         {
-            string t0, unit, sNum = string.Empty, rest = "";
+            string t0, sNum = string.Empty, rest = "";
             int? startRest = 0;
 
             tokens.MoveNext();
@@ -64,7 +59,7 @@ namespace SQSAppender.Parsers
                                         });
 
                             tokens.MoveNext();
-                            while (tokens.MoveNext() && tokens.Current.Index <= tokens.Current.Index + length);
+                            while (tokens.MoveNext() && tokens.Current.Index <= tokens.Current.Index + length) ;
                         }
 
                         tokens.MoveNext();
@@ -95,22 +90,13 @@ namespace SQSAppender.Parsers
                             continue;
                         }
 
-                        var v = new AppenderValue
-                                {
-                                    dValue = d,
-                                    sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue,
-                                    Name = t0
-                                };
+                        var v = NewAppenderValue();
 
-                        //cloudwatch specific
-                        //if (tokens.MoveNext())
-                        //    if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
-                        //    {
-                        //        v.Unit = unit;
-                        //        var t = StandardUnit.FindValue(unit.ToLowerInvariant());
-                        //        if (t.ToString() != unit.ToLowerInvariant()) //If conversion capitalizes unit then it is valid and should not be included in rest.
-                        //            tokens.MoveNext();
-                        //    }
+                        v.dValue = d;
+                        v.sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue;
+                        v.Name = t0;
+
+                        PostElementParse(ref tokens, v);
 
                         _values.Add(v);
                     }
@@ -128,7 +114,18 @@ namespace SQSAppender.Parsers
             _values.Add(new AppenderValue { Name = "__cav_rest", sValue = rest.Trim() });
         }
 
-        protected virtual bool ShouldLocalParse(string t0) { return false;}
+        protected virtual AppenderValue NewAppenderValue()
+        {
+            var v = new AppenderValue();
+            return v;
+        }
+
+        protected virtual void PostElementParse(ref List<Match>.Enumerator tokens, AppenderValue appenderValue)
+        {
+            tokens.MoveNext();
+        }
+
+        protected virtual bool ShouldLocalParse(string t0) { return false; }
 
 
         protected abstract bool IsSupportedName(string t0);
@@ -205,22 +202,4 @@ namespace SQSAppender.Parsers
             _values = new List<AppenderValue>();
         }
     }
-
-    public class DatumFilledException : InvalidOperationException
-    {
-        public DatumFilledException(string message)
-            : base(message)
-        {
-
-        }
-    }
-    public struct AppenderValue
-    {
-        public string Name;
-        public double? dValue;
-        //public StandardUnit Unit;//cloudwatch specific
-        public string sValue;
-        public DateTimeOffset? Time;
-    }
-
 }

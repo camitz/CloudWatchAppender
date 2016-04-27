@@ -116,9 +116,6 @@
     <Compile Include="..\CloudWatchAppender\Services\CloudWatchClientWrapper.cs">
       <Link>Services\CloudWatchClientWrapper.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchAppender\Services\CloudWatchClientWrapperBase.cs">
-      <Link>Services\CloudWatchClientWrapperBase.cs</Link>
-    </Compile>
     <Compile Include="..\CloudWatchAppender\Services\CloudWatchLogsClientWrapper.cs">
       <Link>Services\CloudWatchLogsClientWrapper.cs</Link>
     </Compile>
@@ -130,9 +127,6 @@
     </Compile>
     <Compile Include="..\CloudWatchAppender\Services\UnitConverter.cs">
       <Link>Services\UnitConverter.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchAppender\TypeConverters\RegionConverter.cs">
-      <Link>TypeConverters\RegionConverter.cs</Link>
     </Compile>
     <Compile Include="..\CloudWatchAppender\TypeConverters\StandardUnitConverter.cs">
       <Link>TypeConverters\StandardUnitConverter.cs</Link>

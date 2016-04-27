@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using AWSAppender.Core.Services;
 using CloudWatchAppender.Model;
 using MetricDatum = CloudWatchAppender.Model.MetricDatum;
 
@@ -28,6 +29,7 @@ namespace CloudWatchAppender.Parsers
         public double? DefaultMaximum { get; set; }
         public double? DefaultMinimum { get; set; }
         public new bool ConfigOverrides { get { return base.ConfigOverrides; } set { base.ConfigOverrides = value; } }
+        public bool Aggresive { get; set; }
 
         public MetricDatumEventMessageParser() : base(true) { }
         public MetricDatumEventMessageParser(bool useOverrides)
@@ -85,9 +87,29 @@ namespace CloudWatchAppender.Parsers
                    MetricDatum.SupportedStatistics.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        protected override void PostElementParse(ref List<Match>.Enumerator tokens, AppenderValue appenderValue)
+        {
+            string unit;
+
+            if (tokens.MoveNext())
+                if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
+                {
+                    ((MetricDatumAppenderValue)appenderValue).Unit = unit;
+                    var t = StandardUnit.FindValue(unit.ToLowerInvariant());
+                    if (t.ToString() != unit.ToLowerInvariant()) //If conversion capitalizes unit then it is valid and should not be included in rest.
+                        tokens.MoveNext();
+                }
+        }
+
+        protected override AppenderValue NewAppenderValue()
+        {
+            return new MetricDatumAppenderValue();
+        }
 
         protected override bool FillName(AppenderValue value)
         {
+            var metricValue = value as MetricDatumAppenderValue;
+
             switch (value.Name.ToLowerInvariant())
             {
                 case "value":
@@ -95,7 +117,7 @@ namespace CloudWatchAppender.Parsers
                         return false;
 
                     _currentDatum.Value = DefaultsOverridePattern ? DefaultValue ?? value.dValue.Value : value.dValue.Value;
-                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
+                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? metricValue.Unit : metricValue.Unit;
                     break;
 
                 case "unit":
@@ -125,14 +147,14 @@ namespace CloudWatchAppender.Parsers
                         return false;
 
                     _currentDatum.Maximum = DefaultsOverridePattern ? DefaultMaximum ?? value.dValue.Value : value.dValue.Value;
-                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
+                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? metricValue.Unit : metricValue.Unit;
                     break;
 
                 case "minimum":
                     if (_currentDatum.Mode == DatumMode.StatisticsMode && _currentDatum.Minimum != 0.0)
                         return false;
                     _currentDatum.Minimum = DefaultsOverridePattern ? DefaultMinimum ?? value.dValue.Value : value.dValue.Value;
-                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
+                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? metricValue.Unit : metricValue.Unit;
                     break;
 
                 case "samplecount":
@@ -140,7 +162,7 @@ namespace CloudWatchAppender.Parsers
                         return false;
 
                     _currentDatum.SampleCount = DefaultsOverridePattern ? DefaultSampleCount ?? value.dValue.Value : value.dValue.Value;
-                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
+                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? metricValue.Unit : metricValue.Unit;
                     break;
 
                 case "sum":
@@ -148,7 +170,7 @@ namespace CloudWatchAppender.Parsers
                         return false;
 
                     _currentDatum.Sum = DefaultsOverridePattern ? DefaultSum ?? value.dValue.Value : value.dValue.Value;
-                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
+                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? metricValue.Unit : metricValue.Unit;
                     break;
 
                 case "timestamp":
@@ -170,7 +192,7 @@ namespace CloudWatchAppender.Parsers
 
                     _currentDatum.MetricName = DefaultsOverridePattern ? DefaultMetricName ?? value.Name : value.Name;
                     _currentDatum.Value = DefaultsOverridePattern ? DefaultValue ?? value.dValue.Value : value.dValue.Value;
-                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? value.Unit : value.Unit;
+                    _currentDatum.Unit = DefaultsOverridePattern ? DefaultUnit ?? metricValue.Unit : metricValue.Unit;
 
                     break;
             }
@@ -286,5 +308,11 @@ namespace CloudWatchAppender.Parsers
         {
             return _data.Select(x => x.Request);
         }
+    }
+
+    class MetricDatumAppenderValue : AppenderValue
+    {
+        public StandardUnit Unit;//cloudwatch specific
+
     }
 }

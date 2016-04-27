@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.Runtime;
+using AWSAppender.Core;
 using AWSAppender.Core.Layout;
+using AWSAppender.Core.Services;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Parsers;
 using CloudWatchAppender.Services;
+using CloudWatchAppender.TypeConverters;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
@@ -14,7 +17,7 @@ using log4net.Util;
 namespace CloudWatchAppender
 {
 
-    public class CloudWatchAppender : CloudWatchAppenderBase<PutMetricDataRequest>, ICloudWatchAppender
+    public class CloudWatchAppender : AWSAppenderBase<PutMetricDataRequest>, ICloudWatchAppender
     {
         private CloudWatchClientWrapper _client;
         private readonly static Type _declaringType = typeof(CloudWatchAppender);
@@ -106,6 +109,7 @@ namespace CloudWatchAppender
 
         public CloudWatchAppender()
         {
+            log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(StandardUnit), typeof(StandardUnitConverter)); //cloudwatch specific
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;

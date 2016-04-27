@@ -8,7 +8,7 @@ using log4net.Util;
 
 namespace CloudWatchAppender.Services
 {
-    public class CloudWatchLogsClientWrapper : CloudWatchClientWrapperBase<AmazonCloudWatchLogsClient>
+    public class CloudWatchLogsClientWrapper : AWSAppender.Core.Services.ClientWrapperBase<AmazonCloudWatchLogsConfig,AmazonCloudWatchLogsClient>
     {
         private static readonly LockObject _lockObject = new LockObject();
 

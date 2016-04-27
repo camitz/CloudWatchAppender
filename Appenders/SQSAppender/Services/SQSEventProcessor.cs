@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AWSAppender.Core.Services;
 using log4net.Core;
 using log4net.Util;
 using SQSAppender.Model;
@@ -9,16 +10,6 @@ using PatternParser = AWSAppender.Core.Services.PatternParser;
 
 namespace SQSAppender.Services
 {
-#if NET35
-    public interface IEventProcessor<T>
-#else
-    public interface IEventProcessor<T>
-#endif
-    {
-        //to core
-        IEnumerable<T> ProcessEvent(LoggingEvent loggingEvent, string renderedString);
-        IEventMessageParser<T> EventMessageParser { get; set; }
-    }
 
     public class SQSEventProcessor : IEventProcessor<SQSDatum>
     {

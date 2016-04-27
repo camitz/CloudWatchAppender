@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch.Model;
+using AWSAppender.Core.Services;
 using CloudWatchAppender.Model;
 
 namespace CloudWatchAppender.Parsers

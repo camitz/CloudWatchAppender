@@ -2,7 +2,7 @@ using System;
 using Amazon;
 using log4net.Util.TypeConverters;
 
-namespace CloudWatchAppender.TypeConverters
+namespace AWSAppender.Core.TypeConverters
 {
     public class RegionConverter :  IConvertFrom
     {

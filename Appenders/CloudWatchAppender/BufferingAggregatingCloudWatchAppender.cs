@@ -5,11 +5,14 @@ using System.Runtime.CompilerServices;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.Runtime;
+using AWSAppender.Core;
 using AWSAppender.Core.Layout;
+using AWSAppender.Core.Services;
 using CloudWatchAppender.Appenders;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Parsers;
 using CloudWatchAppender.Services;
+using CloudWatchAppender.TypeConverters;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
@@ -20,7 +23,7 @@ using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
 namespace CloudWatchAppender
 {
 
-    public class BufferingAggregatingCloudWatchAppender : BufferingCloudWatchAppenderBase<PutMetricDataRequest>, ICloudWatchAppender
+    public class BufferingAggregatingCloudWatchAppender : BufferingAWSAppenderBase<PutMetricDataRequest>, ICloudWatchAppender
     {
         private CloudWatchClientWrapper _client;
         private StandardUnit _standardUnit;
@@ -28,6 +31,12 @@ namespace CloudWatchAppender
         private string _metricName;
         private string _ns;
         private bool _configOverrides = true;
+
+        public BufferingAggregatingCloudWatchAppender()
+        {
+            log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(StandardUnit), typeof(StandardUnitConverter));
+        }
+
         private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
 
         

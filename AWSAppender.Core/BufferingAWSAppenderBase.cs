@@ -1,22 +1,18 @@
 using System;
 using System.Net;
 using Amazon;
-using Amazon.CloudWatch;
 using Amazon.Runtime;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Parsers;
-using CloudWatchAppender.Services;
-using CloudWatchAppender.TypeConverters;
+using AWSAppender.Core.TypeConverters;
 using log4net.Appender;
 
-namespace CloudWatchAppender
+namespace AWSAppender.Core
 {
-    public abstract class BufferingCloudWatchAppenderBase<T> : BufferingAppenderSkeleton, IAWSAppender
+    public abstract class BufferingAWSAppenderBase<T> : BufferingAppenderSkeleton, IAWSAppender
     {
-        protected BufferingCloudWatchAppenderBase()
+        protected BufferingAWSAppenderBase()
         {
             log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(RegionEndpoint), typeof(RegionConverter));
-            log4net.Util.TypeConverters.ConverterRegistry.AddConverter(typeof(StandardUnit), typeof(StandardUnitConverter));
         }
 
         public string AccessKey

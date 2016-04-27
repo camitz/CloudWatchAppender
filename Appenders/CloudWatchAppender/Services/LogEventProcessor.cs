@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AWSAppender.Core.Services;
 using CloudWatchAppender.Model;
 using CloudWatchAppender.Parsers;
 using log4net.Core;

@@ -33,23 +33,32 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK.Core">
+      <HintPath>..\packages\AWSSDK.Core.3.1.4.3\lib\net35\AWSSDK.Core.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net35-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Threading">
       <HintPath>..\packages\TaskParallelLibrary.1.0.2856.0\lib\Net35\System.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\AWSAppender.Core\AWSAppenderBase.cs">
+      <Link>AWSAppenderBase.cs</Link>
+    </Compile>
     <Compile Include="..\AWSAppender.Core\Fakes\FakeInstanceMetaDataReader.cs">
       <Link>Fakes\FakeInstanceMetaDataReader.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\IAWSAppender.cs">
+      <Link>IAWSAppender.cs</Link>
     </Compile>
     <Compile Include="..\AWSAppender.Core\Layout\PatternLayout.cs">
       <Link>Layout\PatternLayout.cs</Link>
@@ -66,8 +75,17 @@
     <Compile Include="..\AWSAppender.Core\PatternConverter\NamedPatternConverter.cs">
       <Link>PatternConverter\NamedPatternConverter.cs</Link>
     </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\ClientWrapperBase.cs">
+      <Link>Services\ClientWrapperBase.cs</Link>
+    </Compile>
     <Compile Include="..\AWSAppender.Core\Services\EventRateLimiter.cs">
       <Link>Services\EventRateLimiter.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\IEventMessageParser.cs">
+      <Link>Services\IEventMessageParser.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\IEventProcessor.cs">
+      <Link>Services\IEventProcessor.cs</Link>
     </Compile>
     <Compile Include="..\AWSAppender.Core\Services\InstanceMetaDataReader.cs">
       <Link>Services\InstanceMetaDataReader.cs</Link>
@@ -78,7 +96,11 @@
     <Compile Include="..\AWSAppender.Core\Services\ServiceTasks.cs">
       <Link>Services\ServiceTasks.cs</Link>
     </Compile>
+    <Compile Include="..\AWSAppender.Core\TypeConverters\RegionConverter.cs">
+      <Link>TypeConverters\RegionConverter.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AWSClientFactoryWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

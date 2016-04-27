@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using AWSAppender.Core.Services;
 
 namespace SQSAppender.Services
 {

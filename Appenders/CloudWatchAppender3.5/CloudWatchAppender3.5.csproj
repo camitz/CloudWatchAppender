@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9F170522-C3C2-43B4-A80A-C0EC88EFC8C1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CloudWatchAppender</RootNamespace>
+    <AssemblyName>CloudWatchAppender</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">C:\cocoin\trunk\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AWSSDK.CloudWatch, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\CloudWatchAppender\packages\AWSSDK.CloudWatch.3.1.0.5\lib\net35\AWSSDK.CloudWatch.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AWSSDK.CloudWatchLogs, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\CloudWatchAppender\packages\AWSSDK.CloudWatchLogs.3.1.2.4\lib\net35\AWSSDK.CloudWatchLogs.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AWSSDK.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\CloudWatchAppender\packages\AWSSDK.Core.3.1.4.3\lib\net35\AWSSDK.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\CloudWatchAppender\packages\log4net.2.0.3\lib\net35-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Threading">
+      <HintPath>..\CloudWatchAppender\packages\TaskParallelLibrary.1.0.2856.0\lib\Net35\System.Threading.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CloudWatchAppender\BufferingAggregatingCloudWatchAppender.cs">
+      <Link>BufferingAggregatingCloudWatchAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\BufferingCloudWatchAppenderBase.cs">
+      <Link>BufferingCloudWatchAppenderBase.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\BufferingCloudWatchLogsAppender.cs">
+      <Link>BufferingCloudWatchLogsAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\CloudWatchAppender.cs">
+      <Link>CloudWatchAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\CloudWatchAppenderBase.cs">
+      <Link>CloudWatchAppenderBase.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\CloudWatchAppenderException.cs">
+      <Link>CloudWatchAppenderException.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\CloudWatchLogsAppender.cs">
+      <Link>CloudWatchLogsAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Model\LogDatum.cs">
+      <Link>Model\LogDatum.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Model\LogDatumRenderer.cs">
+      <Link>Model\LogDatumRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Model\MetricDatum.cs">
+      <Link>Model\MetricDatum.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Model\MetricDatumRenderer.cs">
+      <Link>Model\MetricDatumRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Parsers\DummyLogsEventMessageParser.cs">
+      <Link>Parsers\DummyLogsEventMessageParser.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Parsers\EventMessageParserBase.cs">
+      <Link>Parsers\EventMessageParserBase.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Parsers\IEventMessageParser.cs">
+      <Link>Parsers\IEventMessageParser.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Parsers\LogsEventMessageParser.cs">
+      <Link>Parsers\LogsEventMessageParser.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Parsers\MetricDatumEventMessageParser.cs">
+      <Link>Parsers\MetricDatumEventMessageParser.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\CloudWatchClientWrapper.cs">
+      <Link>Services\CloudWatchClientWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\CloudWatchClientWrapperBase.cs">
+      <Link>Services\CloudWatchClientWrapperBase.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\CloudWatchLogsClientWrapper.cs">
+      <Link>Services\CloudWatchLogsClientWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\LogEventProcessor.cs">
+      <Link>Services\LogEventProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\MetricDatumEventProcessor.cs">
+      <Link>Services\MetricDatumEventProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\Services\UnitConverter.cs">
+      <Link>Services\UnitConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\TypeConverters\RegionConverter.cs">
+      <Link>TypeConverters\RegionConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\CloudWatchAppender\TypeConverters\StandardUnitConverter.cs">
+      <Link>TypeConverters\StandardUnitConverter.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\CloudWatchAppender\packages\AWSSDK.CloudWatch.3.1.0.5\analyzers\dotnet\cs\AWSSDK.CloudWatch.CodeAnalysis.dll" />
+    <Analyzer Include="..\CloudWatchAppender\packages\AWSSDK.CloudWatchLogs.3.1.2.4\analyzers\dotnet\cs\AWSSDK.CloudWatchLogs.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AWSAppender.Core3.5\AWSAppender.Core3.5.csproj">
+      <Project>{6c134e9b-bf74-4db6-b033-5da7a4858c24}</Project>
+      <Name>AWSAppender.Core3.5</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

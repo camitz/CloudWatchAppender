@@ -57,9 +57,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CloudWatchAppender\CloudWatchAppender.csproj">
+    <ProjectReference Include="..\..\Appenders\CloudWatchAppender\CloudWatchAppender.csproj">
       <Project>{9D22716F-0CF0-45DB-8957-9DACADFFF930}</Project>
       <Name>CloudWatchAppender</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AWSAppender.Core\AWSAppender.Core.csproj">
+      <Project>{7FF5ACE5-4E7F-444F-BCB0-38C71FBC3ECC}</Project>
+      <Name>AWSAppender.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

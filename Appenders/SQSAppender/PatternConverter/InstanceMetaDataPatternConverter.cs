@@ -23,7 +23,7 @@ namespace SQSAppender.PatternConverter
                 loggingEvent.Properties["IsqsAppender.MetaData." + MetaDataKeys.instanceid + ".Error"] = "error";
 
             if (string.IsNullOrEmpty(s))
-                writer.Write(Option + ":error");
+                writer.Write(Option + "_error");
 
             writer.Write(s);
         }

@@ -75,6 +75,9 @@
     <Compile Include="..\AWSAppender.Core\PatternConverter\NamedPatternConverter.cs">
       <Link>PatternConverter\NamedPatternConverter.cs</Link>
     </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\AWSClientFactoryWrapper.cs">
+      <Link>Services\AWSClientFactoryWrapper.cs</Link>
+    </Compile>
     <Compile Include="..\AWSAppender.Core\Services\ClientWrapperBase.cs">
       <Link>Services\ClientWrapperBase.cs</Link>
     </Compile>
@@ -100,7 +103,6 @@
       <Link>TypeConverters\RegionConverter.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\AWSClientFactoryWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

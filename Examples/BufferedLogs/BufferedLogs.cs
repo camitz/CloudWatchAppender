@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Threading;
 using AWSAppender.Core.Services;
 using CloudWatchAppender.Model;
-using CloudWatchAppender.Services;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
@@ -14,7 +13,7 @@ namespace BufferedLogs
     internal class BufferedLogs
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(BufferedLogs));
-        private const int nTicks = 1000;
+        private const int nTicks = 100;
 
         private static void Main(string[] args)
         {

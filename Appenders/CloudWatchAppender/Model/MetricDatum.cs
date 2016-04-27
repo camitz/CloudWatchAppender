@@ -194,10 +194,10 @@ namespace CloudWatchAppender.Model
 
         public List<Dimension> Dimensions
         {
-            get { return _dimensions; }
+            get { return _dimensions ?? (_dimensions = new List<Dimension>()); }
             set
             {
-                if (_dimensions != null)
+                if (_dimensions != null && _dimensions.Any())
                     throw new DatumFilledException("Value has been set already.");
 
                 _dimensions = value;

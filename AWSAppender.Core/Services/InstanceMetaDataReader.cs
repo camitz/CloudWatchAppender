@@ -121,7 +121,7 @@ namespace AWSAppender.Core.Services
                         Task.Factory.StartNew(() =>
                                                   {
                                                       if (++_attempts[key] > 10)
-                                                          _cachedValues[key] = key+":MaxAttemptsExceeded";
+                                                          _cachedValues[key] = key + "_MaxAttemptsExceeded";
 
                                                       var task =
                                                           Task.Factory.StartNew(() =>

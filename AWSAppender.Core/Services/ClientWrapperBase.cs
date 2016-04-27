@@ -38,7 +38,7 @@ namespace AWSAppender.Core.Services
                 return;
 
             if (clientConfig == null)
-                    clientConfig =(TConfig) Activator.CreateInstance(typeof(TConfig));
+                clientConfig = (TConfig)Activator.CreateInstance(typeof(TConfig));
 
 
             if (string.IsNullOrEmpty(_endPoint) && clientConfig.RegionEndpoint == null && ConfigurationManager.AppSettings["AWSServiceEndpoint"] != null)
@@ -69,7 +69,7 @@ namespace AWSAppender.Core.Services
                     {
                         if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AWSRegion"]))
                             Client = (TClient)AWSClientFactoryWrapper<TClient>.CreateServiceClient();
-                        else if (clientConfig.RegionEndpoint != null)
+                        else if (clientConfig.RegionEndpoint != null || clientConfig.ServiceURL != null)
                             Client = (TClient)AWSClientFactoryWrapper<TClient>.CreateServiceClient(clientConfig);
                     }
                     else
@@ -138,17 +138,17 @@ namespace AWSAppender.Core.Services
 
                                  try
                                  {
-                                     if (!nestedTask.Wait(30000))
+                                     if (!nestedTask.Wait(30000))//should be configurable
                                      {
                                          tokenSource.Cancel();
                                          LogLog.Error(GetType(),
-                                             "ISQSAppender timed out while submitting to CloudWatch. Exception (if any): {0}", nestedTask.Exception);
+                                             "Appender timed out while submitting to CloudWatch. Exception (if any): {0}", nestedTask.Exception);
                                      }
                                  }
                                  catch (Exception e)
                                  {
                                      LogLog.Error(GetType(),
-                                         "IsqsAppender encountered an error while submitting to cloudwatch. {0}", e);
+                                         "Appender encountered an error while submitting to cloudwatch. {0}", e);
                                  }
 
                                  superTask.ContinueWith(t =>

@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace SQSAppender.Model
+namespace SNSAppender.Model
 {
     public class SNSDatum
     {

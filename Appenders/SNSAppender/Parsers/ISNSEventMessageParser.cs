@@ -1,7 +1,7 @@
 using AWSAppender.Core.Services;
-using SQSAppender.Model;
+using SNSAppender.Model;
 
-namespace SQSAppender.Parsers
+namespace SNSAppender.Parsers
 {
 
     public interface ISNSEventMessageParser : IEventMessageParser<SNSDatum>

@@ -10,11 +10,11 @@ using AWSAppender.Core.Services;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
-using SQSAppender.Model;
-using SQSAppender.Parsers;
-using SQSAppender.Services;
+using SNSAppender.Model;
+using SNSAppender.Parsers;
+using SNSAppender.Services;
 
-namespace SQSAppender
+namespace SNSAppender
 {
     public class BufferingSNSAppender : BufferingAWSAppenderBase<SNSDatum>, ISNSAppender
     {
@@ -89,11 +89,6 @@ namespace SQSAppender
                 _configOverrides = value;
                 _eventProcessor = null;
             }
-        }
-
-        public int RateLimit
-        {
-            set { _eventRateLimiter = new EventRateLimiter(value); }
         }
 
         public BufferingSNSAppender()

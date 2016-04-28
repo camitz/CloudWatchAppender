@@ -3,7 +3,7 @@ using System.Linq;
 using CloudWatchLogsAppender.Parsers;
 using NUnit.Framework;
 
-namespace CloudWatchAppender.Tests
+namespace CloudWatchLogsAppender.Tests
 {
     [TestFixture]
     public class DummyEventParserTests

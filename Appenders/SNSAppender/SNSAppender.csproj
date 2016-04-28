@@ -8,8 +8,8 @@
     <ProjectGuid>{28957A1C-6AC4-4815-A62B-EE5C082586AC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SQSAppender</RootNamespace>
-    <AssemblyName>SQSAppender</AssemblyName>
+    <RootNamespace>SNSAppender</RootNamespace>
+    <AssemblyName>SNSAppender</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">C:\cocoin\trunk\</SolutionDir>
@@ -75,7 +75,7 @@
   <ItemGroup>
     <Compile Include="BufferingSNSAppender.cs" />
     <Compile Include="ISNSAppender.cs" />
-    <Compile Include="SQSAppender.cs" />
+    <Compile Include="SNSAppender.cs" />
     <Compile Include="Model\SNSDatum.cs" />
     <Compile Include="Model\SNSDatumRenderer.cs" />
     <Compile Include="Parsers\ISNSEventMessageParser.cs" />

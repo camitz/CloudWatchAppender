@@ -70,6 +70,7 @@
     <Compile Include="Services\InstanceMetaDataReader.cs" />
     <Compile Include="Services\PatternParser.cs" />
     <Compile Include="Services\ServiceTasks.cs" />
+    <Compile Include="Services\EventProcessorBase.cs" />
     <Compile Include="TypeConverters\RegionConverter.cs" />
   </ItemGroup>
   <ItemGroup>

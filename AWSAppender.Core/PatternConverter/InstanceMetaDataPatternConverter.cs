@@ -20,7 +20,7 @@ namespace AWSAppender.Core.PatternConverter
             var s = InstanceMetaDataReader.Instance.GetMetaData(Option, out error);
 
             if (error)
-                loggingEvent.Properties["CloudWatchAppender.MetaData." + MetaDataKeys.instanceid + ".Error"] = "error";
+                loggingEvent.Properties["AWSAppender.MetaData." + MetaDataKeys.instanceid + ".Error"] = "error";
 
             if (string.IsNullOrEmpty(s))
                 writer.Write(Option + "_error");

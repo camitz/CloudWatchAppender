@@ -1,16 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using AWSAppender.Core.Services;
 using CloudWatchLogsAppender.Model;
 using CloudWatchLogsAppender.Parsers;
 using log4net.Core;
-using log4net.Util;
 using PatternParser = AWSAppender.Core.Services.PatternParser;
 
 namespace CloudWatchLogsAppender.Services
 {
-    public class LogEventProcessor : IEventProcessor<LogDatum>
+    public class LogEventProcessor : EventProcessorBase, IEventProcessor<LogDatum>
     {
         private bool _dirtyParsedProperties = true;
         private string _parsedStreamName;
@@ -33,20 +31,7 @@ namespace CloudWatchLogsAppender.Services
 
         public IEnumerable<LogDatum> ProcessEvent(LoggingEvent loggingEvent, string renderedString)
         {
-            var patternParser = new PatternParser(loggingEvent);
-
-            if (renderedString.Contains("%"))
-                renderedString = patternParser.Parse(renderedString);
-
-            LogLog.Debug(_declaringType, string.Format("RenderedString: {0}", renderedString));
-
-            if (_dirtyParsedProperties)
-            {
-                ParseProperties(patternParser);
-
-                if (!loggingEvent.Properties.GetKeys().Any(key => key.StartsWith("CloudWatchAppender.MetaData.") && key.EndsWith(".Error")))
-                    _dirtyParsedProperties = false;
-            }
+            renderedString = PreProcess(loggingEvent, renderedString);
 
             var eventMessageParser = EventMessageParser as ILogsEventMessageParser;
 
@@ -60,7 +45,7 @@ namespace CloudWatchLogsAppender.Services
 
         public IEventMessageParser<LogDatum> EventMessageParser { get; set; }
 
-        private void ParseProperties(PatternParser patternParser)
+        protected override void ParseProperties(PatternParser patternParser)
         {
             _parsedStreamName = string.IsNullOrEmpty(_streamName)
                 ? null
@@ -79,6 +64,5 @@ namespace CloudWatchLogsAppender.Services
                 : (DateTime?)DateTime.Parse(patternParser.Parse(_timestamp));
         }
 
-        private readonly static Type _declaringType = typeof(LogEventProcessor);
     }
 }

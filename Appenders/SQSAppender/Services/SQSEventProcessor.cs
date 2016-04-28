@@ -11,9 +11,8 @@ using PatternParser = AWSAppender.Core.Services.PatternParser;
 namespace SQSAppender.Services
 {
 
-    public class SQSEventProcessor : IEventProcessor<SQSDatum>
+    public class SQSEventProcessor : EventProcessorBase, IEventProcessor<SQSDatum>
     {
-        private bool _dirtyParsedProperties = true;
         private string _parsedQueueName;
         private int? _parsedDelaySeconds;
         private string _parsedMessage;
@@ -33,21 +32,7 @@ namespace SQSAppender.Services
 
         public IEnumerable<SQSDatum> ProcessEvent(LoggingEvent loggingEvent, string renderedString)
         {
-            //move to base class
-            var patternParser = new PatternParser(loggingEvent);
-
-            if (renderedString.Contains("%"))
-                renderedString = patternParser.Parse(renderedString);
-
-            LogLog.Debug(_declaringType, string.Format("RenderedString: {0}", renderedString));
-
-            if (_dirtyParsedProperties)
-            {
-                ParseProperties(patternParser);
-
-                if (!loggingEvent.Properties.GetKeys().Any(key => key.StartsWith("IsqsAppender.MetaData.") && key.EndsWith(".Error")))
-                    _dirtyParsedProperties = false;
-            }
+            renderedString = PreProcess(loggingEvent, renderedString);
 
             var eventMessageParser = EventMessageParser as ISQSEventMessageParser;
 
@@ -60,7 +45,7 @@ namespace SQSAppender.Services
 
         public IEventMessageParser<SQSDatum> EventMessageParser { get; set; }
 
-        private void ParseProperties(PatternParser patternParser)
+        protected override void ParseProperties(PatternParser patternParser)
         {
             _parsedQueueName = string.IsNullOrEmpty(_queueName)
                 ? null
@@ -74,7 +59,5 @@ namespace SQSAppender.Services
                 ? null
                 : patternParser.Parse(_message);
         }
-
-        private readonly static Type _declaringType = typeof(SQSEventProcessor);
     }
 }

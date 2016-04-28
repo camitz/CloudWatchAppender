@@ -7,12 +7,11 @@ using Amazon.CloudWatch.Model;
 using AWSAppender.Core.Services;
 using CloudWatchAppender.Parsers;
 using log4net.Core;
-using log4net.Util;
 using PatternParser = AWSAppender.Core.Services.PatternParser;
 
 namespace CloudWatchAppender.Services
 {
-    public class MetricDatumEventProcessor : IEventProcessor<PutMetricDataRequest>
+    public class MetricDatumEventProcessor :EventProcessorBase, IEventProcessor<PutMetricDataRequest>
     {
         private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
         private Dictionary<string, Dimension> _parsedDimensions;
@@ -43,18 +42,7 @@ namespace CloudWatchAppender.Services
 
         public IEnumerable<PutMetricDataRequest> ProcessEvent(LoggingEvent loggingEvent, string renderedString)
         {
-            var patternParser = new PatternParser(loggingEvent);
-
-            if (renderedString.Contains("%"))
-                renderedString = patternParser.Parse(renderedString);
-
-            LogLog.Debug(_declaringType, string.Format("RenderedString: {0}", renderedString));
-
-            if (!_hasParsedProperties)
-            {
-                ParseProperties(patternParser);
-                _hasParsedProperties = true;
-            }
+            renderedString = PreProcess(loggingEvent, renderedString);
 
             //todo:reuse
             _metricDatumEventMessageParser = new MetricDatumEventMessageParser(_configOverrides)
@@ -74,7 +62,7 @@ namespace CloudWatchAppender.Services
 
         public IEventMessageParser<PutMetricDataRequest> EventMessageParser { get; set; }
 
-        private void ParseProperties(PatternParser patternParser)
+        protected override void ParseProperties(PatternParser patternParser)
         {
             _parsedDimensions = !_dimensions.Any()
                 ? null
@@ -95,6 +83,5 @@ namespace CloudWatchAppender.Services
                 : (DateTimeOffset?)DateTimeOffset.Parse(patternParser.Parse(_timestamp));
         }
 
-        private readonly static Type _declaringType = typeof(MetricDatumEventProcessor);
     }
 }

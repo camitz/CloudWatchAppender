@@ -93,6 +93,9 @@
     <Compile Include="..\AWSAppender.Core\Services\EventMessageParserBase.cs">
       <Link>Services\EventMessageParserBase.cs</Link>
     </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\EventProcessorBase.cs">
+      <Link>Services\EventProcessorBase.cs</Link>
+    </Compile>
     <Compile Include="..\AWSAppender.Core\Services\EventRateLimiter.cs">
       <Link>Services\EventRateLimiter.cs</Link>
     </Compile>

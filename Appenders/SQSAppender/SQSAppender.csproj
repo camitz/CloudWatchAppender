@@ -78,12 +78,8 @@
     <Compile Include="SQSAppender.cs" />
     <Compile Include="Model\SQSDatum.cs" />
     <Compile Include="Model\SQSDatumRenderer.cs" />
-    <Compile Include="Parsers\IEventMessageParser.cs" />
+    <Compile Include="Parsers\ISQSEventMessageParser.cs" />
     <Compile Include="Parsers\SQSMessageParser.cs" />
-    <Compile Include="PatternConverter\InstanceIDPatternConverter.cs" />
-    <Compile Include="PatternConverter\InstanceMetaDataPatternConverter.cs" />
-    <Compile Include="PatternConverter\LoggerPatternConverter.cs" />
-    <Compile Include="PatternConverter\NamedPatternConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\SQSClientWrapper.cs" />
     <Compile Include="Services\SQSEventProcessor.cs" />

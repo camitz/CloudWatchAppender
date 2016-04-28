@@ -16,12 +16,16 @@
     <dependencies>
       <group targetFramework=".NETFramework4.5">
         <dependency id="log4net" version="2.0.3" />
-        <dependency id="AWSSDK" version="2.3.15.0" />
+        <dependency id="AWSSDK.Core" version="3.1.4.3" />
+        <dependency id="AWSSDK.CloudWatch" version="3.1.0.5" />
+        <dependency id="AWSSDK.CloudWatchLogs" version="3.1.2.4" />
       </group>
       <group targetFramework=".NETFramework3.5">
         <dependency id="log4net" version="2.0.3" />
         <dependency id="TaskParallelLibrary" version="1.0.2856.0" />
-        <dependency id="AWSSDK" version="2.3.15.0" />
+        <dependency id="AWSSDK.Core" version="3.1.4.3" />
+        <dependency id="AWSSDK.CloudWatch" version="3.1.0.5" />
+        <dependency id="AWSSDK.CloudWatchLogs" version="3.1.2.4" />
       </group>
     </dependencies>
   </metadata>

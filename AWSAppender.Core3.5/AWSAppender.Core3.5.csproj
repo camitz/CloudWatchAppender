@@ -7,8 +7,8 @@
     <ProjectGuid>{6C134E9B-BF74-4DB6-B033-5DA7A4858C24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AWSAppender.Core3._5</RootNamespace>
-    <AssemblyName>AWSAppender.Core3.5</AssemblyName>
+    <RootNamespace>AWSAppender.Core</RootNamespace>
+    <AssemblyName>AWSAppender.Core</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

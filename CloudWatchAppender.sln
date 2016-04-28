@@ -57,6 +57,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchLogsAppender", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchLogsAppender.Tests", "Tests\CloudWatchLogsAppender.Tests\CloudWatchLogsAppender.Tests.csproj", "{F7ABF857-6E8F-483E-B998-8C07F3241CBC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchLogsAppender3.5", "Appenders\CloudWatchLogsAppender3.5\CloudWatchLogsAppender3.5.csproj", "{5E5777A7-7A11-47F1-8D33-12C4BC17B128}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -247,6 +249,16 @@ Global
 		{F7ABF857-6E8F-483E-B998-8C07F3241CBC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F7ABF857-6E8F-483E-B998-8C07F3241CBC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F7ABF857-6E8F-483E-B998-8C07F3241CBC}.Release|x86.ActiveCfg = Release|Any CPU
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -268,5 +280,6 @@ Global
 		{855A9589-B74F-4553-A074-824D8CAE77FD} = {454F1AF8-8B2E-4ED9-AD57-6765C371C79A}
 		{23F90E5A-5C96-4116-B27A-5836CD3C0472} = {A79FBA9F-CF47-4515-87E2-DF9A4D47C65E}
 		{F7ABF857-6E8F-483E-B998-8C07F3241CBC} = {E7BC305F-0B81-4F14-8E79-22A1D0A0A863}
+		{5E5777A7-7A11-47F1-8D33-12C4BC17B128} = {A79FBA9F-CF47-4515-87E2-DF9A4D47C65E}
 	EndGlobalSection
 EndGlobal

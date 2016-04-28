@@ -2,15 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Amazon.CloudWatch;
-using Amazon.CloudWatch.Model;
-using CloudWatchAppender.Model;
-using CloudWatchAppender.Parsers;
+using AWSAppender.Core.Services;
 using MetricDatum = CloudWatchAppender.Model.MetricDatum;
 
 namespace CloudWatchAppender.Services
 {
-    public class MetricDatumEventMessageParser : EventMessageParserBase
+    public class MetricDatumEventMessageParser : EventMessageParserBase<>
     {
         private readonly bool _defaultsOverridePattern;
         private readonly Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();

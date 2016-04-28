@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6C134E9B-BF74-4DB6-B033-5DA7A4858C24}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AWSAppender.Core</RootNamespace>
+    <AssemblyName>AWSAppender.Core</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\CloudWatchAppender\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AWSSDK.Core">
+      <HintPath>..\packages\AWSSDK.Core.3.1.4.3\lib\net35\AWSSDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.3\lib\net35-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Threading">
+      <HintPath>..\packages\TaskParallelLibrary.1.0.2856.0\lib\Net35\System.Threading.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\AWSAppender.Core\AWSAppenderBase.cs">
+      <Link>AWSAppenderBase.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\BufferingAWSAppenderBase.cs">
+      <Link>BufferingAWSAppenderBase.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Fakes\FakeInstanceMetaDataReader.cs">
+      <Link>Fakes\FakeInstanceMetaDataReader.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\IAWSAppender.cs">
+      <Link>IAWSAppender.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Layout\PatternLayout.cs">
+      <Link>Layout\PatternLayout.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\PatternConverter\InstanceIDPatternConverter.cs">
+      <Link>PatternConverter\InstanceIDPatternConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\PatternConverter\InstanceMetaDataPatternConverter.cs">
+      <Link>PatternConverter\InstanceMetaDataPatternConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\PatternConverter\LoggerPatternConverter.cs">
+      <Link>PatternConverter\LoggerPatternConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\PatternConverter\NamedPatternConverter.cs">
+      <Link>PatternConverter\NamedPatternConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\AppenderValue.cs">
+      <Link>Services\AppenderValue.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\AWSClientFactoryWrapper.cs">
+      <Link>Services\AWSClientFactoryWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\ClientWrapperBase.cs">
+      <Link>Services\ClientWrapperBase.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\DatumFilledException.cs">
+      <Link>Services\DatumFilledException.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\EventMessageParserBase.cs">
+      <Link>Services\EventMessageParserBase.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\EventProcessorBase.cs">
+      <Link>Services\EventProcessorBase.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\EventRateLimiter.cs">
+      <Link>Services\EventRateLimiter.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\IEventMessageParser.cs">
+      <Link>Services\IEventMessageParser.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\IEventProcessor.cs">
+      <Link>Services\IEventProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\InstanceMetaDataReader.cs">
+      <Link>Services\InstanceMetaDataReader.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\PatternParser.cs">
+      <Link>Services\PatternParser.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\Services\ServiceTasks.cs">
+      <Link>Services\ServiceTasks.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSAppender.Core\TypeConverters\RegionConverter.cs">
+      <Link>TypeConverters\RegionConverter.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

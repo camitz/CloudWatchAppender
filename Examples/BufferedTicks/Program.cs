@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using Amazon.CloudWatch.Model;
-using CloudWatchAppender.Services;
+using AWSAppender.Core.Services;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
@@ -38,20 +38,18 @@ namespace BufferedTicks
                         random.NextDouble() * (1e5 - 1e2) + 1e2,
                         nss[random.Next(2)], names[random.Next(2)], dims[random.Next(2)], units[random.Next(3)]);
                 else
-                    log.Info(new CloudWatchAppender.Model.MetricDatum("A tick!")
-                    {
-                        NameSpace = nss[random.Next(2)],
-                        Dimensions = { new Dimension { Name = "TestDim", Value = dims[random.Next(2)] } },
-                        //MetricName = names[random.Next(2)],
-                        Unit = units[random.Next(3)],
-                        StatisticValues = new StatisticSet
-                                             {
-                                                 Minimum = random.NextDouble() * (3e3 - 1e2) + 1e2,
-                                                 Maximum = random.NextDouble() * (1.1e5 - .9e4) + .9e4,
-                                                 Sum = (random.NextDouble() * (6e4 - 4e4) + 4e4) * 100,
-                                                 SampleCount = 100
-                                             }
-                    });
+                {
+                    var metricDatum = new CloudWatchAppender.Model.MetricDatum("A tick!");
+                    metricDatum.NameSpace = nss[random.Next(2)];
+                    metricDatum.Dimensions.Add(new Dimension { Name = "TestDim", Value = dims[random.Next(2)] });
+                    metricDatum.Unit = units[random.Next(3)];
+                    metricDatum.StatisticValues = new StatisticSet();
+                    metricDatum.StatisticValues.Minimum = random.NextDouble() * (3e3 - 1e2) + 1e2;
+                    metricDatum.StatisticValues.Maximum = random.NextDouble() * (1.1e5 - .9e4) + .9e4;
+                    metricDatum.StatisticValues.Sum = (random.NextDouble() * (6e4 - 4e4) + 4e4) * 100;
+                    metricDatum.StatisticValues.SampleCount = 100;
+                    log.Info(metricDatum);
+                }
 
                 Thread.Sleep(10);
             }

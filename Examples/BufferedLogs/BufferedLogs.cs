@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
-using CloudWatchAppender.Services;
+using AWSAppender.Core.Services;
+using CloudWatchLogsAppender.Model;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
@@ -12,7 +13,7 @@ namespace BufferedLogs
     internal class BufferedLogs
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(BufferedLogs));
-        private const int nTicks = 1000;
+        private const int nTicks = 100;
 
         private static void Main(string[] args)
         {
@@ -33,7 +34,7 @@ namespace BufferedLogs
                     log.InfoFormat("A tick! Groupname: {0} Streamname: {1}",
                         groups[random.Next(2)], streams[random.Next(2)]);
                 else
-                    log.Info(new CloudWatchAppender.Model.LogDatum("A tick!")
+                    log.Info(new LogDatum("A tick!")
                     {
                         GroupName = groups[random.Next(2)],
                         StreamName = streams[random.Next(2)],

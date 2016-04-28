@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
-using CloudWatchAppender.Services;
+using AWSAppender.Core.Services;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
@@ -34,7 +34,7 @@ namespace BufferedLogs
                     log.InfoFormat("A tick! Groupname: {0} Streamname: {1}",
                         groups[random.Next(2)], streams[random.Next(2)]);
                 else
-                    log.Info(new CloudWatchAppender.Model.LogDatum("A tick!")
+                    log.Info(new CloudWatchLogsAppender.Model.LogDatum("A tick!")
                     {
                         GroupName = groups[random.Next(2)],
                         StreamName = streams[random.Next(2)],

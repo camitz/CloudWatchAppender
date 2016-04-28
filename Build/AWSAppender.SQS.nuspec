@@ -8,11 +8,9 @@
     <licenseUrl>http://opensource.org/licenses/mit-license.php</licenseUrl>
     <projectUrl>https://github.com/camitz/CloudWatchAppender</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Note: This is a convenience package only, containing updated AWSAppender.CloudWatch and AWSAppender.CloudWatchLogs. It is recommended you use those packages. 
-    
-    You can also use this package to reference older versions, 4.0 and below. A CloudWatch appender for log4net. You can configure log4net to direct your log events to CloudWatch, making them show up as data points on a graph.</description>
+    <description>A CloudWatch appender for log4net. You can configure log4net to direct your log events to CloudWatch, making them show up as data points on a graph. Part of the AWSAppender project which also includes support for CloudWatch Logs, Simple Notification Service and Simple Queue Service.</description>
     <summary>An AWS CloudWatch appender for log4net.</summary>
-    <releaseNotes>As of 5.0, services are divided into separate packages. </releaseNotes>
+    <releaseNotes>As of 5.0, services are divided into separate packages.</releaseNotes>
     <copyright>Martin Camitz</copyright>
     <tags>log4net aws cloudwatch amazon</tags>
     <dependencies>
@@ -20,14 +18,14 @@
         <dependency id="log4net" version="2.0.3" />
         <dependency id="AWSAppender.Core" version="5.0" />
         <dependency id="AWSSDK.Core" version="3.1.4.3" />
-        <dependency id="AWSSDK.CloudWatch" version="3.1.0.5" />
+        <dependency id="AWSSDK.SQS" version="3.1.0.6" />
       </group>
       <group targetFramework=".NETFramework3.5">
         <dependency id="log4net" version="2.0.3" />
         <dependency id="TaskParallelLibrary" version="1.0.2856.0" />
         <dependency id="AWSAppender.Core" version="5.0" />
         <dependency id="AWSSDK.Core" version="3.1.4.3" />
-        <dependency id="AWSSDK.CloudWatch" version="3.1.0.5" />
+        <dependency id="AWSSDK.SQS" version="3.1.0.6" />
       </group>
     </dependencies>
   </metadata>

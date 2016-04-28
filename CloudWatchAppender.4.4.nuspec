@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>CloudWatchAppender</id>
+        <version>4.4</version>
+        <title>CloudWatchAppender</title>
+        <authors>Martin Camitz</authors>
+        <licenseUrl>http://opensource.org/licenses/mit-license.php</licenseUrl>
+        <projectUrl>https://github.com/camitz/CloudWatchAppender</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A CloudWatch appender for log4net. 
+
+You can configure log4net to direct some of your log events to CloudWatch, making them show up as data points on a graph.</description>
+        <summary>An AWS CloudWatch appender for log4net.</summary>
+        <releaseNotes>https://github.com/camitz/CloudWatchAppender/issues/5</releaseNotes>
+        <copyright>Martin Camitz</copyright>
+        <tags>log4net aws cloudwatch amazon</tags>
+        <dependencies>
+            <group targetFramework=".NETFramework4.5">
+                <dependency id="log4net" version="2.0.3" />
+                <dependency id="AWSSDK" version="2.3.15.0" />
+            </group>
+            <group targetFramework=".NETFramework3.5">
+                <dependency id="log4net" version="2.0.3" />
+                <dependency id="TaskParallelLibrary" version="1.0.2856.0" />
+                <dependency id="AWSSDK" version="2.3.15.0" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="lib\net35\CloudWatchAppender.dll" target="lib\net35\CloudWatchAppender.dll" />
+        <file src="lib\net35\CloudWatchAppender.pdb" target="lib\net35\CloudWatchAppender.pdb" />
+        <file src="lib\net45\CloudWatchAppender.dll" target="lib\net45\CloudWatchAppender.dll" />
+        <file src="lib\net45\CloudWatchAppender.pdb" target="lib\net45\CloudWatchAppender.pdb" />
+    </files>
+</package>

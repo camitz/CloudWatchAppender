@@ -8,5 +8,6 @@ namespace SQSAppender.Parsers
     {
         string DefaultQueueName { get; set; }
         string DefaultMessage { get; set; }
+        int? DefaultDelaySeconds { get; set; }
     }
 }

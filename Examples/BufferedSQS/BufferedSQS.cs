@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Threading;
 using AWSAppender.Core.Services;
 using log4net;
 using log4net.Appender;
@@ -30,16 +29,32 @@ namespace BufferedLogs
             {
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
 
-                if (random.Next(2) == 0)
-                    log.InfoFormat("A tick! Queuename: {0} ID: {1}", queues[random.Next(2)], random.NextDouble().ToString(CultureInfo.InvariantCulture).Replace(".",""));
-                else
-                    log.Info(new SQSDatum("A tick!")
-                    {
-                        QueueName = queues[random.Next(2)],
-                        ID = random.NextDouble().ToString(CultureInfo.InvariantCulture).Replace(".", "")
-                    });
-
-                log.Info("Message: sample text for logging");
+                switch (random.Next(4))
+                {
+                    case 0:
+                        log.InfoFormat("A tick! Queuename: {0} ID: {1}", "queue0",
+                            random.NextDouble().ToString(CultureInfo.InvariantCulture).Replace(".", ""));
+                        break;
+                    case 1:
+                        log.InfoFormat("A tick! Queuename: {0} ID: {1} DelaySeconds: {2}", "queue1",
+                            random.NextDouble().ToString(CultureInfo.InvariantCulture).Replace(".", ""), random.Next(10));
+                        break;
+                    case 2:
+                        log.Info(new SQSDatum("A tick!")
+                                 {
+                                     QueueName = "queue2",
+                                     ID = random.NextDouble().ToString(CultureInfo.InvariantCulture).Replace(".", "")
+                                 });
+                        break;
+                    case 3:
+                        log.Info(new SQSDatum("A tick!")
+                                 {
+                                     QueueName = "queue3",
+                                     ID = random.NextDouble().ToString(CultureInfo.InvariantCulture).Replace(".", ""),
+                                     DelaySeconds = random.Next(10) + 10
+                                 });
+                        break;
+                }
 
                 //Thread.Sleep(10);
             }

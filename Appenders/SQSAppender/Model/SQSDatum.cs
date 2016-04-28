@@ -16,6 +16,7 @@ namespace SQSAppender.Model
         public string Message { get; set; }
         public string QueueName { get; set; }
         public string ID { get; set; }
+        public int? DelaySeconds { get; set; }
 
         public override string ToString()
         {

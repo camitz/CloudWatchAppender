@@ -6,6 +6,7 @@ namespace SQSAppender
     {
         string QueueName { set; }
         string Message { set; }
+        string DelaySeconds { set; }
     }
 
 }

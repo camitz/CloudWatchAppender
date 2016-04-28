@@ -40,6 +40,7 @@ namespace SQSAppender
         }
 
         public string QueueName { get; set; }
+        public string DelaySeconds { get; set; }
 
         public string Message { get; set; }
 
@@ -69,7 +70,7 @@ namespace SQSAppender
 
             _client = new SQSClientWrapper(EndPoint, AccessKey, Secret, ClientConfig);
 
-            _eventProcessor = new SQSEventProcessor(QueueName, Message)
+            _eventProcessor = new SQSEventProcessor(QueueName, Message, DelaySeconds)
                               {
                                   EventMessageParser = EventMessageParser
                               };
@@ -91,20 +92,24 @@ namespace SQSAppender
 
             var sqsDatum = _eventProcessor.ProcessEvent(loggingEvent, RenderLoggingEvent(loggingEvent)).Single();
 
+            var sendMessageBatchRequestEntry = new SendMessageBatchRequestEntry
+                                               {
+                                                   MessageBody = sqsDatum.Message,
+                                                   Id = sqsDatum.ID,
+                                               };
+
+            if (sqsDatum.DelaySeconds.HasValue)
+                sendMessageBatchRequestEntry.DelaySeconds = sqsDatum.DelaySeconds.Value;
+
             _client.AddSendMessageRequest(new SendMessageBatchRequestWrapper
                                           {
                                               QueueName = sqsDatum.QueueName,
                                               Entries = new[]
                                                         {
-                                                            new SendMessageBatchRequestEntry
-                                                            {
-                                                                MessageBody = sqsDatum.Message,
-                                                                Id = sqsDatum.ID
-                                                            }
+                                                            sendMessageBatchRequestEntry
                                                         }.ToList()
                                           }
                 );
-
 
 
         }

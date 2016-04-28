@@ -20,6 +20,9 @@ namespace SQSAppender.Model
             if (!String.IsNullOrEmpty(sqsDatum.QueueName))
                 writer.Write("Queuename: {0}, ", sqsDatum.QueueName);
 
+            if (sqsDatum.DelaySeconds.HasValue)
+                writer.Write("DelaySeconds: {0}, ", sqsDatum.DelaySeconds);
+
             if (!String.IsNullOrEmpty(sqsDatum.ID))
                 writer.Write("ID: {0}", sqsDatum.ID);
 

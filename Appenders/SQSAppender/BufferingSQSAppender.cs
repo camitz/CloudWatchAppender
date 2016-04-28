@@ -32,6 +32,7 @@ namespace SQSAppender
         private bool _configOverrides = true;
 
         private AmazonSQSConfig _clientConfig;
+        private string _delaySeconds;
 
         public override IEventProcessor<SQSDatum> EventProcessor
         {
@@ -57,6 +58,16 @@ namespace SQSAppender
                 _eventProcessor = null;
             }
             get { return _queueName; }
+        }
+
+        public string DelaySeconds
+        {
+            set
+            {
+                _delaySeconds = value;
+                _eventProcessor = null;
+            }
+            get { return _delaySeconds; }
         }
 
 
@@ -110,7 +121,7 @@ namespace SQSAppender
 
             _client = new SQSClientWrapper(EndPoint, AccessKey, Secret, ClientConfig);
 
-            _eventProcessor = new SQSEventProcessor(_queueName, _message)
+            _eventProcessor = new SQSEventProcessor(_queueName, _message,_delaySeconds)
                               {
                                   EventMessageParser = EventMessageParser
                               };
@@ -147,7 +158,7 @@ namespace SQSAppender
 
         private static IEnumerable<SendMessageBatchRequestWrapper> Assemble(IEnumerable<SQSDatum> data)
         {
-            if (data.Any(x => x.Message.Length > 256*1024))
+            if (data.Any(x => System.Text.UTF8Encoding.UTF8.GetByteCount(x.Message) > 256 * 1024))
                 throw new MessageTooLargeException();
 
             var requests = new List<SendMessageBatchRequestWrapper>();
@@ -161,7 +172,7 @@ namespace SQSAppender
 
                     var taken = grouping
                         .Skip(skip)
-                        .TakeWhile(x => (size += x.Message.Length) < 256 * 1024)
+                        .TakeWhile(x => (size += System.Text.UTF8Encoding.UTF8.GetByteCount(x.Message)) < 256 * 1024)
                         .Take(10);
 
                     requests.Add(new SendMessageBatchRequestWrapper
@@ -170,11 +181,18 @@ namespace SQSAppender
                                      Entries =
                                          taken
                                          .Select(
-                                             sqsDatum => new SendMessageBatchRequestEntry
-                                                  {
-                                                      MessageBody = sqsDatum.Message,
-                                                      Id = sqsDatum.ID
-                                                  }
+                                             sqsDatum =>
+                                             {
+                                                 var t= new SendMessageBatchRequestEntry
+                                                        {
+                                                            MessageBody = sqsDatum.Message,
+                                                            Id = sqsDatum.ID
+                                                        };
+
+                                                 if (sqsDatum.DelaySeconds.HasValue)
+                                                     t.DelaySeconds = sqsDatum.DelaySeconds.Value;
+                                                 return t;
+                                             }
                                          ).ToList()
                                  });
 

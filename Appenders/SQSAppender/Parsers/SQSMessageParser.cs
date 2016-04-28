@@ -13,6 +13,7 @@ namespace SQSAppender.Parsers
         private static string _assemblyName;
 
         public string DefaultMessage { get; set; }
+        public int? DefaultDelaySeconds { get; set; }
         public string DefaultQueueName { get; set; }
         public new bool ConfigOverrides { get { return base.ConfigOverrides; } set { base.ConfigOverrides = value; } }
 
@@ -35,6 +36,9 @@ namespace SQSAppender.Parsers
 
             if (string.IsNullOrEmpty(_currentDatum.Message))
                 _currentDatum.Message = DefaultMessage ?? "";
+
+            if (!_currentDatum.DelaySeconds.HasValue)
+                _currentDatum.DelaySeconds= DefaultDelaySeconds;
         }
 
 
@@ -68,6 +72,13 @@ namespace SQSAppender.Parsers
                     _currentDatum.QueueName = DefaultsOverridePattern ? DefaultQueueName ?? value.sValue : value.sValue;
                     break;
 
+                case "delayseconds":
+                    if (_currentDatum.DelaySeconds.HasValue)
+                        return false;
+
+                    _currentDatum.DelaySeconds = DefaultsOverridePattern ? DefaultDelaySeconds ?? Convert.ToInt32(value.dValue) : Convert.ToInt32(value.dValue);
+                    break;
+
                 case "id":
                     if (!string.IsNullOrEmpty(_currentDatum.ID))
                         return false;
@@ -90,6 +101,7 @@ namespace SQSAppender.Parsers
                                                     {
                                                         "Message",
                                                         "QueueName",
+                                                        "DelaySeconds",
                                                         "ID"
                                                     };
 

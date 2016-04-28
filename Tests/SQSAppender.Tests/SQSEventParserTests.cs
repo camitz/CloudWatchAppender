@@ -29,6 +29,7 @@ namespace SQSAppender.Tests
                 foreach (var r in parsedData)
                 {
                     Assert.AreEqual("unspecified", r.QueueName);
+                    Assert.AreEqual(null, r.DelaySeconds);
                     Assert.AreEqual("A tick", r.Message);
                     Assert.AreNotEqual(prevID, r.ID);
 
@@ -46,12 +47,13 @@ namespace SQSAppender.Tests
             var parser = new SQSMessageParser();
             for (int i = 0; i < 2; i++)
             {
-                var parsedData = parser.Parse("A tick! QueueName: NewName GroupName: GName");
+                var parsedData = parser.Parse("A tick! QueueName: NewName DelaySeconds: 9");
 
                 var data = parsedData;
 
                 Assert.That(data.Count(), Is.EqualTo(1));
                 Assert.That(data.Select(x => x.QueueName), Has.All.EqualTo("NewName"));
+                Assert.That(data.Select(x => x.DelaySeconds), Has.All.EqualTo(9));
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
             }
         }
@@ -62,11 +64,12 @@ namespace SQSAppender.Tests
             var parser = new SQSMessageParser();
             for (int i = 0; i < 2; i++)
             {
-                var parsedData = parser.Parse("QueueName: NewName GroupName: GName A tick!");
+                var parsedData = parser.Parse("QueueName: NewName DelaySeconds: 9 A tick!");
 
                 var data = parsedData;
 
                 Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.DelaySeconds), Has.All.EqualTo(9));
                 Assert.That(data.Select(x => x.QueueName), Has.All.EqualTo("NewName"));
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
             }
@@ -78,11 +81,12 @@ namespace SQSAppender.Tests
             var parser = new SQSMessageParser();
             for (int i = 0; i < 2; i++)
             {
-                var parsedData = parser.Parse("QueueName: NewName A tick! GroupName: GName");
+                var parsedData = parser.Parse("QueueName: NewName A tick! DelaySeconds: 9");
 
                 var data = parsedData;
 
                 Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.DelaySeconds), Has.All.EqualTo(9));
                 Assert.That(data.Select(x => x.QueueName), Has.All.EqualTo("NewName"));
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
             }
@@ -94,11 +98,12 @@ namespace SQSAppender.Tests
             var parser = new SQSMessageParser();
             for (int i = 0; i < 2; i++)
             {
-                var parsedData = parser.Parse("Beginning tick! QueueName: NewName Middle tick! GroupName: GName End tick!");
+                var parsedData = parser.Parse("Beginning tick! QueueName: NewName Middle tick! DelaySeconds: 9 End tick!");
 
                 var data = parsedData;
 
                 Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.DelaySeconds), Has.All.EqualTo(9));
                 Assert.That(data.Select(x => x.QueueName), Has.All.EqualTo("NewName"));
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("Beginning tick! Middle tick! End tick!"));
             }
@@ -110,11 +115,12 @@ namespace SQSAppender.Tests
             var parser = new SQSMessageParser();
             for (int i = 0; i < 2; i++)
             {
-                var parsedData = parser.Parse("QueueName: (New Name) A tick! GroupName: GName");
+                var parsedData = parser.Parse("QueueName: (New Name) A tick! DelaySeconds: 9");
 
                 var data = parsedData;
 
                 Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.DelaySeconds), Has.All.EqualTo(9));
                 Assert.That(data.Select(x => x.QueueName), Has.All.EqualTo("New Name"));
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
             }

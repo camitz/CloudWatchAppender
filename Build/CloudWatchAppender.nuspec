@@ -8,9 +8,11 @@
     <licenseUrl>http://opensource.org/licenses/mit-license.php</licenseUrl>
     <projectUrl>https://github.com/camitz/CloudWatchAppender</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>As of 5.0, services are divided into separate packages. This is a legacy package, containing updated AWSAppender.CloudWatch, AWSAppender.CloudWatchLogs and AWSAppender.Core. It is recommended you include those libraries as individua packages. You can also use this package to reference older versions, 4.0 and below.
+    <description>As of 5.0, services are divided into separate packages. This is a legacy package, containing updated AWSAppender.CloudWatch, AWSAppender.CloudWatchLogs and AWSAppender.Core. It is recommended you include those libraries as individual packages. You can also use this package to reference older versions, 4.0 and below.
     
     A CloudWatch appender for log4net. You can configure log4net to direct your log events to CloudWatch, making them show up as data points on a graph.
+
+    Part of the CloudWatchAppender/AWSAppender project which also includes support for Simple Notification Service (SNS) and Simple Queue Service (SQS).
     </description>
     <summary>An AWS CloudWatch appender for log4net.</summary>
     <releaseNotes> </releaseNotes>

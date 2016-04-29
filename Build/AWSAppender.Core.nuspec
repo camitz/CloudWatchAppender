@@ -12,7 +12,7 @@
     <summary>The core library for the AWSAppender suite for log4net, known as the CloudWatchAppender project.</summary>
     <releaseNotes>As of 5.0, services are divided into separate packages.</releaseNotes>
     <copyright>Martin Camitz</copyright>
-    <tags>log4net aws cloudwatch amazon</tags>
+    <tags>log4net aws cloudwatch cloudwatchappender awsappender amazon</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.5">
         <dependency id="log4net" version="2.0.3" />

@@ -58,13 +58,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Appenders\CloudWatchLogsAppender\CloudWatchLogsAppender.csproj">
+    <ProjectReference Include="..\..\Appenders\CloudWatchLogsAppender\AWSAppender.CloudWatchLogs.csproj">
       <Project>{23F90E5A-5C96-4116-B27A-5836CD3C0472}</Project>
-      <Name>CloudWatchLogsAppender</Name>
+      <Name>AWSAppender.CloudWatchLogs</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Appenders\SQSAppender\SQSAppender.csproj">
+    <ProjectReference Include="..\..\Appenders\SQSAppender\AWSAppender.SQS.csproj">
       <Project>{e1c74e85-4040-4d95-98ab-af13960c17c3}</Project>
-      <Name>SQSAppender</Name>
+      <Name>AWSAppender.SQS</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\AWSAppender.Core\AWSAppender.Core.csproj">
       <Project>{7FF5ACE5-4E7F-444F-BCB0-38C71FBC3ECC}</Project>

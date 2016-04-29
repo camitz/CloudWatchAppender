@@ -8,8 +8,8 @@
     <ProjectGuid>{9D22716F-0CF0-45DB-8957-9DACADFFF930}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CloudWatchAppender</RootNamespace>
-    <AssemblyName>CloudWatchAppender</AssemblyName>
+    <RootNamespace>AWSAppender.CloudWatch</RootNamespace>
+    <AssemblyName>AWSAppender.CloudWatch</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">C:\cocoin\trunk\</SolutionDir>

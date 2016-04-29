@@ -25,13 +25,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logs", "Examples\Logs\Logs.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedLogs", "Examples\BufferedLogs\BufferedLogs.csproj", "{1B18AB98-9299-45A0-BFF6-CE92625008B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchAppender3.5", "Appenders\CloudWatchAppender3.5\CloudWatchAppender3.5.csproj", "{9F170522-C3C2-43B4-A80A-C0EC88EFC8C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.CloudWatch3.5", "Appenders\CloudWatchAppender3.5\AWSAppender.CloudWatch3.5.csproj", "{9F170522-C3C2-43B4-A80A-C0EC88EFC8C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples3.5", "Examples3.5", "{3C829670-629C-4510-9185-E6E908BD51B3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedLogs", "Examples3.5\BufferedLogs\BufferedLogs.csproj", "{9353EA01-55B9-4D06-A2DF-2D1D2E5EF9A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQSAppender", "Appenders\SQSAppender\SQSAppender.csproj", "{E1C74E85-4040-4D95-98AB-AF13960C17C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.SQS", "Appenders\SQSAppender\AWSAppender.SQS.csproj", "{E1C74E85-4040-4D95-98AB-AF13960C17C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.Core", "AWSAppender.Core\AWSAppender.Core.csproj", "{7FF5ACE5-4E7F-444F-BCB0-38C71FBC3ECC}"
 EndProject
@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Appenders", "Appenders", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{E6F4BD22-390B-47ED-8A07-FC917A7E4C2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchAppender", "Appenders\CloudWatchAppender\CloudWatchAppender.csproj", "{9D22716F-0CF0-45DB-8957-9DACADFFF930}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.CloudWatch", "Appenders\CloudWatchAppender\AWSAppender.CloudWatch.csproj", "{9D22716F-0CF0-45DB-8957-9DACADFFF930}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQSAppender.Tests", "Tests\SQSAppender.Tests\SQSAppender.Tests.csproj", "{101328C0-9615-4519-AB26-D2E4F4863FB6}"
 EndProject
@@ -53,17 +53,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchAppender.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedSQS", "Examples\BufferedSQS\BufferedSQS.csproj", "{855A9589-B74F-4553-A074-824D8CAE77FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchLogsAppender", "Appenders\CloudWatchLogsAppender\CloudWatchLogsAppender.csproj", "{23F90E5A-5C96-4116-B27A-5836CD3C0472}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.CloudWatchLogs", "Appenders\CloudWatchLogsAppender\AWSAppender.CloudWatchLogs.csproj", "{23F90E5A-5C96-4116-B27A-5836CD3C0472}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchLogsAppender.Tests", "Tests\CloudWatchLogsAppender.Tests\CloudWatchLogsAppender.Tests.csproj", "{F7ABF857-6E8F-483E-B998-8C07F3241CBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchLogsAppender3.5", "Appenders\CloudWatchLogsAppender3.5\CloudWatchLogsAppender3.5.csproj", "{5E5777A7-7A11-47F1-8D33-12C4BC17B128}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.CloudWatchLog3.5", "Appenders\CloudWatchLogsAppender3.5\AWSAppender.CloudWatchLog3.5.csproj", "{5E5777A7-7A11-47F1-8D33-12C4BC17B128}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQSAppender3.5", "Appenders\SQSAppender3.5\SQSAppender3.5.csproj", "{F96B18A0-8F72-4DD9-BD09-1FDE3E327E9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.SQS3.5", "Appenders\SQSAppender3.5\AWSAppender.SQS3.5.csproj", "{F96B18A0-8F72-4DD9-BD09-1FDE3E327E9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SNSAppender", "Appenders\SNSAppender\SNSAppender.csproj", "{28957A1C-6AC4-4815-A62B-EE5C082586AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.SNS", "Appenders\SNSAppender\AWSAppender.SNS.csproj", "{28957A1C-6AC4-4815-A62B-EE5C082586AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SNS", "Examples\SNS\SNS.csproj", "{5A0EEB04-4926-4B6C-9F1D-BE5D280F7145}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.SNS3.5", "Appenders\SNS3.5Appender\AWSAppender.SNS3.5.csproj", "{2EAB6604-135A-4C94-9763-3DDF667CF661}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -295,6 +297,16 @@ Global
 		{5A0EEB04-4926-4B6C-9F1D-BE5D280F7145}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{5A0EEB04-4926-4B6C-9F1D-BE5D280F7145}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5A0EEB04-4926-4B6C-9F1D-BE5D280F7145}.Release|x86.ActiveCfg = Release|Any CPU
+		{2EAB6604-135A-4C94-9763-3DDF667CF661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EAB6604-135A-4C94-9763-3DDF667CF661}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EAB6604-135A-4C94-9763-3DDF667CF661}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2EAB6604-135A-4C94-9763-3DDF667CF661}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2EAB6604-135A-4C94-9763-3DDF667CF661}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2EAB6604-135A-4C94-9763-3DDF667CF661}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EAB6604-135A-4C94-9763-3DDF667CF661}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EAB6604-135A-4C94-9763-3DDF667CF661}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2EAB6604-135A-4C94-9763-3DDF667CF661}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2EAB6604-135A-4C94-9763-3DDF667CF661}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -320,5 +332,6 @@ Global
 		{F96B18A0-8F72-4DD9-BD09-1FDE3E327E9D} = {A79FBA9F-CF47-4515-87E2-DF9A4D47C65E}
 		{28957A1C-6AC4-4815-A62B-EE5C082586AC} = {A79FBA9F-CF47-4515-87E2-DF9A4D47C65E}
 		{5A0EEB04-4926-4B6C-9F1D-BE5D280F7145} = {454F1AF8-8B2E-4ED9-AD57-6765C371C79A}
+		{2EAB6604-135A-4C94-9763-3DDF667CF661} = {A79FBA9F-CF47-4515-87E2-DF9A4D47C65E}
 	EndGlobalSection
 EndGlobal

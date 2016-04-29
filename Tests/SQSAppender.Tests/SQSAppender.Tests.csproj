@@ -85,13 +85,13 @@
       <Project>{7ff5ace5-4e7f-444f-bcb0-38c71fbc3ecc}</Project>
       <Name>AWSAppender.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Appenders\CloudWatchAppender\CloudWatchAppender.csproj">
+    <ProjectReference Include="..\..\Appenders\CloudWatchAppender\AWSAppender.CloudWatch.csproj">
       <Project>{9d22716f-0cf0-45db-8957-9dacadfff930}</Project>
-      <Name>CloudWatchAppender</Name>
+      <Name>AWSAppender.CloudWatch</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Appenders\SQSAppender\SQSAppender.csproj">
+    <ProjectReference Include="..\..\Appenders\SQSAppender\AWSAppender.SQS.csproj">
       <Project>{e1c74e85-4040-4d95-98ab-af13960c17c3}</Project>
-      <Name>SQSAppender</Name>
+      <Name>AWSAppender.SQS</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

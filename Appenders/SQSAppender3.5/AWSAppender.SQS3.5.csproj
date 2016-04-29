@@ -4,16 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5E5777A7-7A11-47F1-8D33-12C4BC17B128}</ProjectGuid>
+    <ProjectGuid>{F96B18A0-8F72-4DD9-BD09-1FDE3E327E9D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CloudWatchLogsAppender</RootNamespace>
-    <AssemblyName>CloudWatchLogsAppender</AssemblyName>
+    <RootNamespace>AWSAppender.SQS</RootNamespace>
+    <AssemblyName>AWSAppender.SQS</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,62 +33,48 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.CloudWatchLogs, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AWSSDK.CloudWatchLogs.3.1.2.4\lib\net35\AWSSDK.CloudWatchLogs.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="AWSSDK.Core">
       <HintPath>..\..\packages\AWSSDK.Core.3.1.4.3\lib\net35\AWSSDK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="AWSSDK.SQS">
+      <HintPath>..\..\packages\AWSSDK.SQS.3.1.0.6\lib\net35\AWSSDK.SQS.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
       <HintPath>..\..\packages\log4net.2.0.3\lib\net35-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Threading, Version=1.0.2856.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="System.Threading">
       <HintPath>..\..\packages\TaskParallelLibrary.1.0.2856.0\lib\Net35\System.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\CloudWatchLogsAppender\BufferingCloudWatchLogsAppender.cs">
-      <Link>BufferingCloudWatchLogsAppender.cs</Link>
+    <Compile Include="..\SQSAppender\Model\SQSDatum.cs">
+      <Link>Model\SQSDatum.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchLogsAppender\CloudWatchLogsAppender.cs">
-      <Link>CloudWatchLogsAppender.cs</Link>
+    <Compile Include="..\SQSAppender\Model\SQSDatumRenderer.cs">
+      <Link>Model\SQSDatumRenderer.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchLogsAppender\ICloudWatchLogsAppender.cs">
-      <Link>ICloudWatchLogsAppender.cs</Link>
+    <Compile Include="..\SQSAppender\Parsers\ISQSEventMessageParser.cs">
+      <Link>Parsers\ISQSEventMessageParser.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchLogsAppender\Model\LogDatum.cs">
-      <Link>Model\LogDatum.cs</Link>
+    <Compile Include="..\SQSAppender\Parsers\SQSMessageParser.cs">
+      <Link>Parsers\SQSMessageParser.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchLogsAppender\Model\LogDatumRenderer.cs">
-      <Link>Model\LogDatumRenderer.cs</Link>
+    <Compile Include="..\SQSAppender\Services\SQSClientWrapper.cs">
+      <Link>Services\SQSClientWrapper.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchLogsAppender\Parsers\DummyLogsEventMessageParser.cs">
-      <Link>Parsers\DummyLogsEventMessageParser.cs</Link>
+    <Compile Include="..\SQSAppender\Services\SQSEventProcessor.cs">
+      <Link>Services\SQSEventProcessor.cs</Link>
     </Compile>
-    <Compile Include="..\CloudWatchLogsAppender\Parsers\ILogsEventMessageParser.cs">
-      <Link>Parsers\ILogsEventMessageParser.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchLogsAppender\Parsers\LogsEventMessageParser.cs">
-      <Link>Parsers\LogsEventMessageParser.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchLogsAppender\Services\CloudWatchLogsClientWrapper.cs">
-      <Link>Services\CloudWatchLogsClientWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\CloudWatchLogsAppender\Services\LogEventProcessor.cs">
-      <Link>Services\LogEventProcessor.cs</Link>
-    </Compile>
+    <Compile Include="BufferingSQSAppender.cs" />
+    <Compile Include="ISQSAppender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQSAppender.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

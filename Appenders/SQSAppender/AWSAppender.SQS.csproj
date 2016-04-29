@@ -8,8 +8,8 @@
     <ProjectGuid>{E1C74E85-4040-4D95-98AB-AF13960C17C3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SQSAppender</RootNamespace>
-    <AssemblyName>SQSAppender</AssemblyName>
+    <RootNamespace>AWSAppender.SQS</RootNamespace>
+    <AssemblyName>AWSAppender.SQS</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">C:\cocoin\trunk\</SolutionDir>

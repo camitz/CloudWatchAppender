@@ -57,9 +57,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Appenders\SNSAppender\SNSAppender.csproj">
+    <ProjectReference Include="..\..\Appenders\SNSAppender\AWSAppender.SNS.csproj">
       <Project>{28957a1c-6ac4-4815-a62b-ee5c082586ac}</Project>
-      <Name>SNSAppender</Name>
+      <Name>AWSAppender.SNS</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\AWSAppender.Core\AWSAppender.Core.csproj">
       <Project>{7ff5ace5-4e7f-444f-bcb0-38c71fbc3ecc}</Project>

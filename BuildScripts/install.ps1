@@ -33,7 +33,7 @@ try
 			foreach ($nuspecPath in (Get-ChildItem -Filter *.nuspec -Recurse ))
 			{
 
-				[xml]$nuspec = Get-Content $nuspecPath
+				[xml]$nuspec = Get-Content $nuspecPath.FullName
 
 				$nuspec.package.metadata.releaseNotes = $release.Body
 				$nuspec.package.metadata.version = $env:BuildVersion

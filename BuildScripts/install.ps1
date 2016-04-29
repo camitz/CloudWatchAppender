@@ -38,7 +38,7 @@ try
 				$nuspec.package.metadata.releaseNotes = $release.Body
 				$nuspec.package.metadata.version = $env:BuildVersion
 				
-				$nuspec.Save( $nuspecPath )
+				$nuspec.Save( $nuspecPath.FullName )
 			}
 		}
 	}

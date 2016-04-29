@@ -23,8 +23,8 @@ $nuspecPath = (Get-ChildItem -Filter CloudWatchAppender.nuspec -Recurse ).FullNa
 
 nuget pack $nuspecPath
 
-Remove-Item -Force build\lib\net35
-Remove-Item -Force build\lib\net45
+Remove-Item -Recurse -Path build\lib\net35
+Remove-Item -Recurse -Path build\lib\net45
 
 
 #Copy Files into folders
@@ -39,8 +39,8 @@ $nuspecPath = (Get-ChildItem -Filter AWSAppender.Core.nuspec -Recurse ).FullName
 
 nuget pack $nuspecPath
 
-Remove-Item -Force build\lib\net35
-Remove-Item -Force build\lib\net45
+Remove-Item -Recurse -Path build\lib\net35
+Remove-Item -Recurse -Path build\lib\net45
 
 
 #Copy Files into folders
@@ -55,8 +55,8 @@ $nuspecPath = (Get-ChildItem -Filter AWSAppender.CloudWatch.nuspec -Recurse ).Fu
 
 nuget pack $nuspecPath
 
-Remove-Item -Force build\lib\net35
-Remove-Item -Force build\lib\net45
+Remove-Item -Recurse -Path build\lib\net35
+Remove-Item -Recurse -Path build\lib\net45
 
 
 #Copy Files into folders
@@ -71,8 +71,8 @@ $nuspecPath = (Get-ChildItem -Filter AWSAppender.CloudWatchLogs.nuspec -Recurse 
 
 nuget pack $nuspecPath
 
-Remove-Item -Force build\lib\net35
-Remove-Item -Force build\lib\net45
+Remove-Item -Recurse -Path build\lib\net35
+Remove-Item -Recurse -Path build\lib\net45
 
 #Copy Files into folders
 Copy-Item -Force "Appenders\SQSAppender\bin\Release\AWSAppender.SQS.dll" "build\lib\net45"
@@ -86,8 +86,8 @@ $nuspecPath = (Get-ChildItem -Filter AWSAppender.SQS.nuspec -Recurse ).FullName
 
 nuget pack $nuspecPath
 
-Remove-Item -Force build\lib\net35
-Remove-Item -Force build\lib\net45
+Remove-Item -Recurse -Path build\lib\net35
+Remove-Item -Recurse -Path build\lib\net45
 
 
 
@@ -103,6 +103,6 @@ $nuspecPath = (Get-ChildItem -Filter AWSAppender.SNS.nuspec -Recurse ).FullName
 
 nuget pack $nuspecPath
 
-Remove-Item -Force build\lib\net35
-Remove-Item -Force build\lib\net45
+Remove-Item -Recurse -Path build\lib\net35
+Remove-Item -Recurse -Path build\lib\net45
 

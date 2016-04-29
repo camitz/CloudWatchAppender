@@ -9,7 +9,6 @@ namespace AWSAppender.CloudWatchLogs.Services
 {
     public class LogEventProcessor : EventProcessorBase, IEventProcessor<LogDatum>
     {
-        private bool _dirtyParsedProperties = true;
         private string _parsedStreamName;
         private string _parsedGroupName;
         private string _parsedMessage;

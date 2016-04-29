@@ -14,7 +14,6 @@ namespace AWSAppender.CloudWatch.Services
     {
         private Dictionary<string, Dimension> _dimensions = new Dictionary<string, Dimension>();
         private Dictionary<string, Dimension> _parsedDimensions;
-        private bool _hasParsedProperties;
         private string _parsedNamespace;
         private string _parsedMetricName;
         private DateTimeOffset? _dateTimeOffset;

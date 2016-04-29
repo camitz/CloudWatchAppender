@@ -76,7 +76,9 @@ namespace CloudWatchAppender.Tests
             var t = new StringWriter();
 
             new MetricDatumRenderer().RenderObject(null, new MetricDatum()
+#pragma warning disable 618
                                         .WithStatisticValues(new StatisticSet
+#pragma warning restore 618
                                                                  {
                                                                      Maximum = 100.1,
                                                                      Minimum = 2.1,

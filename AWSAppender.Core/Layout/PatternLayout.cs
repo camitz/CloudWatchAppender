@@ -15,7 +15,6 @@ namespace AWSAppender.Core.Layout
         {
             s_rulesRegistry = new Hashtable(1)
                     {
-                        {"instanceid", typeof (InstanceIDPatternConverter)}, //Deprecated
                         {"metadata", typeof (InstanceMetaDataPatternConverter)}, 
                         {"c", typeof (LoggerPatternConverter)},
                         {"logger", typeof (LoggerPatternConverter)},

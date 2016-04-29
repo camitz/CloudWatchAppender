@@ -39,8 +39,6 @@ namespace AWSAppender.SQS.Services
 
             lock (_lockObject)
             {
-                AmazonWebServiceResponse ret = null;
-
                 string queueUrl;
                 _validatedQueueNames.TryGetValue(sendMessageBatchRequest.QueueName, out queueUrl);
 

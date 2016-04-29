@@ -14,11 +14,9 @@ namespace AWSAppender.SQS.Services
         private string _parsedQueueName;
         private int? _parsedDelaySeconds;
         private string _parsedMessage;
-        private DateTime? _dateTimeOffset;
         private readonly string _queueName;
         private readonly string _delaySeconds;
         private readonly string _message;
-        private string _parsedId;
 
         public SQSEventProcessor(string queueName, string message, string delaySeconds)
         {

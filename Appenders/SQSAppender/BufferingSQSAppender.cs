@@ -22,7 +22,6 @@ namespace AWSAppender.SQS
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private SQSClientWrapper _client;
         private static readonly Type _declaringType = typeof(BufferingSQSAppender);
-        private string _timestamp;
 
         private string _queueName;
         private string _message;

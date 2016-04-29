@@ -11,12 +11,9 @@ namespace AWSAppender.SNS.Services
     public class SNSEventProcessor : EventProcessorBase, IEventProcessor<SNSDatum>
     {
         private string _parsedTopic;
-        private int? _parsedDelaySeconds;
         private string _parsedMessage;
-        private DateTime? _dateTimeOffset;
         private readonly string _topic;
         private readonly string _message;
-        private string _parsedId;
 
         public SNSEventProcessor(string topic, string message)
         {

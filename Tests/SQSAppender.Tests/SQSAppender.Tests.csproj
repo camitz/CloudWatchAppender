@@ -44,22 +44,23 @@
       <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="nunit.core">
-      <HintPath>..\CloudWatchAppender\packages\NUnitTestAdapter.1.2\lib\nunit.core.dll</HintPath>
+      <HintPath>..\..\packages\NUnitTestAdapter.1.2\lib\nunit.core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="nunit.core.interfaces">
-      <HintPath>..\CloudWatchAppender\packages\NUnitTestAdapter.1.2\lib\nunit.core.interfaces.dll</HintPath>
+      <HintPath>..\..\packages\NUnitTestAdapter.1.2\lib\nunit.core.interfaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\CloudWatchAppender\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="nunit.util">
-      <HintPath>..\CloudWatchAppender\packages\NUnitTestAdapter.1.2\lib\nunit.util.dll</HintPath>
+      <HintPath>..\..\packages\NUnitTestAdapter.1.2\lib\nunit.util.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NUnit.VisualStudio.TestAdapter">
-      <HintPath>..\CloudWatchAppender\packages\NUnitTestAdapter.1.2\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
+      <HintPath>..\..\packages\NUnitTestAdapter.1.2\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

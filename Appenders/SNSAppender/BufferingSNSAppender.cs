@@ -21,7 +21,6 @@ namespace AWSAppender.SNS
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private SNSClientWrapper _client;
         private static readonly Type _declaringType = typeof(BufferingSNSAppender);
-        private string _timestamp;
 
         private string _topic;
         private string _message;

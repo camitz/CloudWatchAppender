@@ -28,6 +28,16 @@ build:
 artifacts:
 - path: CloudWatchAppender.$(BuildVersion).nupkg
   name: CloudWatchAppender
+- path: AWSAppender.Core.$(BuildVersion).nupkg
+  name: AWSAppender.Core
+- path: AWSAppender.CloudWatch.$(BuildVersion).nupkg
+  name: AWSAppender.CloudWatch
+- path: AWSAppender.CloudWatchLogs.$(BuildVersion).nupkg
+  name: AWSAppender.CloudWatchLogs
+- path: AWSAppender.SNS.$(BuildVersion).nupkg
+  name: AWSAppender.SNS
+- path: AWSAppender.SQS.$(BuildVersion).nupkg
+  name: AWSAppender.SQS
 deploy:
 - provider: GitHub
   auth_token:
@@ -40,7 +50,7 @@ deploy:
 - provider: NuGet
   api_key:
     secure: nJSdlo2bRHEauK9vfPjJvhao5uLnsuaDIdebgN6kmNVW0jGQBxwxhTUJPg0/nxwg
-  artifact: /.*\.nupkg/
+  artifact: /.*.nupkg/
   on:
     branch: master
     IsGithubRelease: true

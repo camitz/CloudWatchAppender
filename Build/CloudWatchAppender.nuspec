@@ -8,29 +8,20 @@
     <licenseUrl>http://opensource.org/licenses/mit-license.php</licenseUrl>
     <projectUrl>https://github.com/camitz/CloudWatchAppender</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Note: This is a convenience package only, containing updated AWSAppender.CloudWatch and AWSAppender.CloudWatchLogs. It is recommended you use those packages. You can also use this package to reference older versions, 4.0 and below. 
-    
-    As of 5.0, services are divided into separate packages.
-    
-    A CloudWatch appender for log4net. You can configure log4net to direct your log events to CloudWatch, making them show up as data points on a graph.
-    </description>
+    <description>A CloudWatch appender for log4net. You can configure log4net to direct some of your log events to CloudWatch, making them show up as data points on a graph.</description>
     <summary>An AWS CloudWatch appender for log4net.</summary>
-    <releaseNotes> </releaseNotes>
+    <releaseNotes>https://github.com/camitz/CloudWatchAppender/issues/5</releaseNotes>
     <copyright>Martin Camitz</copyright>
     <tags>log4net aws cloudwatch amazon</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.5">
         <dependency id="log4net" version="2.0.3" />
-        <dependency id="AWSAppender.Core" version="5.0" />
-        <dependency id="AWSSDK.Core" version="3.1.4.3" />
-        <dependency id="AWSSDK.CloudWatch" version="3.1.0.5" />
+        <dependency id="AWSSDK" version="2.3.15.0" />
       </group>
       <group targetFramework=".NETFramework3.5">
         <dependency id="log4net" version="2.0.3" />
         <dependency id="TaskParallelLibrary" version="1.0.2856.0" />
-        <dependency id="AWSAppender.Core" version="5.0" />
-        <dependency id="AWSSDK.Core" version="3.1.4.3" />
-        <dependency id="AWSSDK.CloudWatch" version="3.1.0.5" />
+        <dependency id="AWSSDK" version="2.3.15.0" />
       </group>
     </dependencies>
   </metadata>

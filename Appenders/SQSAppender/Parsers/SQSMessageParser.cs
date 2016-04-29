@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AWSAppender.Core.Services;
-using SQSAppender.Model;
+using AWSAppender.SQS.Model;
 
-namespace SQSAppender.Parsers
+namespace AWSAppender.SQS.Parsers
 {
     public class SQSMessageParser : EventMessageParserBase<SQSDatum>, ISQSEventMessageParser
     {

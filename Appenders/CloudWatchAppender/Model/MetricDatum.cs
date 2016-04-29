@@ -6,7 +6,7 @@ using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using log4net.Util;
 
-namespace CloudWatchAppender.Model
+namespace AWSAppender.CloudWatch.Model
 {
     public class MetricDatum
     {

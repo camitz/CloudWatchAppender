@@ -1,6 +1,6 @@
 using System;
 
-namespace CloudWatchAppender
+namespace AWSAppender.CloudWatch
 {
     internal class CloudWatchAppenderException : Exception
     {

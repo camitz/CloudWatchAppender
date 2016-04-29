@@ -2,7 +2,7 @@ using System;
 using Amazon.CloudWatch;
 using log4net.Util.TypeConverters;
 
-namespace CloudWatchAppender.TypeConverters
+namespace AWSAppender.CloudWatch.TypeConverters
 {
     public class StandardUnitConverter :  IConvertFrom
     {

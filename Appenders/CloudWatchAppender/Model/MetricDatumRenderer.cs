@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using log4net.ObjectRenderer;
 
-namespace CloudWatchAppender.Model
+namespace AWSAppender.CloudWatch.Model
 {
     public class MetricDatumRenderer : IObjectRenderer
     {

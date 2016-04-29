@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using AWSAppender.CloudWatchLogs.Model;
 using AWSAppender.Core.Services;
-using CloudWatchLogsAppender.Model;
 
-namespace CloudWatchLogsAppender.Parsers
+namespace AWSAppender.CloudWatchLogs.Parsers
 {
     public class LogsEventMessageParser : EventMessageParserBase<LogDatum>, ILogsEventMessageParser
     {

@@ -1,6 +1,6 @@
 ﻿using AWSAppender.Core;
 
-namespace SQSAppender
+namespace AWSAppender.SQS
 {
     public interface ISQSAppender : IAWSAppender
     {

@@ -1,8 +1,8 @@
 using System;
+using AWSAppender.CloudWatchLogs.Model;
 using AWSAppender.Core.Services;
-using CloudWatchLogsAppender.Model;
 
-namespace CloudWatchLogsAppender.Parsers
+namespace AWSAppender.CloudWatchLogs.Parsers
 {
 
     public interface ILogsEventMessageParser : IEventMessageParser<LogDatum>

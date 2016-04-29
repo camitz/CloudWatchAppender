@@ -30,13 +30,16 @@ try
 			$resp = invoke-webrequest $releaseUrl
 			$release = $resp.Content | ConvertFrom-Json
 
-			$nuspecPath = (Get-ChildItem -Filter *.nuspec -Recurse )[0].FullName
-			[xml]$nuspec = Get-Content $nuspecPath
+			foreach ($nuspecPath in (Get-ChildItem -Filter *.nuspec -Recurse ))
+			{
 
-			$nuspec.package.metadata.releaseNotes = $release.Body
-			$nuspec.package.metadata.version = $env:BuildVersion
-			
-			$nuspec.Save( $nuspecPath )
+				[xml]$nuspec = Get-Content $nuspecPath
+
+				$nuspec.package.metadata.releaseNotes = $release.Body
+				$nuspec.package.metadata.version = $env:BuildVersion
+				
+				$nuspec.Save( $nuspecPath )
+			}
 		}
 	}
 }

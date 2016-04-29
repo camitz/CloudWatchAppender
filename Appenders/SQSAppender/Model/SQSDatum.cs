@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace SQSAppender.Model
+namespace AWSAppender.SQS.Model
 {
     public class SQSDatum
     {

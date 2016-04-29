@@ -5,7 +5,7 @@ using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 using AWSAppender.Core.Services;
 
-namespace SNSAppender.Services
+namespace AWSAppender.SNS.Services
 {
     public class SNSClientWrapper : ClientWrapperBase<AmazonSimpleNotificationServiceConfig, AmazonSimpleNotificationServiceClient>
     {

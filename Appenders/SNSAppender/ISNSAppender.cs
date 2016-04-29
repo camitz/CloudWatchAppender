@@ -1,6 +1,6 @@
 ﻿using AWSAppender.Core;
 
-namespace SNSAppender
+namespace AWSAppender.SNS
 {
     public interface ISNSAppender : IAWSAppender
     {

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Amazon.CloudWatch.Model;
-using CloudWatchAppender.Model;
+using AWSAppender.CloudWatch.Model;
 using NUnit.Framework;
+using MetricDatum = AWSAppender.CloudWatch.Model.MetricDatum;
 
 namespace CloudWatchAppender.Tests
 {
@@ -74,7 +75,7 @@ namespace CloudWatchAppender.Tests
         {
             var t = new StringWriter();
 
-            new MetricDatumRenderer().RenderObject(null, new Model.MetricDatum()
+            new MetricDatumRenderer().RenderObject(null, new MetricDatum()
                                         .WithStatisticValues(new StatisticSet
                                                                  {
                                                                      Maximum = 100.1,

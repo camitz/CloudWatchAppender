@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using log4net.ObjectRenderer;
 
-namespace CloudWatchLogsAppender.Model
+namespace AWSAppender.CloudWatchLogs.Model
 {
     public class LogDatumRenderer : IObjectRenderer
     {

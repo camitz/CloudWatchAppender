@@ -8,12 +8,12 @@ using Amazon.SQS.Model;
 using AWSAppender.Core;
 using AWSAppender.Core.Layout;
 using AWSAppender.Core.Services;
+using AWSAppender.SQS.Model;
+using AWSAppender.SQS.Parsers;
+using AWSAppender.SQS.Services;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
-using SQSAppender.Model;
-using SQSAppender.Parsers;
-using SQSAppender.Services;
 
 namespace SQSAppender
 {

@@ -4,12 +4,11 @@ using System.Globalization;
 using System.Linq;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using AWSAppender.CloudWatch.Parsers;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Parsers;
 using log4net.Core;
-using PatternParser = AWSAppender.Core.Services.PatternParser;
 
-namespace CloudWatchAppender.Services
+namespace AWSAppender.CloudWatch.Services
 {
     public class MetricDatumEventProcessor :EventProcessorBase, IEventProcessor<PutMetricDataRequest>
     {

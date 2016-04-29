@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using AWSAppender.CloudWatch.Model;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Model;
-using MetricDatum = CloudWatchAppender.Model.MetricDatum;
+using MetricDatum = AWSAppender.CloudWatch.Model.MetricDatum;
 
-namespace CloudWatchAppender.Parsers
+namespace AWSAppender.CloudWatch.Parsers
 {
     public class MetricDatumEventMessageParser : EventMessageParserBase<PutMetricDataRequest>
     {

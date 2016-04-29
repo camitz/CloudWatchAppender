@@ -4,17 +4,17 @@ using System.Reflection;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Amazon.Runtime;
+using AWSAppender.CloudWatchLogs.Model;
+using AWSAppender.CloudWatchLogs.Parsers;
+using AWSAppender.CloudWatchLogs.Services;
 using AWSAppender.Core;
 using AWSAppender.Core.Layout;
 using AWSAppender.Core.Services;
-using CloudWatchLogsAppender.Model;
-using CloudWatchLogsAppender.Parsers;
-using CloudWatchLogsAppender.Services;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
 
-namespace CloudWatchLogsAppender
+namespace AWSAppender.CloudWatchLogs
 {
     public class CloudWatchLogsAppender : AWSAppenderBase<LogDatum>, ICloudWatchLogsAppender
     {

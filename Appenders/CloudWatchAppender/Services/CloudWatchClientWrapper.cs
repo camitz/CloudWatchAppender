@@ -2,7 +2,7 @@ using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.Runtime;
 
-namespace CloudWatchAppender.Services
+namespace AWSAppender.CloudWatch.Services
 {
     public class CloudWatchClientWrapper : AWSAppender.Core.Services.ClientWrapperBase<AmazonCloudWatchConfig, AmazonCloudWatchClient>
     {

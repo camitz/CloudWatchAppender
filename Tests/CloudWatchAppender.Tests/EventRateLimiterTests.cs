@@ -1,6 +1,5 @@
 using System;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Services;
 using NUnit.Framework;
 
 namespace CloudWatchAppender.Tests

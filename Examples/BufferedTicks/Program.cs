@@ -7,6 +7,7 @@ using log4net;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Repository;
+using MetricDatum = AWSAppender.CloudWatch.Model.MetricDatum;
 
 namespace BufferedTicks
 {
@@ -39,7 +40,7 @@ namespace BufferedTicks
                         nss[random.Next(2)], names[random.Next(2)], dims[random.Next(2)], units[random.Next(3)]);
                 else
                 {
-                    var metricDatum = new CloudWatchAppender.Model.MetricDatum("A tick!");
+                    var metricDatum = new MetricDatum("A tick!");
                     metricDatum.NameSpace = nss[random.Next(2)];
                     metricDatum.Dimensions.Add(new Dimension { Name = "TestDim", Value = dims[random.Next(2)] });
                     metricDatum.Unit = units[random.Next(3)];

@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Services;
 using NUnit.Framework;
 using log4net;
 using log4net.Core;

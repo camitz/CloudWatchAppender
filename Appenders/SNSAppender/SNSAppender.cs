@@ -6,14 +6,14 @@ using Amazon.SimpleNotificationService;
 using AWSAppender.Core;
 using AWSAppender.Core.Layout;
 using AWSAppender.Core.Services;
+using AWSAppender.SNS.Model;
+using AWSAppender.SNS.Parsers;
+using AWSAppender.SNS.Services;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
-using SNSAppender.Model;
-using SNSAppender.Parsers;
-using SNSAppender.Services;
 
-namespace SNSAppender
+namespace AWSAppender.SNS
 {
     public class SNSAppender : AWSAppenderBase<SNSDatum>, ISNSAppender
     {

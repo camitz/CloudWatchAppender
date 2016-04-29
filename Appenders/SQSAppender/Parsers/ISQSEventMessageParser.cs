@@ -1,7 +1,7 @@
 using AWSAppender.Core.Services;
-using SQSAppender.Model;
+using AWSAppender.SQS.Model;
 
-namespace SQSAppender.Parsers
+namespace AWSAppender.SQS.Parsers
 {
 
     public interface ISQSEventMessageParser : IEventMessageParser<SQSDatum>

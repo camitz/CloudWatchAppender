@@ -2,7 +2,7 @@ using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using AWSAppender.Core;
 
-namespace CloudWatchAppender
+namespace AWSAppender.CloudWatch
 {
     public interface ICloudWatchAppender : IAWSAppender
     {

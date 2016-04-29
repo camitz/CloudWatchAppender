@@ -1,6 +1,6 @@
 using System.Linq;
+using AWSAppender.SQS.Parsers;
 using NUnit.Framework;
-using SQSAppender.Parsers;
 
 namespace SQSAppender.Tests
 {

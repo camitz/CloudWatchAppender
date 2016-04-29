@@ -11,3 +11,5 @@ Copy-Item -Force "CloudWatchAppender\bin\Release\CloudWatchAppender.dll" "build\
 $nuspecPath = (Get-ChildItem -Filter *.nuspec -Recurse )[0].FullName
 
 nuget pack $nuspecPath
+
+Remove-Item -Force build\lib\net35

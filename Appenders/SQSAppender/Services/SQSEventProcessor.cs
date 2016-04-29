@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using AWSAppender.Core.Services;
+using AWSAppender.SQS.Model;
+using AWSAppender.SQS.Parsers;
 using log4net.Core;
-using log4net.Util;
-using SQSAppender.Model;
-using SQSAppender.Parsers;
 using PatternParser = AWSAppender.Core.Services.PatternParser;
 
-namespace SQSAppender.Services
+namespace AWSAppender.SQS.Services
 {
 
     public class SQSEventProcessor : EventProcessorBase, IEventProcessor<SQSDatum>

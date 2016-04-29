@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
+using AWSAppender.CloudWatchLogs.Model;
+using AWSAppender.CloudWatchLogs.Parsers;
 using AWSAppender.Core.Services;
-using CloudWatchLogsAppender.Model;
-using CloudWatchLogsAppender.Parsers;
 using log4net.Core;
-using PatternParser = AWSAppender.Core.Services.PatternParser;
 
-namespace CloudWatchLogsAppender.Services
+namespace AWSAppender.CloudWatchLogs.Services
 {
     public class LogEventProcessor : EventProcessorBase, IEventProcessor<LogDatum>
     {

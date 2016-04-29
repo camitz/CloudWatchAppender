@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.Globalization;
 using AWSAppender.Core.Services;
+using AWSAppender.SQS.Model;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Repository;
-using SQSAppender.Model;
 
 namespace BufferedLogs
 {

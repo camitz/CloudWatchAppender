@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using AWSAppender.CloudWatchLogs.Model;
 using AWSAppender.Core.Services;
-using CloudWatchLogsAppender.Model;
 using log4net;
 using log4net.Appender;
 using log4net.Config;

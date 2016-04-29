@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AWSAppender.Core.Services;
-using SNSAppender.Model;
+using AWSAppender.SNS.Model;
 
-namespace SNSAppender.Parsers
+namespace AWSAppender.SNS.Parsers
 {
     public class SNSMessageParser : EventMessageParserBase<SNSDatum>, ISNSEventMessageParser
     {

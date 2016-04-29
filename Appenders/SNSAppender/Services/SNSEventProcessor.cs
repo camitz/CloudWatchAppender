@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using AWSAppender.Core.Services;
+using AWSAppender.SNS.Model;
+using AWSAppender.SNS.Parsers;
 using log4net.Core;
-using SNSAppender.Model;
-using SNSAppender.Parsers;
 
-namespace SNSAppender.Services
+namespace AWSAppender.SNS.Services
 {
 
     public class SNSEventProcessor : EventProcessorBase, IEventProcessor<SNSDatum>

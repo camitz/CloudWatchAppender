@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.Runtime;
+using AWSAppender.CloudWatch.Model;
+using AWSAppender.CloudWatch.Parsers;
+using AWSAppender.CloudWatch.Services;
+using AWSAppender.CloudWatch.TypeConverters;
 using AWSAppender.Core;
 using AWSAppender.Core.Layout;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Model;
-using CloudWatchAppender.Parsers;
-using CloudWatchAppender.Services;
-using CloudWatchAppender.TypeConverters;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
 
-namespace CloudWatchAppender
+namespace AWSAppender.CloudWatch
 {
 
     public class CloudWatchAppender : AWSAppenderBase<PutMetricDataRequest>, ICloudWatchAppender

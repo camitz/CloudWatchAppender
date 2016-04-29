@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using log4net.ObjectRenderer;
 
-namespace SQSAppender.Model
+namespace AWSAppender.SQS.Model
 {
     public class SQSDatumRenderer : IObjectRenderer
     {

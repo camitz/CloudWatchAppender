@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using log4net.ObjectRenderer;
 
-namespace SNSAppender.Model
+namespace AWSAppender.SNS.Model
 {
     public class SNSDatumRenderer : IObjectRenderer
     {

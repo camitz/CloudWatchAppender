@@ -57,7 +57,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.CloudWatchLogs"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudWatchLogsAppender.Tests", "Tests\CloudWatchLogsAppender.Tests\CloudWatchLogsAppender.Tests.csproj", "{F7ABF857-6E8F-483E-B998-8C07F3241CBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.CloudWatchLog3.5", "Appenders\CloudWatchLogsAppender3.5\AWSAppender.CloudWatchLog3.5.csproj", "{5E5777A7-7A11-47F1-8D33-12C4BC17B128}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.CloudWatchLogs3.5", "Appenders\CloudWatchLogsAppender3.5\AWSAppender.CloudWatchLogs3.5.csproj", "{5E5777A7-7A11-47F1-8D33-12C4BC17B128}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.SQS3.5", "Appenders\SQSAppender3.5\AWSAppender.SQS3.5.csproj", "{F96B18A0-8F72-4DD9-BD09-1FDE3E327E9D}"
 EndProject
@@ -65,7 +65,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.SNS", "Appender
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SNS", "Examples\SNS\SNS.csproj", "{5A0EEB04-4926-4B6C-9F1D-BE5D280F7145}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.SNS3.5", "Appenders\SNS3.5Appender\AWSAppender.SNS3.5.csproj", "{2EAB6604-135A-4C94-9763-3DDF667CF661}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.SNS3.5", "Appenders\SNSAppender3.5\AWSAppender.SNS3.5.csproj", "{2EAB6604-135A-4C94-9763-3DDF667CF661}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

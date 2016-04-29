@@ -2,6 +2,7 @@
 using System.Linq;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using AWSAppender.CloudWatch;
 using log4net.Util.TypeConverters;
 using NUnit.Framework;
 

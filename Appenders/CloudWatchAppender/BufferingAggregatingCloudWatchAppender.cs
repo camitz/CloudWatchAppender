@@ -5,13 +5,13 @@ using System.Runtime.CompilerServices;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.Runtime;
+using AWSAppender.CloudWatch.Model;
+using AWSAppender.CloudWatch.Parsers;
+using AWSAppender.CloudWatch.Services;
+using AWSAppender.CloudWatch.TypeConverters;
 using AWSAppender.Core;
 using AWSAppender.Core.Layout;
 using AWSAppender.Core.Services;
-using CloudWatchAppender.Model;
-using CloudWatchAppender.Parsers;
-using CloudWatchAppender.Services;
-using CloudWatchAppender.TypeConverters;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
@@ -19,7 +19,7 @@ using MetricDatum = Amazon.CloudWatch.Model.MetricDatum;
 [assembly: InternalsVisibleTo("CloudWatchAppender.Tests")]
 
 
-namespace CloudWatchAppender
+namespace AWSAppender.CloudWatch
 {
 
     public class BufferingAggregatingCloudWatchAppender : BufferingAWSAppenderBase<PutMetricDataRequest>, ICloudWatchAppender

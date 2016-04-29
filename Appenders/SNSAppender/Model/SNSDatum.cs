@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace SNSAppender.Model
+namespace AWSAppender.SNS.Model
 {
     public class SNSDatum
     {

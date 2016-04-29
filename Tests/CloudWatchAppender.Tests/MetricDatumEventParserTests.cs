@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
-using CloudWatchAppender.Parsers;
+using AWSAppender.CloudWatch.Parsers;
 using NUnit.Framework;
 
 namespace CloudWatchAppender.Tests

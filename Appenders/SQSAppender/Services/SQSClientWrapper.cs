@@ -6,7 +6,7 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using AWSAppender.Core.Services;
 
-namespace SQSAppender.Services
+namespace AWSAppender.SQS.Services
 {
     public class SQSClientWrapper : ClientWrapperBase<AmazonSQSConfig, AmazonSQSClient>
     {

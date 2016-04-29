@@ -3,7 +3,7 @@ using System.Linq;
 using Amazon.CloudWatch;
 using log4net.Util.TypeConverters;
 
-namespace CloudWatchAppender.Services
+namespace AWSAppender.CloudWatch.Services
 {
     public class UnitConverter
     {

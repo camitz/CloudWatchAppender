@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using CloudWatchLogsAppender.Parsers;
+using AWSAppender.CloudWatchLogs.Parsers;
 using NUnit.Framework;
 
 namespace CloudWatchLogsAppender.Tests

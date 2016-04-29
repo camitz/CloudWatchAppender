@@ -17,11 +17,11 @@ nuget:
   account_feed: true
   project_feed: true
 before_build:
-- nuget restore CloudWatchAppender\CloudWatchAppender.sln -verbosity detailed
+- nuget restore CloudWatchAppender.sln -verbosity detailed
 after_build:
   - ps: .\BuildScripts\after_build.ps1
 build:
-  project: CloudWatchAppender\CloudWatchAppender.sln
+  project: CloudWatchAppender.sln
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
@@ -33,14 +33,14 @@ deploy:
   auth_token:
     secure: ioxuMU09l+pPETzGYBz4oElm1jw68rlSf81AU5KcDc4VAzsgYfB/iqvGhPlHfxoe
   artifact: 
-  prerelease: false
+  prerelease: true
   on:
-    branch: CloudWatchAppenderv4
+    branch: master
     IsGithubRelease: true
 - provider: NuGet
   api_key:
     secure: nJSdlo2bRHEauK9vfPjJvhao5uLnsuaDIdebgN6kmNVW0jGQBxwxhTUJPg0/nxwg
   artifact: /.*\.nupkg/
   on:
-    branch: CloudWatchAppenderv4
+    branch: master
     IsGithubRelease: true

@@ -56,9 +56,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Appenders\CloudWatchLogsAppender3.5\AWSAppender.CloudWatchLog3.5.csproj">
+    <ProjectReference Include="..\..\Appenders\CloudWatchLogsAppender3.5\AWSAppender.CloudWatchLogs3.5.csproj">
       <Project>{5e5777a7-7a11-47f1-8d33-12c4bc17b128}</Project>
-      <Name>AWSAppender.CloudWatchLog3.5</Name>
+      <Name>AWSAppender.CloudWatchLogs3.5</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\AWSAppender.Core3.5\AWSAppender.Core3.5.csproj">
       <Project>{6C134E9B-BF74-4DB6-B033-5DA7A4858C24}</Project>

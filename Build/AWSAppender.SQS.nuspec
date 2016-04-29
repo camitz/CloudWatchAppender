@@ -10,7 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A CloudWatch Logs appender for log4net. Direct your log events to CloudWatch Logs. Part of the CloudWatchAppender/AWSAppender project which also includes support for CloudWatch, CloudWatch Logs and Simple Notification Service (SNS).</description>
     <summary>An AWS CloudWatch appender for log4net.</summary>
-    <releaseNotes>As of 5.0, services are divided into separate packages.</releaseNotes>
+    <releaseNotes>CloudWatchAppender, in future to be known as the AWSAppender-suite, has gone through a major rehaul separating the supported AWS services into their own packages, as well as adding two: SNS and SQS. Now you can use log4net to send messages across your distributed infrastructure.</releaseNotes>
     <copyright>Martin Camitz</copyright>
     <tags>log4net aws cloudwatch cloudwatchappender SNS simple queue service awsappender amazon</tags>
     <dependencies>

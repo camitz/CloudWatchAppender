@@ -15,7 +15,7 @@
     Part of the CloudWatchAppender/AWSAppender project which also includes support for Simple Notification Service (SNS) and Simple Queue Service (SQS).
     </description>
     <summary>An AWS CloudWatch appender for log4net.</summary>
-    <releaseNotes> </releaseNotes>
+    <releaseNotes>CloudWatchAppender, in future to be known as the AWSAppender-suite, has gone through a major rehaul separating the supported AWS services into their own packages, as well as adding two: SNS and SQS. Now you can use log4net to send messages across your distributed infrastructure.</releaseNotes>
     <copyright>Martin Camitz</copyright>
     <tags>log4net aws cloudwatch cloudwatchappender awsappender amazon</tags>
     <dependencies>

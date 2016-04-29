@@ -11,13 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContinuousTicks", "Examples
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaDataTester", "Tools\MetaDataTester\MetaDataTester.csproj", "{EB37B258-908D-4B1A-92C7-D235AA33F408}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E3870282-4BA9-431A-A37F-CA0848D72D1E}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedTicks", "Examples\BufferedTicks\BufferedTicks.csproj", "{2EBBA259-08B2-427E-AB5B-BE6D136B1EBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logs", "Examples\Logs\Logs.csproj", "{E710959F-F8D3-4A1A-B47B-8D1115EAE34A}"
@@ -65,6 +58,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SNS", "Examples\SNS\SNS.csproj", "{5A0EEB04-4926-4B6C-9F1D-BE5D280F7145}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSAppender.SNS3.5", "Appenders\SNSAppender3.5\AWSAppender.SNS3.5.csproj", "{2EAB6604-135A-4C94-9763-3DDF667CF661}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4F798035-968A-4CC1-91E5-F2464FFEA25E}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

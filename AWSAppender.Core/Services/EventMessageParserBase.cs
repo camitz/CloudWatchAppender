@@ -166,7 +166,7 @@ namespace AWSAppender.Core.Services
 
                 var tokens =
                     Regex.Matches(renderedMessage,
-                        @"(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|\((?<word>[\w /]+)\)|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
+                        @"(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|[(""](?<word>[\w /]+)[)""]|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
                         .Cast<Match>()
                         .ToList()
                         .GetEnumerator();

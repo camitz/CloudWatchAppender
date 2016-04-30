@@ -9,7 +9,8 @@ using NUnit.Framework;
 namespace CloudWatchAppender.Tests
 {
     [TestFixture]
-    public class MetricDatumEventParserTests
+    [Ignore("Not ready.")]
+    public class MetricDatumEventJsonParserTests
     {
 
 
@@ -23,6 +24,42 @@ namespace CloudWatchAppender.Tests
         {
             var parser = new MetricDatumEventMessageParser();
             var parsedData = parser.Parse("A tick! Value: 3.0 Kilobytes/Second");
+
+            var passes = 0;
+            foreach (var r in parsedData)
+            {
+                Assert.AreEqual(StandardUnit.KilobytesSecond, r.MetricData[0].Unit);
+                Assert.AreEqual(3.0, r.MetricData[0].Value);
+                //Assert.AreEqual("A tick!", r.MetricData[1].Value);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+        }
+
+        [Test]
+        public void SingleValueAndUnit_Json1()
+        {
+            var parser = new MetricDatumEventMessageParser();
+            var parsedData = parser.Parse("A tick! {Value: 3.0 Kilobytes/Second}");
+
+            var passes = 0;
+            foreach (var r in parsedData)
+            {
+                Assert.AreEqual(StandardUnit.KilobytesSecond, r.MetricData[0].Unit);
+                Assert.AreEqual(3.0, r.MetricData[0].Value);
+                //Assert.AreEqual("A tick!", r.MetricData[1].Value);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+        }
+
+        [Test]
+        public void SingleValueAndUnit_Json2()
+        {
+            var parser = new MetricDatumEventMessageParser();
+            var parsedData = parser.Parse("A tick! {\"Value\": { \"Value\": 3.0, \"Unit:\" \"Kilobytes/Second\"}}");
 
             var passes = 0;
             foreach (var r in parsedData)
@@ -58,10 +95,10 @@ namespace CloudWatchAppender.Tests
         public void SingleValueAndUnit_Overrides()
         {
             var parser = new MetricDatumEventMessageParser()
-            {
-                DefaultValue = 4.0,
-                DefaultUnit = "Megabytes/Second"
-            };
+                         {
+                             DefaultValue = 4.0,
+                             DefaultUnit = "Megabytes/Second"
+                         };
             var parsedData = parser.Parse("A tick! Value: 3.0 Kilobytes/Second");
 
             var passes = 0;
@@ -81,6 +118,27 @@ namespace CloudWatchAppender.Tests
             var parser = new MetricDatumEventMessageParser();
             var parsedData = parser.Parse(
                 "A tick! SampleCount: 3000, Minimum: 1.3 Gigabits/Second, Maximum: 127.9 Gigabits/Second, Sum: 15000.5 Gigabits/Second");
+
+            var passes = 0;
+            foreach (var r in parsedData)
+            {
+                Assert.AreEqual(StandardUnit.GigabitsSecond, r.MetricData[0].Unit);
+                Assert.AreEqual(1.3, r.MetricData[0].StatisticValues.Minimum);
+                Assert.AreEqual(127.9, r.MetricData[0].StatisticValues.Maximum);
+                Assert.AreEqual(15000.5, r.MetricData[0].StatisticValues.Sum);
+                Assert.AreEqual(3000, r.MetricData[0].StatisticValues.SampleCount);
+                passes++;
+            }
+
+            Assert.AreEqual(1, passes);
+        }
+
+        [Test]
+        public void StatisticsJson()
+        {
+            var parser = new MetricDatumEventMessageParser();
+            var parsedData = parser.Parse(
+                "A tick! {SampleCount: 3000, Minimum: { value:1.3, unit:\"Gigabits/Second\"}, Maximum: \"127.9 Gigabits/Second\", Sum: {value: \"15000.5\", \"unit\": \"Gigabits/Second\"}}");
 
             var passes = 0;
             foreach (var r in parsedData)
@@ -167,10 +225,10 @@ namespace CloudWatchAppender.Tests
         public void MetricNameAndNameSpace_Overrides()
         {
             var parser = new MetricDatumEventMessageParser()
-            {
-                DefaultMetricName = "DefaultMetricName",
-                DefaultNameSpace = "DefaultNameSpace"
-            };
+                         {
+                             DefaultMetricName = "DefaultMetricName",
+                             DefaultNameSpace = "DefaultNameSpace"
+                         };
             var parsedData = parser.Parse("A tick! Name: NewName NameSpace: NewNameSpace");
 
             var passes = 0;
@@ -222,9 +280,9 @@ namespace CloudWatchAppender.Tests
         public void Timestamp_Override()
         {
             var parser = new MetricDatumEventMessageParser()
-            {
-                DefaultTimestamp = DateTimeOffset.Parse("2012-09-06 12:55:55")
-            };
+                         {
+                             DefaultTimestamp = DateTimeOffset.Parse("2012-09-06 12:55:55")
+                         };
             var parsedData = parser.Parse("A tick! Timestamp: 2012-09-06 17:55:55");
 
             var passes = 0;
@@ -264,9 +322,9 @@ namespace CloudWatchAppender.Tests
         public void Timestamp_Override_Offset()
         {
             var parser = new MetricDatumEventMessageParser()
-            {
-                DefaultTimestamp = DateTimeOffset.Parse("2012-09-06 12:55:55 +02:00")
-            };
+                         {
+                             DefaultTimestamp = DateTimeOffset.Parse("2012-09-06 12:55:55 +02:00")
+                         };
             var parsedData = parser.Parse("A tick! Timestamp: 2012-09-06 17:55:55 +02:00");
 
             var passes = 0;
@@ -360,13 +418,13 @@ namespace CloudWatchAppender.Tests
         public void DimensionsList_Overrides()
         {
             var parser = new MetricDatumEventMessageParser()
-            {
-                DefaultDimensions = new Dictionary<string, Dimension>
-                                                         {
-                                                             {"InstanceID", new Dimension{Name="InstanceID", Value = "asdfg"}},
-                                                             {"Cake", new Dimension{Name="Cake", Value = "chocolate"}}
-                                                         }
-            };
+                         {
+                             DefaultDimensions = new Dictionary<string, Dimension>
+                                                 {
+                                                     {"InstanceID", new Dimension{Name="InstanceID", Value = "asdfg"}},
+                                                     {"Cake", new Dimension{Name="Cake", Value = "chocolate"}}
+                                                 }
+                         };
             var parsedData = parser.Parse("A tick! Dummy: 4.6 Kilobytes Dimensions: (InstanceID: qwerty, Fruit: apple) Value: 4.5 Seconds ");
 
             var passes = 0;
@@ -400,14 +458,14 @@ namespace CloudWatchAppender.Tests
         public void DimensionsList_Overrides_Empties()
         {
             var parser = new MetricDatumEventMessageParser()
-            {
-                DefaultDimensions = new Dictionary<string, Dimension>
-                                                         {
-                                                             {"InstanceID", new Dimension{Name="InstanceID", Value = "asdfg"}},
-                                                             {"Cake", new Dimension{Name="Cake", Value = "chocolate"}},
-                                                             {"Nuts", new Dimension{Name="Nuts", Value = ""}}
-                                                         }
-            };
+                         {
+                             DefaultDimensions = new Dictionary<string, Dimension>
+                                                 {
+                                                     {"InstanceID", new Dimension{Name="InstanceID", Value = "asdfg"}},
+                                                     {"Cake", new Dimension{Name="Cake", Value = "chocolate"}},
+                                                     {"Nuts", new Dimension{Name="Nuts", Value = ""}}
+                                                 }
+                         };
             var parsedData = parser.Parse("A tick! Dimensions: (InstanceID: qwerty, Fruit: , Nuts: walnuts) Value: 4.5 Seconds");
 
             var passes = 0;

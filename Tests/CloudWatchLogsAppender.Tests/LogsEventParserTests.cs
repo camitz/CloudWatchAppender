@@ -124,6 +124,23 @@ namespace CloudWatchLogsAppender.Tests
             }
         }
 
+        [Test]
+        public void QuotedNames()
+        {
+            var parser = new LogsEventMessageParser();
+            for (int i = 0; i < 2; i++)
+            {
+                var parsedData = parser.Parse("StreamName: \"New Name\" A tick! GroupName: GName");
+
+                var data = parsedData;
+
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("New Name"));
+                Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+            }
+        }
+
 
         [Test]
 #if APPVEYOR

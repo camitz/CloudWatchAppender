@@ -51,6 +51,11 @@ namespace AWSAppender.CloudWatchLogs.Parsers
             return SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        protected override bool IsSupportedValueField(string t0)
+        {
+            throw new NotImplementedException();
+        }
+
 
         protected override bool FillName(AppenderValue value)
         {
@@ -90,7 +95,7 @@ namespace AWSAppender.CloudWatchLogs.Parsers
 
         protected override void NewDatum()
         {
-            _currentDatum = new LogDatum { };
+            _currentDatum = new LogDatum();
         }
 
 
@@ -98,69 +103,10 @@ namespace AWSAppender.CloudWatchLogs.Parsers
 
         protected override bool ShouldLocalParse(string t0)
         {
-            return t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase);
+            return false;
         }
 
 
-        protected override void LocalParse(ref List<Match>.Enumerator tokens, string sNum)
-        {
-            if (!tokens.MoveNext())
-                return;
-
-            string name, value;
-            if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
-            {
-                tokens.MoveNext();
-
-                while (tokens.Current != null &&
-                       string.IsNullOrEmpty(tokens.Current.Groups["rparen"].Value))
-                {
-                    if (
-                        string.IsNullOrEmpty(
-                            name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
-                    {
-                        tokens.MoveNext();
-                        continue;
-                    }
-
-                    if (!tokens.MoveNext())
-                        continue;
-
-                    if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value) &&
-                        string.IsNullOrEmpty(sNum = tokens.Current.Groups["float"].Value))
-                    {
-                        tokens.MoveNext();
-                        continue;
-                    }
-
-                    //_dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
-                    tokens.MoveNext();
-
-                if (
-                    string.IsNullOrEmpty(
-                        name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
-                {
-                    tokens.MoveNext();
-                    return;
-                }
-
-                if (!tokens.MoveNext())
-                    return;
-
-                if (string.IsNullOrEmpty(value = tokens.Current.Groups["word"].Value))
-                {
-                    tokens.MoveNext();
-                    return;
-                }
-
-                //_dimensions[name] = new Dimension { Name = name, Value = string.IsNullOrEmpty(sNum) ? value : sNum };
-            }
-        }
 
         protected override void Init()
         {

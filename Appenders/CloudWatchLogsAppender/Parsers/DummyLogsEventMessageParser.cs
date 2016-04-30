@@ -15,5 +15,10 @@ namespace AWSAppender.CloudWatchLogs.Parsers
         {
             return false;
         }
+
+        protected override bool IsSupportedValueField(string t0)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

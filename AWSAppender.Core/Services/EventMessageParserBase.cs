@@ -16,58 +16,74 @@ namespace AWSAppender.Core.Services
             DefaultsOverridePattern = useOverrides;
         }
 
-        public virtual bool ConfigOverrides { get { return DefaultsOverridePattern; } set { DefaultsOverridePattern = value; } }
+        protected bool ConfigOverrides { get { return DefaultsOverridePattern; } set { DefaultsOverridePattern = value; } }
         protected abstract void SetDefaults();
         protected abstract void NewDatum();
         protected abstract bool FillName(AppenderValue value);
 
-        protected void ParseTokens(ref List<Match>.Enumerator tokens, string renderedMessage)
+        protected virtual void ParseTokens(ref List<Match>.Enumerator tokens, string renderedMessage)
         {
-            string t0, sNum = string.Empty, rest = "";
-            int? startRest = 0;
+            string name, sNum = string.Empty, rest = "";
+            int? startRest = 0, jsonDepth = 0, ignoreBelow = null, includeAt = null;
+
+            AppenderValue currentValue = null;
 
             tokens.MoveNext();
             while (tokens.Current != null)
             {
-                if (!string.IsNullOrEmpty(t0 = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
+                if (!string.IsNullOrEmpty(tokens.Current.Groups["lbrace"].Value))
                 {
-                    if (!IsSupportedName(t0))
+                    jsonDepth++;
+                    tokens.MoveNext();
+                    if (currentValue != null && includeAt == null)
+                        includeAt = jsonDepth;
+
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(tokens.Current.Groups["rbrace"].Value))
+                {
+                    jsonDepth--;
+                    tokens.MoveNext();
+                    if (currentValue != null && jsonDepth < includeAt)
+                    {
+                        includeAt = null;
+                        _values.Add(currentValue);
+                        currentValue = null;
+                    }
+                    continue;
+                }
+
+
+                if (ignoreBelow != null && jsonDepth > ignoreBelow)
+                {
+                    tokens.MoveNext();
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
+                {
+                    if (!IsSupportedName(name))
                     {
                         tokens.MoveNext();
+                        ignoreBelow = jsonDepth;
                         continue;
                     }
 
-                    if (startRest.HasValue)
-                        rest += renderedMessage.Substring(startRest.Value, tokens.Current.Index - startRest.Value);
+                    ignoreBelow = null;
 
-                    startRest = null;
+                    if (currentValue != null && includeAt == null)
+                        currentValue = null;
 
-                    if (ShouldLocalParse(t0))
+                    if (currentValue == null)
                     {
-                        LocalParse(ref tokens, sNum);
+                        currentValue = NewAppenderValue();
+                        currentValue.Name = name;
                     }
-                    else if (t0.StartsWith("Timestamp", StringComparison.InvariantCultureIgnoreCase))
+
+                    if (includeAt != null && (IsSupportedValueField(name) || name.Equals("value",StringComparison.OrdinalIgnoreCase)))
                     {
-                        DateTimeOffset time;
-                        int length;
-                        if (ExtractTime(renderedMessage.Substring(tokens.Current.Index + "Timestamp".Length), out time, out length))
-                        {
-                            _values.Add(new AppenderValue
-                                        {
-                                            Name = "Timestamp",
-                                            Time = time
-                                        });
-
-                            tokens.MoveNext();
-                            while (tokens.MoveNext() && tokens.Current.Index <= tokens.Current.Index + length) ;
-                        }
-
                         tokens.MoveNext();
-                    }
-                    else
-                    {
-                        if (!tokens.MoveNext())
-                            continue;
 
                         sNum = string.IsNullOrEmpty(tokens.Current.Groups["float"].Value)
                             ? tokens.Current.Groups["int"].Value
@@ -90,15 +106,90 @@ namespace AWSAppender.Core.Services
                             continue;
                         }
 
-                        var v = NewAppenderValue();
 
-                        v.dValue = d;
-                        v.sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue;
-                        v.Name = t0;
+                        if (name.Equals("value", StringComparison.OrdinalIgnoreCase))
+                        {
+                            currentValue.dValue = d;
+                            currentValue.sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue;
 
-                        PostElementParse(ref tokens, v);
+                            PostElementParse(ref tokens, currentValue);
+                            
+                            continue;
+                        }
 
-                        _values.Add(v);
+                        AssignValueField(currentValue,name, d, sNum, sValue);
+                        tokens.MoveNext();
+                        continue;
+                    }
+
+                    if (startRest.HasValue)
+                        rest += renderedMessage.Substring(startRest.Value, tokens.Current.Index - startRest.Value);
+
+                    startRest = null;
+
+                    if (ShouldLocalParse(name))
+                    {
+                        LocalParse(ref tokens, sNum);
+                    }
+                    else if (name.StartsWith("Timestamp", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        DateTimeOffset time;
+                        int length;
+                        if (ExtractTime(renderedMessage.Substring(tokens.Current.Index + "Timestamp".Length), out time, out length))
+                        {
+                            _values.Add(new AppenderValue
+                                        {
+                                            Name = "Timestamp",
+                                            Time = time
+                                        });
+
+                            tokens.MoveNext();
+                            while (tokens.MoveNext() && tokens.Current.Index <= tokens.Current.Index + length) ;
+                        }
+
+                        tokens.MoveNext();
+                    }
+                    else
+                    {
+                        if (!tokens.MoveNext())
+                            continue;
+
+                        if (!string.IsNullOrEmpty(tokens.Current.Groups["lbrace"].Value))
+                            continue;
+
+                        sNum = string.IsNullOrEmpty(tokens.Current.Groups["float"].Value)
+                            ? tokens.Current.Groups["int"].Value
+                            : tokens.Current.Groups["float"].Value;
+
+                        var sValue = tokens.Current.Groups["word"].Value;
+
+                        var strings = sValue.Split(' ');
+                        if (strings.Count() > 1 && string.IsNullOrEmpty(sNum))
+                            sNum = strings[0];
+
+                        if (string.IsNullOrEmpty(sNum) && string.IsNullOrEmpty(sValue))
+                        {
+                            tokens.MoveNext();
+                            continue;
+                        }
+
+                        double d;
+                        if (!Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d) &&
+                            string.IsNullOrEmpty(sValue))
+                        {
+                            tokens.MoveNext();
+                            continue;
+                        }
+
+
+                        currentValue.dValue = d;
+                        currentValue.sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue;
+
+                        var aggregate = strings.Skip(1).Aggregate("",(a,b)=>a+b);
+
+                        PostElementParse(ref tokens, currentValue,aggregate);
+
+                        _values.Add(currentValue);
                     }
                 }
                 else
@@ -114,13 +205,17 @@ namespace AWSAppender.Core.Services
             _values.Add(new AppenderValue { Name = "__cav_rest", sValue = rest.Trim() });
         }
 
+        protected virtual void AssignValueField(AppenderValue currentValue, string fieldName, double d, string sNum, string sValue)
+        {
+        }
+
         protected virtual AppenderValue NewAppenderValue()
         {
             var v = new AppenderValue();
             return v;
         }
 
-        protected virtual void PostElementParse(ref List<Match>.Enumerator tokens, AppenderValue appenderValue)
+        protected virtual void PostElementParse(ref List<Match>.Enumerator tokens, AppenderValue appenderValue, string aggregate=null)
         {
             tokens.MoveNext();
         }
@@ -129,20 +224,21 @@ namespace AWSAppender.Core.Services
 
 
         protected abstract bool IsSupportedName(string t0);
+        protected abstract bool IsSupportedValueField(string t0);
 
         private bool ExtractTime(string s, out DateTimeOffset time, out int length)
         {
             var success = false;
             length = 0;
-            DateTimeOffset lastTriedTime;
 
             time = DateTimeOffset.UtcNow;
 
             s = s.Trim();
-            s = s.Trim(":".ToCharArray());
+            s = s.Trim(":\" ".ToCharArray());
 
             for (int i = 1; i <= s.Length; i++)
             {
+                DateTimeOffset lastTriedTime;
                 if (DateTimeOffset.TryParse(s.Substring(0, i), null, DateTimeStyles.AssumeUniversal, out lastTriedTime))
                 {
                     success = true;
@@ -166,7 +262,7 @@ namespace AWSAppender.Core.Services
 
                 var tokens =
                     Regex.Matches(renderedMessage,
-                        @"(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|[(""](?<word>[\w /]+)[)""]|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
+                        @"(?<lbrace>{)|(?<rbrace>})|(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|[(""](?<word>[\w /]+)[)""]|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
                         .Cast<Match>()
                         .ToList()
                         .GetEnumerator();

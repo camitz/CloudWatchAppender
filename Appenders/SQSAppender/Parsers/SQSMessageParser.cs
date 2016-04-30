@@ -48,6 +48,11 @@ namespace AWSAppender.SQS.Parsers
             return SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        protected override bool IsSupportedValueField(string t0)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override IEnumerable<SQSDatum> GetParsedData()
         {
             return new[] { _currentDatum };

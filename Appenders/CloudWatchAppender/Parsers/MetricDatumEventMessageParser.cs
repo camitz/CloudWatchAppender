@@ -10,6 +10,7 @@ using MetricDatum = AWSAppender.CloudWatch.Model.MetricDatum;
 
 namespace AWSAppender.CloudWatch.Parsers
 {
+
     public class MetricDatumEventMessageParser : EventMessageParserBase<PutMetricDataRequest>
     {
         private Dictionary<string, Dimension> _dimensions;
@@ -83,22 +84,49 @@ namespace AWSAppender.CloudWatch.Parsers
         protected override bool IsSupportedName(string t0)
         {
 
-            return Aggresive || MetricDatum.SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) ||
+            return Aggresive || 
+                    MetricDatum.SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) ||
+                    MetricDatum.SupportedValueFields.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) ||
                    MetricDatum.SupportedStatistics.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        protected override void PostElementParse(ref List<Match>.Enumerator tokens, AppenderValue appenderValue)
+        protected override bool IsSupportedValueField(string t0)
+        {
+            return MetricDatum.SupportedValueFields.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        protected override void PostElementParse(ref List<Match>.Enumerator tokens, AppenderValue appenderValue, string aggregate=null)
         {
             string unit;
 
+
             if (tokens.MoveNext())
-                if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
+            {
+                if (!string.IsNullOrEmpty(aggregate))
                 {
-                    ((MetricDatumAppenderValue)appenderValue).Unit = unit;
+                    var t = StandardUnit.FindValue(aggregate.ToLowerInvariant());
+                    if (t.ToString() != aggregate.ToLowerInvariant()) //If conversion capitalizes unit then it is valid and should not be included in rest.
+                    {
+                        ((MetricDatumAppenderValue) appenderValue).Unit = aggregate;
+                    }
+                }
+                else if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
+                {
                     var t = StandardUnit.FindValue(unit.ToLowerInvariant());
                     if (t.ToString() != unit.ToLowerInvariant()) //If conversion capitalizes unit then it is valid and should not be included in rest.
+                    {
                         tokens.MoveNext();
+                        ((MetricDatumAppenderValue)appenderValue).Unit = unit;                        
+                    }
                 }
+            
+        }
+    }
+
+        protected override void AssignValueField(AppenderValue currentValue, string fieldName, double d, string sNum, string sValue)
+        {
+            if (fieldName.Equals("unit", StringComparison.OrdinalIgnoreCase))
+                ((MetricDatumAppenderValue) currentValue).Unit = sValue;
         }
 
         protected override AppenderValue NewAppenderValue()
@@ -242,12 +270,12 @@ namespace AWSAppender.CloudWatch.Parsers
                 return;
 
             string name, value;
-            if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
+            if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value) || !string.IsNullOrEmpty(tokens.Current.Groups["lbrace"].Value))
             {
                 tokens.MoveNext();
 
                 while (tokens.Current != null &&
-                       string.IsNullOrEmpty(tokens.Current.Groups["rparen"].Value))
+                       string.IsNullOrEmpty(tokens.Current.Groups["rparen"].Value) && string.IsNullOrEmpty(tokens.Current.Groups["rbrace"].Value))
                 {
                     if (
                         string.IsNullOrEmpty(
@@ -272,7 +300,7 @@ namespace AWSAppender.CloudWatch.Parsers
             }
             else
             {
-                if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value))
+                if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value) || !string.IsNullOrEmpty(tokens.Current.Groups["lbrace"].Value))
                     tokens.MoveNext();
 
                 if (
@@ -312,7 +340,7 @@ namespace AWSAppender.CloudWatch.Parsers
 
     class MetricDatumAppenderValue : AppenderValue
     {
-        public StandardUnit Unit;//cloudwatch specific
+        public StandardUnit Unit;
 
     }
 }

@@ -225,12 +225,17 @@ namespace AWSAppender.CloudWatch.Model
         public static readonly HashSet<string> SupportedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                                                     {
                                                         "Value",
-                                                        "Unit",
                                                         "Dimension",
                                                         "Dimensions",
                                                         "NameSpace",
                                                         "MetricName",
                                                         "Timestamp"
+                                                    };
+
+        public static readonly HashSet<string> SupportedValueFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                                                    {
+                                                        "Value",
+                                                        "Unit"
                                                     };
 
         public static readonly HashSet<string> SupportedStatistics = new HashSet<string>(StringComparer.OrdinalIgnoreCase)

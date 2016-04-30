@@ -7,8 +7,8 @@
     <ProjectGuid>{2EAB6604-135A-4C94-9763-3DDF667CF661}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AWSAppender.SNS3._5</RootNamespace>
-    <AssemblyName>AWSAppender.SNS3.5</AssemblyName>
+    <RootNamespace>AWSAppender.SNS</RootNamespace>
+    <AssemblyName>AWSAppender.SNS</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>

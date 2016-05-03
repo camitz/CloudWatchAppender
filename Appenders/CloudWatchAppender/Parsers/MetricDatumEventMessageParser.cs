@@ -84,7 +84,7 @@ namespace AWSAppender.CloudWatch.Parsers
         protected override bool IsSupportedName(string t0)
         {
 
-            return Aggresive || 
+            return Aggresive ||
                     MetricDatum.SupportedNames.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) ||
                     MetricDatum.SupportedValueFields.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase)) ||
                    MetricDatum.SupportedStatistics.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase));
@@ -95,38 +95,39 @@ namespace AWSAppender.CloudWatch.Parsers
             return MetricDatum.SupportedValueFields.Any(x => x.Equals(t0, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        protected override void PostElementParse(ref List<Match>.Enumerator tokens, AppenderValue appenderValue, string aggregate=null)
+        protected override void PostElementParse(ref List<Match>.Enumerator tokens, AppenderValue appenderValue, string aggregate = null)
         {
             string unit;
 
+            if (!string.IsNullOrEmpty(aggregate))
+            {
+                var t = StandardUnit.FindValue(aggregate.ToLowerInvariant());
+                if (t.ToString() != aggregate.ToLowerInvariant()) //If conversion capitalizes unit then it is valid and should not be included in rest.
+                {
+                    ((MetricDatumAppenderValue)appenderValue).Unit = aggregate;
+                    return;
+                }
+            }
 
             if (tokens.MoveNext())
             {
-                if (!string.IsNullOrEmpty(aggregate))
-                {
-                    var t = StandardUnit.FindValue(aggregate.ToLowerInvariant());
-                    if (t.ToString() != aggregate.ToLowerInvariant()) //If conversion capitalizes unit then it is valid and should not be included in rest.
-                    {
-                        ((MetricDatumAppenderValue) appenderValue).Unit = aggregate;
-                    }
-                }
-                else if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
+                if (!string.IsNullOrEmpty(unit = tokens.Current.Groups["word"].Value))
                 {
                     var t = StandardUnit.FindValue(unit.ToLowerInvariant());
                     if (t.ToString() != unit.ToLowerInvariant()) //If conversion capitalizes unit then it is valid and should not be included in rest.
                     {
                         tokens.MoveNext();
-                        ((MetricDatumAppenderValue)appenderValue).Unit = unit;                        
+                        ((MetricDatumAppenderValue)appenderValue).Unit = unit;
                     }
                 }
-            
+
+            }
         }
-    }
 
         protected override void AssignValueField(AppenderValue currentValue, string fieldName, double d, string sNum, string sValue)
         {
             if (fieldName.Equals("unit", StringComparison.OrdinalIgnoreCase))
-                ((MetricDatumAppenderValue) currentValue).Unit = sValue;
+                ((MetricDatumAppenderValue)currentValue).Unit = sValue;
         }
 
         protected override AppenderValue NewAppenderValue()
@@ -264,12 +265,13 @@ namespace AWSAppender.CloudWatch.Parsers
             return t0.StartsWith("Dimension", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        protected override void LocalParse(ref List<Match>.Enumerator tokens, string sNum)
+        protected override void LocalParse(ref List<Match>.Enumerator tokens)
         {
             if (!tokens.MoveNext())
                 return;
 
-            string name, value;
+            string name, value, sNum = null;
+
             if (!string.IsNullOrEmpty(tokens.Current.Groups["lparen"].Value) || !string.IsNullOrEmpty(tokens.Current.Groups["lbrace"].Value))
             {
                 tokens.MoveNext();

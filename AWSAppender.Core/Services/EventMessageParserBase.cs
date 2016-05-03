@@ -34,6 +34,12 @@ namespace AWSAppender.Core.Services
                 if (!string.IsNullOrEmpty(tokens.Current.Groups["lbrace"].Value))
                 {
                     jsonDepth++;
+
+                    if (startRest.HasValue)
+                        rest += renderedMessage.Substring(startRest.Value, tokens.Current.Index - startRest.Value);
+
+                    startRest = null;
+
                     tokens.MoveNext();
                     if (currentValue != null && includeAt == null)
                         includeAt = jsonDepth;
@@ -44,6 +50,12 @@ namespace AWSAppender.Core.Services
                 if (!string.IsNullOrEmpty(tokens.Current.Groups["rbrace"].Value))
                 {
                     jsonDepth--;
+
+                    if (startRest.HasValue)
+                        rest += renderedMessage.Substring(startRest.Value, tokens.Current.Index - startRest.Value);
+
+                    startRest = null;
+
                     tokens.MoveNext();
                     if (currentValue != null && jsonDepth < includeAt)
                     {
@@ -81,7 +93,7 @@ namespace AWSAppender.Core.Services
                         currentValue.Name = name;
                     }
 
-                    if (includeAt != null && (IsSupportedValueField(name) || name.Equals("value",StringComparison.OrdinalIgnoreCase)))
+                    if (includeAt != null && (IsSupportedValueField(name) || name.Equals("value", StringComparison.OrdinalIgnoreCase)))
                     {
                         tokens.MoveNext();
 
@@ -97,13 +109,18 @@ namespace AWSAppender.Core.Services
                             continue;
                         }
 
-                        var d = 0.0;
-                        if (
-                            !Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d) &&
-                            string.IsNullOrEmpty(sValue))
+                        double d;
+
+                        if (!Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d))
                         {
-                            tokens.MoveNext();
-                            continue;
+                            if (string.IsNullOrEmpty(sValue))
+                            {
+                                tokens.MoveNext();
+                                continue;
+                            }
+
+                            Double.TryParse(sValue.Trim("\" ".ToCharArray()), NumberStyles.AllowDecimalPoint,
+                                CultureInfo.InvariantCulture, out d);
                         }
 
 
@@ -113,11 +130,11 @@ namespace AWSAppender.Core.Services
                             currentValue.sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue;
 
                             PostElementParse(ref tokens, currentValue);
-                            
+
                             continue;
                         }
 
-                        AssignValueField(currentValue,name, d, sNum, sValue);
+                        AssignValueField(currentValue, name, d, sNum, sValue);
                         tokens.MoveNext();
                         continue;
                     }
@@ -129,7 +146,7 @@ namespace AWSAppender.Core.Services
 
                     if (ShouldLocalParse(name))
                     {
-                        LocalParse(ref tokens, sNum);
+                        LocalParse(ref tokens);
                     }
                     else if (name.StartsWith("Timestamp", StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -174,22 +191,29 @@ namespace AWSAppender.Core.Services
                         }
 
                         double d;
-                        if (!Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d) &&
-                            string.IsNullOrEmpty(sValue))
+
+                        if (!Double.TryParse(sNum, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out d))
                         {
-                            tokens.MoveNext();
-                            continue;
+                            if (string.IsNullOrEmpty(sValue))
+                            {
+                                tokens.MoveNext();
+                                continue;
+                            }
+                            
+                            Double.TryParse(sValue.Trim("\" ".ToCharArray()), NumberStyles.AllowDecimalPoint,
+                                CultureInfo.InvariantCulture, out d);
                         }
 
 
                         currentValue.dValue = d;
                         currentValue.sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue;
 
-                        var aggregate = strings.Skip(1).Aggregate("",(a,b)=>a+b);
+                        var aggregate = strings.Skip(1).Aggregate("", (a, b) => a + b);
 
-                        PostElementParse(ref tokens, currentValue,aggregate);
+                        PostElementParse(ref tokens, currentValue, aggregate);
 
-                        _values.Add(currentValue);
+                        AddValue(currentValue);
+                        currentValue = null;
                     }
                 }
                 else
@@ -202,7 +226,12 @@ namespace AWSAppender.Core.Services
             if (startRest.HasValue)
                 rest += renderedMessage.Substring(startRest.Value, renderedMessage.Length - startRest.Value);
 
-            _values.Add(new AppenderValue { Name = "__cav_rest", sValue = rest.Trim() });
+            AddValue(new AppenderValue { Name = "__cav_rest", sValue = rest.Trim() });
+        }
+
+        protected void AddValue(AppenderValue currentValue)
+        {
+            _values.Add(currentValue);
         }
 
         protected virtual void AssignValueField(AppenderValue currentValue, string fieldName, double d, string sNum, string sValue)
@@ -215,7 +244,7 @@ namespace AWSAppender.Core.Services
             return v;
         }
 
-        protected virtual void PostElementParse(ref List<Match>.Enumerator tokens, AppenderValue appenderValue, string aggregate=null)
+        protected virtual void PostElementParse(ref List<Match>.Enumerator tokens, AppenderValue appenderValue, string aggregate = null)
         {
             tokens.MoveNext();
         }
@@ -250,7 +279,7 @@ namespace AWSAppender.Core.Services
             return success;
         }
 
-        protected virtual void LocalParse(ref List<Match>.Enumerator tokens, string sNum) { }
+        protected virtual void LocalParse(ref List<Match>.Enumerator tokens) { }
 
 
         protected abstract IEnumerable<TDatum> GetParsedData();
@@ -262,7 +291,7 @@ namespace AWSAppender.Core.Services
 
                 var tokens =
                     Regex.Matches(renderedMessage,
-                        @"(?<lbrace>{)|(?<rbrace>})|(?<float>(\d+\.\d+)|(?<int>\d+))|(?<name>\w+:)|[(""](?<word>[\w /]+)[)""]|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
+                        @"(?<lbrace>{)|(?<rbrace>})|(?<float>(\d+\.\d+))|(?<int>\d+)|(?<name>\w+:)|\((?<word>[\w/ ]+)\)|\""(?<word>.*?)\""|(?<word>[\w/]+)|(?<lparen>\()|(?<rparen>\))")
                         .Cast<Match>()
                         .ToList()
                         .GetEnumerator();

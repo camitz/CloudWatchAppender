@@ -295,8 +295,8 @@ namespace CloudWatchAppender.Tests
                 Assert.AreEqual("Fruit", r.MetricData[0].Dimensions[1].Name);
                 Assert.AreEqual("apple", r.MetricData[0].Dimensions[1].Value);
 
-                Assert.AreEqual(StandardUnit.Seconds, r.MetricData[0].Unit);
                 Assert.AreEqual(4.5, r.MetricData[0].Value);
+                Assert.AreEqual(StandardUnit.Seconds, r.MetricData[0].Unit);
 
                 passes++;
             }

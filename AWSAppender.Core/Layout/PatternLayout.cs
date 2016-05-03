@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.IO;
 using AWSAppender.Core.PatternConverter;
 using log4net.Core;
 using log4net.Util;
@@ -49,6 +50,7 @@ namespace AWSAppender.Core.Layout
                                             Name = (string)entry.Key, 
                                             Type = (Type)entry.Value
                                         };
+
                 parser.PatternConverters[entry.Key] = converterInfo;
             }
 
@@ -58,7 +60,22 @@ namespace AWSAppender.Core.Layout
         internal string Parse()
         {
             ActivateOptions();
-            return Format(_loggingEvent);
+            var format = Format(_loggingEvent);
+            return format;
+        }
+
+    }
+
+    public class JsonPatternLayout : PatternLayout
+    {
+        public override string ContentType
+        {
+            get { return base.ContentType; }
+        }
+
+        public override void Format(TextWriter writer, LoggingEvent loggingEvent)
+        {
+            base.Format(writer, loggingEvent);
         }
     }
 }

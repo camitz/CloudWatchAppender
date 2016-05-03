@@ -53,17 +53,19 @@ namespace AWSAppender.CloudWatchLogs.Parsers
 
         protected override bool IsSupportedValueField(string t0)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
+        
 
         protected override bool FillName(AppenderValue value)
         {
             switch (value.Name.ToLowerInvariant())
             {
+                case "message":
                 case "__cav_rest":
                     if (!string.IsNullOrEmpty(_currentDatum.Message))
-                        return false;
+                        break;
 
                     _currentDatum.Message = DefaultsOverridePattern ? DefaultMessage ?? value.sValue : value.sValue;
                     break;
@@ -103,10 +105,15 @@ namespace AWSAppender.CloudWatchLogs.Parsers
 
         protected override bool ShouldLocalParse(string t0)
         {
-            return false;
+            return t0.Equals("message",StringComparison.OrdinalIgnoreCase);
         }
 
 
+        protected override void LocalParse(ref List<Match>.Enumerator tokens)
+        {
+            tokens.MoveNext();
+            AddValue(new AppenderValue{Name = "message",sValue = tokens.Current.Value.Trim(" \"".ToCharArray())});
+        }
 
         protected override void Init()
         {
@@ -129,7 +136,8 @@ namespace AWSAppender.CloudWatchLogs.Parsers
                                                         "Message",
                                                         "GroupName",
                                                         "StreamName",
-                                                        "Timestamp"
+                                                        "Timestamp",
+                                                        "Message"
                                                     };
 
     }

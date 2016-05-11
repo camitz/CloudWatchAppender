@@ -24,7 +24,7 @@ namespace AWSAppender.CloudWatchLogs.Model
             if (!String.IsNullOrEmpty(logDatum.GroupName))
                 writer.Write("Streamname: {0}, ", logDatum.StreamName);
 
-            if (logDatum.Timestamp != default(DateTime))
+            if (logDatum.Timestamp != null)
                 writer.Write("Timestamp: {0}, ", logDatum.Timestamp.Value.ToString(CultureInfo.CurrentCulture));
         }
     }

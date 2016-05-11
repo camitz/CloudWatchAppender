@@ -38,7 +38,7 @@ namespace BufferedLogs
                     {
                         GroupName = groups[random.Next(2)],
                         StreamName = streams[random.Next(2)],
-                        Timestamp = DateTime.Now
+                        Timestamp = DateTime.UtcNow
                     });
 
                 log.Info("Message: sample text for logging");

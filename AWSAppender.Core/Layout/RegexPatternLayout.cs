@@ -3,7 +3,6 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using log4net.Core;
-using log4net.Util;
 
 namespace AWSAppender.Core.Layout
 {

@@ -26,20 +26,20 @@ namespace ContinuousTicks
                 //log.Info(String.Format("A tick! Timestamp: {0}", DateTimeOffset.Now.AddMinutes(-10).ToString()));
                 //log.Info(null);
                 //log.Info("A tick! %logger %metadata{instanceid}");
-                //log.Info(new CloudWatchAppender.MetricDatum("A tick!")
-                //    .WithTimestamp(DateTimeOffset.Now.AddMinutes(-10))
-                //    .WithUnit("Kilobytes")
-                //    .WithValue(29.4));
+                log.Info(new AWSAppender.CloudWatch.Model.MetricDatum("A tick!")
+                    //.WithTimestamp(DateTimeOffset.Now.AddMinutes(-10))
+                    .WithUnit("Kilobytes")
+                    .WithValue(29.4));
             }
             
             stopWatch.Stop();
-            Console.WriteLine(String.Format("All {0} ticks in {1} ms.\nWaiting for requests to complete.", nTicks, stopWatch.ElapsedMilliseconds));
+            Console.WriteLine("All {0} ticks in {1} ms.\nWaiting for requests to complete.", nTicks, stopWatch.ElapsedMilliseconds);
 
             stopWatch.Start();
             ServiceTasks.WaitForPendingRequests();
 
             stopWatch.Stop();
-            Console.WriteLine(String.Format("Requests completed in {0} ms.", stopWatch.ElapsedMilliseconds));
+            Console.WriteLine("Requests completed in {0} ms.", stopWatch.ElapsedMilliseconds);
         }
     }
 }

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using AWSAppender.CloudWatchLogs.Model;
 using AWSAppender.CloudWatchLogs.Parsers;
 using NUnit.Framework;
 
@@ -13,7 +15,7 @@ namespace CloudWatchLogsAppender.Tests
         {
         }
 
-    
+
 
 
         [Test]
@@ -141,6 +143,15 @@ namespace CloudWatchLogsAppender.Tests
             }
         }
 
+        [Test]
+        public void NamesWithDashesEtc()
+        {
+            Assert.That(new LogsEventMessageParser()
+                .Parse("StreamName: \"New Name\" A tick! GroupName: f-o_o/b.a.–r")
+                .Select(x => x.GroupName), 
+                Has.All.EqualTo("f-o_o/b.a.–r"));
+        }
+
 
         [Test]
 #if APPVEYOR
@@ -191,7 +202,7 @@ namespace CloudWatchLogsAppender.Tests
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
             }
         }
-     
+
         [Test]
         [Ignore("Appveyor fails these")]
         public void Timestamp_Override_Offset()

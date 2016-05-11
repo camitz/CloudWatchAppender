@@ -189,8 +189,10 @@ namespace CloudWatchLogsAppender.Tests
         }
 
 
-#if !APPVEYOR
         [Test]
+#if APPVEYOR
+        [Ignore("Appveryor fails this")]
+#endif
         public void Timestamp_Override()
         {
             var parser = new LogsEventMessageParser
@@ -209,6 +211,5 @@ namespace CloudWatchLogsAppender.Tests
             }
         }
  
-#endif
     }
 }

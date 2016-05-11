@@ -55,6 +55,7 @@
     <Compile Include="Fakes\FakeInstanceMetaDataReader.cs" />
     <Compile Include="IAWSAppender.cs" />
     <Compile Include="Layout\PatternLayout.cs" />
+    <Compile Include="Layout\RegexPatternLayout.cs" />
     <Compile Include="PatternConverter\InstanceIDPatternConverter.cs" />
     <Compile Include="PatternConverter\InstanceMetaDataPatternConverter.cs" />
     <Compile Include="PatternConverter\LoggerPatternConverter.cs" />

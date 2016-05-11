@@ -31,8 +31,8 @@ namespace BufferedLogs
                 //log.Info("A tick! Value: 2, Unit: Bytes, Unit: Kilobytes");
 
                 if (random.Next(2) == 0)
-                    log.InfoFormat("A tick! Groupname: {0} Streamname: {1}",
-                        groups[random.Next(2)], streams[random.Next(2)]);
+                    log.InfoFormat("A tick! Groupname: {0} Streamname: {1} Gauge: {2}",
+                        groups[random.Next(2)], streams[random.Next(2)], random.Next(200));
                 else
                     log.Info(new LogDatum("A tick!")
                     {

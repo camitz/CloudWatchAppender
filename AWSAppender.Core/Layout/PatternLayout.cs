@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using AWSAppender.Core.PatternConverter;
 using log4net.Core;
 using log4net.Util;
@@ -39,7 +40,7 @@ namespace AWSAppender.Core.Layout
 
         }
 
-        protected override log4net.Util.PatternParser CreatePatternParser(string pattern)
+        protected override PatternParser CreatePatternParser(string pattern)
         {
             var parser = base.CreatePatternParser(pattern);
 
@@ -47,7 +48,7 @@ namespace AWSAppender.Core.Layout
             {
                 var converterInfo = new ConverterInfo
                                         {
-                                            Name = (string)entry.Key, 
+                                            Name = (string)entry.Key,
                                             Type = (Type)entry.Value
                                         };
 

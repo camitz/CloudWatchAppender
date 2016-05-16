@@ -1,3 +1,7 @@
+try
+{
+	if($env:IsGithubRelease)
+	{
 #Create Folder Structure
 New-Item -Force -ItemType directory -Path build\lib\net35
 New-Item -Force -ItemType directory -Path build\lib\net45
@@ -106,3 +110,5 @@ nuget pack $nuspecPath
 Remove-Item -Recurse -Path build\lib\net35
 Remove-Item -Recurse -Path build\lib\net45
 
+}
+}

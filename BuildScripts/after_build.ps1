@@ -112,3 +112,7 @@ Remove-Item -Recurse -Path build\lib\net45
 
 }
 }
+catch 
+{
+	Write-Host $_.Exception.GetType().FullName, $_.Exception.Message
+}

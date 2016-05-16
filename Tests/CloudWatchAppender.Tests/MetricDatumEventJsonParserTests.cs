@@ -238,25 +238,6 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
-        public void Timestamp_Override()
-        {
-            var parser = new MetricDatumEventMessageParser()
-                         {
-                             DefaultTimestamp = DateTimeOffset.Parse("2012-09-06 12:55:55")
-                         };
-            var parsedData = parser.Parse("A tick! Timestamp: \"2012-09-06 17:55:55\"");
-
-            var passes = 0;
-            foreach (var r in parsedData)
-            {
-                Assert.AreEqual(DateTime.Parse("2012-09-06 10:55:55"), r.MetricData[0].Timestamp);
-                passes++;
-            }
-
-            Assert.AreEqual(1, passes);
-        }
-
-        [Test]
         public void Timestamp()
         {
             var parser = new MetricDatumEventMessageParser();

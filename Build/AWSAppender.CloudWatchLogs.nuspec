@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>AWSAppender.CloudWatchLogs</id>
-    <version></version>
+    <version>0.1</version>
     <title>AWSAppender.CloudWatchLogs</title>
     <authors>Martin Camitz</authors>
     <licenseUrl>http://opensource.org/licenses/mit-license.php</licenseUrl>
@@ -16,16 +16,16 @@
     <dependencies>
       <group targetFramework=".NETFramework4.5">
         <dependency id="log4net" version="2.0.3" />
-        <dependency id="AWSAppender.Core" version="5.0" />
         <dependency id="AWSSDK.Core" version="3.1.4.3" />
         <dependency id="AWSSDK.CloudWatchLogs" version="3.1.2.4" />
+        <dependency id="AWSAppender.Core" version="5.0.1" />
       </group>
       <group targetFramework=".NETFramework3.5">
         <dependency id="log4net" version="2.0.3" />
         <dependency id="TaskParallelLibrary" version="1.0.2856.0" />
-        <dependency id="AWSAppender.Core" version="5.0" />
         <dependency id="AWSSDK.Core" version="3.1.4.3" />
         <dependency id="AWSSDK.CloudWatchLogs" version="3.1.2.4" />
+        <dependency id="AWSAppender.Core" version="5.0.1" />
       </group>
     </dependencies>
   </metadata>

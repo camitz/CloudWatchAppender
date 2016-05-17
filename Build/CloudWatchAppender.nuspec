@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>CloudWatchAppender</id>
-    <version></version>
+    <version>0.1</version>
     <title>CloudWatchAppender</title>
     <authors>Martin Camitz</authors>
     <licenseUrl>http://opensource.org/licenses/mit-license.php</licenseUrl>

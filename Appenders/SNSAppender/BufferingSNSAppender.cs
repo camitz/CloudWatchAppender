@@ -141,12 +141,17 @@ namespace AWSAppender.SNS
 
         protected override void SendBuffer(LoggingEvent[] events)
         {
-            var rs = events.SelectMany(e => _eventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
+            var rs = ProcessEvents(events);
 
             var requests = Assemble(rs);
 
             foreach (var putMetricDataRequest in requests)
                 _client.AddPublishRequest(putMetricDataRequest);
+        }
+
+        protected virtual IEnumerable<SNSDatum> ProcessEvents(LoggingEvent[] events)
+        {
+            return events.SelectMany(e => _eventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
         }
 
         private static IEnumerable<PublishRequestWrapper> Assemble(IEnumerable<SNSDatum> data)

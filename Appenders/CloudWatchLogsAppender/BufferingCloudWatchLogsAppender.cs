@@ -158,12 +158,17 @@ namespace AWSAppender.CloudWatchLogs
 
         protected override void SendBuffer(LoggingEvent[] events)
         {
-            var rs = events.SelectMany(e => _eventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
+            var rs = ProcessEvents(events);
 
             var requests = Assemble(rs);
 
             foreach (var putMetricDataRequest in requests)
                 _client.AddLogRequest(putMetricDataRequest);
+        }
+
+        protected virtual IEnumerable<LogDatum> ProcessEvents(LoggingEvent[] events)
+        {
+            return events.SelectMany(e => _eventProcessor.ProcessEvent(e, RenderLoggingEvent(e)).Select(r => r));
         }
 
         private static IEnumerable<PutLogEventsRequest> Assemble(IEnumerable<LogDatum> rs)

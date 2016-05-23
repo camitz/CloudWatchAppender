@@ -47,7 +47,7 @@ namespace AWSAppender.Core
             get { return _endPoint; }
         }
 
-        public IEventMessageParser<T> EventMessageParser
+        protected IEventMessageParser<T> EventMessageParser
         {
             set
             {

@@ -101,10 +101,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\CloudWatchAppender\packages\AWSSDK.CloudWatch.3.1.0.5\analyzers\dotnet\cs\AWSSDK.CloudWatch.CodeAnalysis.dll" />
-    <Analyzer Include="..\CloudWatchAppender\packages\AWSSDK.CloudWatchLogs.3.1.2.4\analyzers\dotnet\cs\AWSSDK.CloudWatchLogs.CodeAnalysis.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\AWSAppender.Core3.5\AWSAppender.Core3.5.csproj">
       <Project>{6c134e9b-bf74-4db6-b033-5da7a4858c24}</Project>
       <Name>AWSAppender.Core3.5</Name>

@@ -70,10 +70,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="packages\AWSSDK.CloudWatch.3.1.0.5\analyzers\dotnet\cs\AWSSDK.CloudWatch.CodeAnalysis.dll" />
-    <Analyzer Include="packages\AWSSDK.CloudWatchLogs.3.1.2.4\analyzers\dotnet\cs\AWSSDK.CloudWatchLogs.CodeAnalysis.dll" />
-  </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\AWSAppender.Core\AWSAppender.Core.csproj">

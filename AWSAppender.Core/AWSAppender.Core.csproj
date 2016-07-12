@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Appenders\RenderingForwardingAppender.cs" />
     <Compile Include="AWSAppenderBase.cs" />
     <Compile Include="BufferingAWSAppenderBase.cs" />
     <Compile Include="Fakes\FakeInstanceMetaDataReader.cs" />

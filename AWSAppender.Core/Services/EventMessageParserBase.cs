@@ -24,7 +24,7 @@ namespace AWSAppender.Core.Services
         protected virtual void ParseTokens(ref List<Match>.Enumerator enumerator, string renderedMessage)
         {
             string name, sNum = string.Empty, rest = "";
-            int? startRest = 0, startRestJson = 0, jsonDepth = 0, ignoreBelow = null, includeAt = null;
+            int? jsonDepth = 0, ignoreBelow = null, includeAt = null;
 
             var collectedTokens = new List<int>();
 
@@ -44,12 +44,6 @@ namespace AWSAppender.Core.Services
                 {
                     jsonDepth++;
 
-                    FlushRest(tokens, renderedMessage, ref startRest, ref startRestJson, ref rest);
-                    startRestJson = startRestJson ?? tokens.Current.Index;
-
-
-                    //collectedTokens.Add(tokens.Current.Index);
-
                     tokens.MoveNext();
                     if (currentValue != null && includeAt == null)
                         includeAt = jsonDepth;
@@ -61,12 +55,6 @@ namespace AWSAppender.Core.Services
                 if (!string.IsNullOrEmpty(tokens.Current.Groups["rbrace"].Value))
                 {
                     jsonDepth--;
-
-                    if (startRestJson.HasValue)
-                        startRestJson++;
-                    FlushRest(tokens, renderedMessage, ref startRest, ref startRestJson, ref rest);
-
-                    //collectedTokens.Add(tokens.Current.Index);
 
                     tokens.MoveNext();
                     if (currentValue != null && jsonDepth < includeAt)
@@ -157,8 +145,6 @@ namespace AWSAppender.Core.Services
                         continue;
                     }
 
-                    FlushRest(tokens, renderedMessage, ref startRest, ref startRestJson, ref rest);
-
                     if (ShouldLocalParse(name))
                     {
                         LocalParse(ref tokens);
@@ -242,19 +228,15 @@ namespace AWSAppender.Core.Services
                 }
                 else
                 {
-                    startRest = startRest ?? tokens.Current.Index;
-                    startRestJson = startRestJson ?? tokens.Current.Index;
                     tokens.MoveNext();
                 }
             }
-
-            FlushRest(tokens, renderedMessage, ref startRest, ref startRestJson, ref rest);
 
             collectedTokens = collectedTokens.Distinct().ToList();
 
             tokens = matches.GetEnumerator();
 
-            startRest = 0;
+            int? startRest = 0;
             var rest2 = "";
             while (tokens.MoveNext())
             {
@@ -275,25 +257,6 @@ namespace AWSAppender.Core.Services
             rest = rest2;
 
             AddValue(new AppenderValue { Name = "__cav_rest", sValue = rest.Trim() });
-        }
-
-        private static void FlushRest(List<Match>.Enumerator tokens, string renderedMessage, ref int? startRest, ref int? startRestJson, ref string rest)
-        {
-            var index = tokens.Current != null ? tokens.Current.Index : renderedMessage.Length;
-            if (startRest.HasValue || startRestJson.HasValue)
-            {
-                var substring = "";
-                //if (startRestJson.HasValue)
-                //    substring = renderedMessage.Substring(startRestJson.Value, tokens.Current.Index - startRestJson.Value);
-
-                if (!(substring.Trim().StartsWith("{") && substring.Trim().EndsWith("}")) && startRest.HasValue)
-                {
-                    substring = renderedMessage.Substring(startRest.Value, index - startRest.Value);
-                }
-
-                rest += substring;
-            }
-            startRest = null;
         }
 
         protected void AddValue(AppenderValue currentValue)

@@ -14,18 +14,22 @@ namespace AWSAppender.SQS.Model
 
         private void RenderAppenderLogDatum(SQSDatum sqsDatum, TextWriter writer)
         {
+            var s = "";
             if (!String.IsNullOrEmpty(sqsDatum.Message))
-                writer.Write(sqsDatum.Message + " ");
+                s += sqsDatum.Message + " ";
 
             if (!String.IsNullOrEmpty(sqsDatum.QueueName))
-                writer.Write("Queuename: {0}, ", sqsDatum.QueueName);
+                s+=String.Format("Queuename: {0}, ", sqsDatum.QueueName);
 
             if (sqsDatum.DelaySeconds.HasValue)
-                writer.Write("DelaySeconds: {0}, ", sqsDatum.DelaySeconds);
+                s+=String.Format("DelaySeconds: {0}, ", sqsDatum.DelaySeconds);
 
             if (!String.IsNullOrEmpty(sqsDatum.ID))
-                writer.Write("ID: {0}", sqsDatum.ID);
+                s += String.Format("ID: {0}", sqsDatum.ID);
 
+            s = s.Trim(", ".ToCharArray());
+
+            writer.Write(s);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
@@ -45,13 +46,16 @@ namespace AWSAppender.SQS
         public string Message { get; set; }
 
         private IEventProcessor<SQSDatum> _eventProcessor;
+        private readonly string _fallbackQueueName;
+        private Regex _queueNameRegex;
 
         public SQSAppender()
         {
+            _queueNameRegex = new Regex(@"^[a-zA-Z0-9_-]{1,80}$");
+
+            _fallbackQueueName = "unspecified";
             if (Assembly.GetEntryAssembly() != null)
-                QueueName = Assembly.GetEntryAssembly().GetName().Name;
-            else
-                QueueName = "unspecified";
+                _fallbackQueueName = Assembly.GetEntryAssembly().GetName().Name.Replace(".", "_");
 
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
@@ -84,6 +88,7 @@ namespace AWSAppender.SQS
         {
             LogLog.Debug(_declaringType, "Appending");
 
+
             if (!EventRateLimiter.Request(loggingEvent.TimeStamp))
             {
                 LogLog.Debug(_declaringType, "Appending denied due to event limiter saturated.");
@@ -91,6 +96,12 @@ namespace AWSAppender.SQS
             }
 
             var sqsDatum = _eventProcessor.ProcessEvent(loggingEvent, RenderLoggingEvent(loggingEvent)).Single();
+
+            if (System.Text.UTF8Encoding.UTF8.GetByteCount(sqsDatum.Message) > 256 * 1024)
+                throw new MessageTooLargeException(sqsDatum.Message);
+
+            if (sqsDatum.QueueName != null && !_queueNameRegex.IsMatch(sqsDatum.QueueName))
+                throw new MessageTooLargeException(sqsDatum.Message);
 
             var sendMessageBatchRequestEntry = new SendMessageBatchRequestEntry
                                                {
@@ -103,7 +114,7 @@ namespace AWSAppender.SQS
 
             _client.AddSendMessageRequest(new SendMessageBatchRequestWrapper
                                           {
-                                              QueueName = sqsDatum.QueueName,
+                                              QueueName = sqsDatum.QueueName ?? _fallbackQueueName,
                                               Entries = new[]
                                                         {
                                                             sendMessageBatchRequestEntry

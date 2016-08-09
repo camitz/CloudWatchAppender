@@ -26,7 +26,7 @@ namespace AWSAppender.SNS.Parsers
             if (Assembly.GetEntryAssembly() != null)
                 _assemblyName = Assembly.GetEntryAssembly().GetName().Name;
         }
-        protected override void SetDefaults()
+        protected override void ApplyDefaults()
         {
             if (string.IsNullOrEmpty(_currentDatum.Topic))
                 _currentDatum.Topic = DefaultTopic ?? _assemblyName ?? "unspecified";
@@ -109,7 +109,6 @@ namespace AWSAppender.SNS.Parsers
                                                         "DelaySeconds",
                                                         "ID"
                                                     };
-
     }
 
 }

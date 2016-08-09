@@ -155,11 +155,11 @@ namespace AWSAppender.Core.Services
                                                         {
                                                             Task task2;
                                                             ServiceTasks.Tasks.TryRemove(superTask.Id, out task2);
-                                                            LogLog.Debug(GetType(), "Cloudwatch complete");
+                                                            LogLog.Debug(GetType(), "AWSAppender complete");
                                                             if (superTask.Exception != null)
                                                                 LogLog.Error(GetType(),
                                                                     string.Format(
-                                                                        "IsqsAppender encountered an error while submitting to CloudWatch. {0}",
+                                                                        "IAWSAppender encountered an error while submitting. {0}",
                                                                         superTask.Exception));
                                                         });
                              });

@@ -44,13 +44,13 @@ namespace AWSAppender.SNS
         public string Message { get; set; }
 
         private IEventProcessor<SNSDatum> _eventProcessor;
+        private readonly string _fallbackTopic;
 
         public SNSAppender()
         {
+            _fallbackTopic = "unspecified";
             if (Assembly.GetEntryAssembly() != null)
-                Topic = Assembly.GetEntryAssembly().GetName().Name;
-            else
-                Topic = "unspecified";
+                _fallbackTopic = Assembly.GetEntryAssembly().GetName().Name;
 
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
@@ -83,6 +83,7 @@ namespace AWSAppender.SNS
         {
             LogLog.Debug(_declaringType, "Appending");
 
+
             if (!EventRateLimiter.Request(loggingEvent.TimeStamp))
             {
                 LogLog.Debug(_declaringType, "Appending denied due to event limiter saturated.");
@@ -95,7 +96,7 @@ namespace AWSAppender.SNS
             _client.AddPublishRequest(new PublishRequestWrapper
                                       {
                                           Message= snsDatum.Message,
-                                          Topic = snsDatum.Topic
+                                          Topic = snsDatum.Topic ?? _fallbackTopic
                                       });
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
@@ -32,6 +33,8 @@ namespace AWSAppender.SQS
 
         private AmazonSQSConfig _clientConfig;
         private string _delaySeconds;
+        private static string _fallbackQueueName;
+        private static Regex _queueNameRegex;
 
         public override IEventProcessor<SQSDatum> EventProcessor
         {
@@ -98,10 +101,11 @@ namespace AWSAppender.SQS
 
         public BufferingSQSAppender()
         {
+            _queueNameRegex = new Regex(@"^[a-zA-Z0-9_-]{1,80}$");
+
+            _fallbackQueueName = "unspecified";
             if (Assembly.GetEntryAssembly() != null)
-                _queueName = Assembly.GetEntryAssembly().GetName().Name;
-            else
-                _queueName = "unspecified";
+                _fallbackQueueName = Assembly.GetEntryAssembly().GetName().Name.Replace(".", "_");
 
             var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
@@ -120,7 +124,7 @@ namespace AWSAppender.SQS
 
             _client = new SQSClientWrapper(EndPoint, AccessKey, Secret, ClientConfig);
 
-            _eventProcessor = new SQSEventProcessor(_queueName, _message,_delaySeconds)
+            _eventProcessor = new SQSEventProcessor(_queueName, _message, _delaySeconds)
                               {
                                   EventMessageParser = EventMessageParser
                               };
@@ -158,16 +162,23 @@ namespace AWSAppender.SQS
 
             foreach (var putMetricDataRequest in requests)
                 _client.AddSendMessageRequest(putMetricDataRequest);
+
+            if (rs.Any(x => System.Text.UTF8Encoding.UTF8.GetByteCount(x.Message) > 256 * 1024))
+                throw new MessageTooLargeException(rs.First(x => System.Text.UTF8Encoding.UTF8.GetByteCount(x.Message) > 256 * 1024).Message);
+
+            if (rs.Any(x => x.QueueName != null && !_queueNameRegex.IsMatch(x.QueueName)))
+                throw new MessageTooLargeException(rs.First(x => System.Text.UTF8Encoding.UTF8.GetByteCount(x.Message) > 256 * 1024).Message);
         }
 
 
         private static IEnumerable<SendMessageBatchRequestWrapper> Assemble(IEnumerable<SQSDatum> data)
         {
-            if (data.Any(x => System.Text.UTF8Encoding.UTF8.GetByteCount(x.Message) > 256 * 1024))
-                throw new MessageTooLargeException();
 
             var requests = new List<SendMessageBatchRequestWrapper>();
-            foreach (var grouping in data.GroupBy(r => r.QueueName))
+            foreach (var grouping in data
+                .Where(x => System.Text.UTF8Encoding.UTF8.GetByteCount(x.Message) <= 256 * 1024)
+                .Where(x => x.QueueName == null || _queueNameRegex.IsMatch(x.QueueName))
+                .GroupBy(r => r.QueueName ?? _fallbackQueueName))
             {
                 var skip = 0;
 
@@ -188,7 +199,7 @@ namespace AWSAppender.SQS
                                          .Select(
                                              sqsDatum =>
                                              {
-                                                 var t= new SendMessageBatchRequestEntry
+                                                 var t = new SendMessageBatchRequestEntry
                                                         {
                                                             MessageBody = sqsDatum.Message,
                                                             Id = sqsDatum.ID
@@ -205,12 +216,24 @@ namespace AWSAppender.SQS
                 }
             }
 
+
             return requests;
         }
     }
 
     internal class MessageTooLargeException : Exception
     {
+        public MessageTooLargeException(string message)
+            : base(message)
+        {
+        }
+    }
+    internal class MalformedQueueName : Exception
+    {
+        public MalformedQueueName(string message)
+            : base("Queuname must be 1-80 alphanumeric characters, hyphen or underscore: " + message)
+        {
+        }
     }
 }
 

@@ -26,7 +26,7 @@ namespace AWSAppender.SQS.Parsers
             if (Assembly.GetEntryAssembly() != null)
                 _assemblyName = Assembly.GetEntryAssembly().GetName().Name;
         }
-        protected override void SetDefaults()
+        protected override void ApplyDefaults()
         {
             if (string.IsNullOrEmpty(_currentDatum.QueueName))
                 _currentDatum.QueueName = DefaultQueueName ?? _assemblyName ?? "unspecified";

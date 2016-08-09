@@ -29,7 +29,7 @@ namespace AWSAppender.CloudWatchLogs.Parsers
             if (Assembly.GetEntryAssembly() != null)
                 _assemblyName = Assembly.GetEntryAssembly().GetName().Name;
         }
-        protected override void SetDefaults()
+        protected override void ApplyDefaults()
         {
             if (string.IsNullOrEmpty(_currentDatum.StreamName))
                 _currentDatum.StreamName = DefaultStreamName ?? _assemblyName ?? "unspecified";

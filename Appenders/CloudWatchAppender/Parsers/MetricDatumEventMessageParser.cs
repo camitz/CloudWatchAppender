@@ -40,7 +40,7 @@ namespace AWSAppender.CloudWatch.Parsers
         }
 
 
-        protected override void SetDefaults()
+        protected override void ApplyDefaults()
         {
             foreach (var datum in _data)
             {

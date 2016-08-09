@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
 using AWSAppender.Core;
@@ -10,6 +11,7 @@ using AWSAppender.Core.Services;
 using AWSAppender.SNS.Model;
 using AWSAppender.SNS.Parsers;
 using AWSAppender.SNS.Services;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using log4net.Util;
@@ -21,6 +23,7 @@ namespace AWSAppender.SNS
         private EventRateLimiter _eventRateLimiter = new EventRateLimiter();
         private SNSClientWrapper _client;
         private static readonly Type _declaringType = typeof(BufferingSNSAppender);
+        private static string _fallbackTopic;
 
         private string _topic;
         private string _message;
@@ -92,12 +95,11 @@ namespace AWSAppender.SNS
 
         public BufferingSNSAppender()
         {
+            _fallbackTopic = "unspecified";
             if (Assembly.GetEntryAssembly() != null)
-                _topic = Assembly.GetEntryAssembly().GetName().Name;
-            else
-                _topic = "unspecified";
+                _fallbackTopic = Assembly.GetEntryAssembly().GetName().Name;
 
-            var hierarchy = ((Hierarchy)log4net.LogManager.GetRepository());
+            var hierarchy = ((Hierarchy)LogManager.GetRepository());
             var logger = hierarchy.GetLogger("Amazon") as Logger;
             logger.Level = Level.Off;
 
@@ -156,13 +158,14 @@ namespace AWSAppender.SNS
 
         private static IEnumerable<PublishRequestWrapper> Assemble(IEnumerable<SNSDatum> data)
         {
-            if (data.Any(x => System.Text.UTF8Encoding.UTF8.GetByteCount(x.Message) > 256 * 1024))
+
+            if (data.Any(x => Encoding.UTF8.GetByteCount(x.Message) > 256 * 1024))
                 throw new MessageTooLargeException();
 
             return data.Select(snsDatum => new PublishRequestWrapper
                                            {
                                                Message = snsDatum.Message,
-                                               Topic = snsDatum.Topic
+                                               Topic = snsDatum.Topic ?? _fallbackTopic
                                            });
         }
     }

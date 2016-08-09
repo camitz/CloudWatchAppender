@@ -21,7 +21,7 @@ namespace AWSAppender.Core.Services
         protected abstract void NewDatum();
         protected abstract bool FillName(AppenderValue value);
 
-        protected virtual void ParseTokens(ref List<Match>.Enumerator tokens, string renderedMessage)
+        protected virtual void ParseTokens(ref List<Match>.Enumerator enumerator, string renderedMessage)
         {
             string name, sNum = string.Empty, rest = "";
             int? startRest = 0, startRestJson = 0, jsonDepth = 0, ignoreBelow = null, includeAt = null;
@@ -29,6 +29,13 @@ namespace AWSAppender.Core.Services
             var collectedTokens = new List<int>();
 
             AppenderValue currentValue = null;
+
+            var matches = new List<Match>();
+
+            while (enumerator.MoveNext())
+                matches.Add(enumerator.Current);
+
+            var tokens = matches.GetEnumerator();
 
             tokens.MoveNext();
             while (tokens.Current != null)
@@ -69,7 +76,7 @@ namespace AWSAppender.Core.Services
                         currentValue = null;
                     }
 
-                    
+
                     continue;
                 }
 
@@ -220,7 +227,8 @@ namespace AWSAppender.Core.Services
                         var aggregate = strings.Skip(1).Aggregate("", (a, b) => a + b);
 
                         PostElementParse(ref tokens, currentValue, aggregate);
-                        collectedTokens.Add(tokens.Current.Index);
+                        if (tokens.Current != null)
+                            collectedTokens.Add(tokens.Current.Index);
 
                         AddValue(currentValue);
                         currentValue = null;
@@ -241,7 +249,7 @@ namespace AWSAppender.Core.Services
 
         private static void FlushRest(List<Match>.Enumerator tokens, string renderedMessage, ref int? startRest, ref int? startRestJson, ref string rest)
         {
-                    var index = tokens.Current!=null?tokens.Current.Index:renderedMessage.Length;
+            var index = tokens.Current != null ? tokens.Current.Index : renderedMessage.Length;
             if (startRest.HasValue || startRestJson.HasValue)
             {
                 var substring = "";

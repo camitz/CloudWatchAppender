@@ -87,7 +87,7 @@ namespace AWSAppender.Core.Services
                     continue;
                 }
 
-                if (!string.IsNullOrEmpty(name = tokens.Current.Groups["name"].Value.Split(new[] { ':' })[0]))
+                if (!string.IsNullOrEmpty(name = tokens.Current.Groups["name"].Value))
                 {
                     if (!IsSupportedName(name))
                     {
@@ -167,7 +167,7 @@ namespace AWSAppender.Core.Services
                     {
                         DateTimeOffset time;
                         int length;
-                        var start = tokens.Current.Index + "Timestamp".Length;
+                        var start = tokens.Current.Index + name.Length+1;
                         if (ExtractTime(renderedMessage.Substring(start), out time, out length))
                         {
                             _values.Add(new AppenderValue
@@ -222,7 +222,7 @@ namespace AWSAppender.Core.Services
                                 continue;
                             }
 
-                            Double.TryParse(sValue.Trim("\" ".ToCharArray()), NumberStyles.AllowDecimalPoint,
+                            Double.TryParse(sValue.Trim('"'), NumberStyles.AllowDecimalPoint,
                                 CultureInfo.InvariantCulture, out d);
                         }
 
@@ -366,7 +366,7 @@ namespace AWSAppender.Core.Services
 
                 var tokens =
                     Regex.Matches(renderedMessage,
-                        @"(?<lbrace>{)|(?<rbrace>})|(?<float>(\d+\.\d+))|(?<int>\d+)|(?<name>\w+:)|\((?<word>[\w/ ]+)\)|\""(?<word>.*?)\""|(?<word>[^()}{"", ]+)|(?<lparen>\()|(?<rparen>\))")
+                        @"(?<lbrace>{)|(?<rbrace>})|(?<float>(\d+\.\d+))|(?<int>\d+)|""(?<name>\w+)"":|(?<name>\w+):|\((?<word>[\w/ ]+)\)|""(?<word>.*?)""|(?<word>[^()}{"", ]+)|(?<lparen>\()|(?<rparen>\))")
                         .Cast<Match>()
                         .ToList()
                         .GetEnumerator();

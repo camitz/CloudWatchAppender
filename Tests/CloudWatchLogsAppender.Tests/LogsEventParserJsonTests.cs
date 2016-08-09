@@ -13,7 +13,7 @@ namespace CloudWatchLogsAppender.Tests
         {
         }
 
-    
+
 
 
         [Test]
@@ -55,7 +55,8 @@ namespace CloudWatchLogsAppender.Tests
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
             }
         }
-   [Test]
+
+        [Test]
         public void TrailingNames()
         {
             var parser = new LogsEventMessageParser();
@@ -69,6 +70,40 @@ namespace CloudWatchLogsAppender.Tests
                 Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
                 Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
+            }
+        }
+
+        [Test]
+        public void TrailingNames_JsonRest()
+        {
+            var parser = new LogsEventMessageParser();
+            for (int i = 0; i < 2; i++)
+            {
+                var parsedData = parser.Parse("{Data: \"A tick!\"} {StreamName: \"NewName\", GroupName: \"GName\"}");
+
+                var data = parsedData;
+
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
+                Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("{Data: \"A tick!\"}"));
+            }
+        }
+
+        [Test]
+        public void TrailingNames_JsonRest2()
+        {
+            var parser = new LogsEventMessageParser();
+            for (int i = 0; i < 2; i++)
+            {
+                var parsedData = parser.Parse("{\"Data\": \"A tick!\"} StreamName: \"NewName\", GroupName: \"GName\"");
+
+                var data = parsedData;
+
+                Assert.That(data.Count(), Is.EqualTo(1));
+                Assert.That(data.Select(x => x.StreamName), Has.All.EqualTo("NewName"));
+                Assert.That(data.Select(x => x.GroupName), Has.All.EqualTo("GName"));
+                Assert.That(data.Select(x => x.Message), Has.All.EqualTo("{\"Data\": \"A tick!\"}"));
             }
         }
 
@@ -210,6 +245,6 @@ namespace CloudWatchLogsAppender.Tests
                 Assert.That(data.Select(x => x.Message), Has.All.EqualTo("A tick!"));
             }
         }
- 
+
     }
 }

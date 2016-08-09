@@ -48,7 +48,7 @@ namespace AWSAppender.Core.Services
                     startRestJson = startRestJson ?? tokens.Current.Index;
 
 
-                    collectedTokens.Add(tokens.Current.Index);
+                    //collectedTokens.Add(tokens.Current.Index);
 
                     tokens.MoveNext();
                     if (currentValue != null && includeAt == null)
@@ -66,7 +66,7 @@ namespace AWSAppender.Core.Services
                         startRestJson++;
                     FlushRest(tokens, renderedMessage, ref startRest, ref startRestJson, ref rest);
 
-                    collectedTokens.Add(tokens.Current.Index);
+                    //collectedTokens.Add(tokens.Current.Index);
 
                     tokens.MoveNext();
                     if (currentValue != null && jsonDepth < includeAt)
@@ -145,8 +145,8 @@ namespace AWSAppender.Core.Services
                             currentValue.dValue = d;
                             currentValue.sValue = string.IsNullOrEmpty(sValue) ? sNum : sValue;
 
-                            PostElementParse(ref tokens, currentValue);
                             collectedTokens.Add(tokens.Current.Index);
+                            PostElementParse(ref tokens, currentValue);
 
                             continue;
                         }
@@ -167,7 +167,8 @@ namespace AWSAppender.Core.Services
                     {
                         DateTimeOffset time;
                         int length;
-                        if (ExtractTime(renderedMessage.Substring(tokens.Current.Index + "Timestamp".Length), out time, out length))
+                        var start = tokens.Current.Index + "Timestamp".Length;
+                        if (ExtractTime(renderedMessage.Substring(start), out time, out length))
                         {
                             _values.Add(new AppenderValue
                                         {
@@ -175,9 +176,14 @@ namespace AWSAppender.Core.Services
                                             Time = time
                                         });
 
+                            collectedTokens.Add(tokens.Current.Index);
                             tokens.MoveNext();
-                            while (tokens.MoveNext() && tokens.Current.Index <= tokens.Current.Index + length)
-                                collectedTokens.Add(tokens.Current.Index);
+                            do
+                            {
+                                if (tokens.Current != null)
+                                    collectedTokens.Add(tokens.Current.Index);
+                            } while (tokens.MoveNext() && tokens.Current.Index < start + length);
+
                         }
 
                         tokens.MoveNext();
@@ -226,9 +232,9 @@ namespace AWSAppender.Core.Services
 
                         var aggregate = strings.Skip(1).Aggregate("", (a, b) => a + b);
 
-                        PostElementParse(ref tokens, currentValue, aggregate);
                         if (tokens.Current != null)
                             collectedTokens.Add(tokens.Current.Index);
+                        PostElementParse(ref tokens, currentValue, aggregate);
 
                         AddValue(currentValue);
                         currentValue = null;
@@ -243,6 +249,30 @@ namespace AWSAppender.Core.Services
             }
 
             FlushRest(tokens, renderedMessage, ref startRest, ref startRestJson, ref rest);
+
+            collectedTokens = collectedTokens.Distinct().ToList();
+
+            tokens = matches.GetEnumerator();
+
+            startRest = 0;
+            var rest2 = "";
+            while (tokens.MoveNext())
+            {
+                if (!collectedTokens.Contains(tokens.Current.Index))
+                    startRest = startRest ?? tokens.Current.Index;
+                else
+                {
+                    if (startRest != null)
+                        rest2 += renderedMessage.Substring(startRest.Value, tokens.Current.Index - startRest.Value);
+                    startRest = null;
+                }
+            }
+
+            if (startRest != null)
+                rest2 += renderedMessage.Substring(startRest.Value, renderedMessage.Length - startRest.Value);
+
+            rest2 = rest2.Replace(" {} ", " ").Replace("{}", "");
+            rest = rest2;
 
             AddValue(new AppenderValue { Name = "__cav_rest", sValue = rest.Trim() });
         }
@@ -299,8 +329,14 @@ namespace AWSAppender.Core.Services
 
             time = DateTimeOffset.UtcNow;
 
-            s = s.Trim();
-            s = s.Trim(":\" ".ToCharArray());
+            var added = s.Length;
+            s = s.TrimStart();
+            s = s.TrimStart(":\" ".ToCharArray());
+
+            added -= s.Length;
+
+            s = s.TrimEnd();
+            s = s.TrimEnd(":\" ".ToCharArray());
 
             for (int i = 1; i <= s.Length; i++)
             {
@@ -312,6 +348,8 @@ namespace AWSAppender.Core.Services
                     length = i;
                 }
             }
+
+            length += added;
 
             return success;
         }

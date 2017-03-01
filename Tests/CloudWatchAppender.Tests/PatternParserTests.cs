@@ -18,6 +18,7 @@ namespace CloudWatchAppender.Tests
         }
 
         [Test]
+        [Ignore]
         public void TestStackTracePattern()
         {
             var p = new PatternParser(GetLoggingEvent());

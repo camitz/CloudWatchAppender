@@ -142,13 +142,13 @@ namespace AWSAppender.Core.Services
                                      {
                                          tokenSource.Cancel();
                                          LogLog.Error(GetType(),
-                                             "Appender timed out while submitting to CloudWatch. Exception (if any): {0}", nestedTask.Exception);
+                                             String.Format("Appender timed out while submitting to CloudWatch. Exception (if any): {0}", nestedTask.Exception), nestedTask.Exception);
                                      }
                                  }
                                  catch (Exception e)
                                  {
                                      LogLog.Error(GetType(),
-                                         "Appender encountered an error while submitting to cloudwatch. {0}", e);
+                                         String.Format("Appender encountered an error while submitting to cloudwatch. {0}", e.Message), e);
                                  }
 
                                  superTask.ContinueWith(t =>
